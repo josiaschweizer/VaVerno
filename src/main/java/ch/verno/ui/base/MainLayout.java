@@ -1,4 +1,4 @@
-package ch.verno.base.ui;
+package ch.verno.ui.base;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -30,7 +30,7 @@ public final class MainLayout extends AppLayout {
         appLogo.setSize("48px");
         appLogo.setColor("green");
 
-        var appName = new Span("Verno");
+        var appName = new Span("My Application");
         appName.getStyle().setFontWeight(Style.FontWeight.BOLD);
 
         var header = new VerticalLayout(appLogo, appName);

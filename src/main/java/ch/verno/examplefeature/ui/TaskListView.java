@@ -1,6 +1,6 @@
 package ch.verno.examplefeature.ui;
 
-import ch.verno.base.ui.ViewToolbar;
+import ch.verno.ui.base.toolbar.ViewToolbar;
 import ch.verno.examplefeature.Task;
 import ch.verno.examplefeature.TaskService;
 import com.vaadin.flow.component.button.Button;

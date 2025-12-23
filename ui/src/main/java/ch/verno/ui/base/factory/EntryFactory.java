@@ -61,7 +61,9 @@ public class EntryFactory<DTO, TWOSELECTIONDTO> {
     final var binding = binder.forField(phoneEntry);
     required.ifPresent(binding::asRequired);
     binding.withValidator(
-        pn -> PhoneNumberFormatter.isValid(
+        pn -> pn == null
+            || pn.isEmpty()
+            || PhoneNumberFormatter.isValid(
             pn.phoneNumber(),
             pn.callingCode().regionCode()
         ),

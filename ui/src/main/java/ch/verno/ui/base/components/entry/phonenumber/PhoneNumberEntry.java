@@ -52,9 +52,7 @@ public class PhoneNumberEntry extends CustomField<PhoneNumber> {
       final var raw = event.getValue().replaceAll("\\D", Publ.EMPTY_STRING);
       final var region = callingCode.regionCode();
 
-      final var formatted = PhoneNumberFormatter.formatNational(raw, region);
-
-      phoneNumberField.setValue(formatted);
+      phoneNumberField.setValue(PhoneNumberFormatter.formatNational(raw, region));
     });
 
     HorizontalLayout layout = new HorizontalLayout(callingCodes, phoneNumberField);
@@ -80,8 +78,8 @@ public class PhoneNumberEntry extends CustomField<PhoneNumber> {
 
   @Override
   protected void setPresentationValue(PhoneNumber value) {
-    if (value == null) {
-      callingCodes.clear();
+    if (value == null || value.isEmpty()) {
+      // Keep the default calling code from the constructor and just clear the number.
       phoneNumberField.clear();
       return;
     }

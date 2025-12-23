@@ -12,6 +12,7 @@ public record CourseDto(
     @Nonnull String title,
     @Nullable Integer capacity,
     @Nonnull String location,
+    @Nonnull CourseLevelDto level,
     @Nonnull CourseScheduleDto schedule,
     @Nonnull Set<DayOfWeek> weekdays,
     @Nullable Integer duration,
@@ -24,6 +25,7 @@ public record CourseDto(
         Publ.EMPTY_STRING,
         null,
         Publ.EMPTY_STRING,
+        CourseLevelDto.empty(),
         CourseScheduleDto.empty(),
         Set.of(),
         null,
@@ -37,6 +39,7 @@ public record CourseDto(
         && this.title().isEmpty()
         && (this.capacity() == null || this.capacity() == 0)
         && this.location().isEmpty()
+        && this.level().isEmpty()
         && this.schedule().isEmpty()
         && this.weekdays().isEmpty()
         && (this.duration() == null || this.duration() == 0)

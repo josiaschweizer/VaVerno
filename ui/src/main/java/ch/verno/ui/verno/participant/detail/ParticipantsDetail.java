@@ -1,10 +1,12 @@
 package ch.verno.ui.verno.participant.detail;
 
 
+import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
+import ch.verno.common.db.dto.CourseDto;
 import ch.verno.common.db.dto.CourseLevelDto;
 import ch.verno.common.db.dto.GenderDto;
 import ch.verno.common.db.dto.ParticipantDto;
-import ch.verno.server.mapper.GenderMapper;
+import ch.verno.common.util.calling.CallingCode;
 import ch.verno.server.service.CourseLevelService;
 import ch.verno.server.service.CourseService;
 import ch.verno.server.service.GenderService;
@@ -21,7 +23,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.Nonnull;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,6 +64,8 @@ public class ParticipantsDetail extends VerticalLayout {
   }
 
   private void init() {
+    binder.setBean(participant);
+
     final var saveButton = new Button("Save");
     saveButton.addClickListener(event -> {
       UI.getCurrent().navigate("participants");
@@ -79,8 +83,6 @@ public class ParticipantsDetail extends VerticalLayout {
 
     add(new ViewToolbar("Participant Detail", saveButton));
     add(participantLayout);
-
-    binder.setBean(this.participant);
   }
 
   @Nonnull
@@ -147,22 +149,65 @@ public class ParticipantsDetail extends VerticalLayout {
   @Nonnull
   private HorizontalLayout createThirdLayer() {
     final var courseLevels = courseLevelService.getAllCourseLevels();
-    final var options = courseLevels.stream()
-        .collect(Collectors.toMap(
-            CourseLevelDto::id,
-            CourseLevelDto::name
-        ));
-
+    final var courseLevelOptions = courseLevels.stream()
+        .collect(Collectors.toMap(CourseLevelDto::id, CourseLevelDto::name));
     final var courseLevelEntry = entryFactory.createComboBoxEntry(
-        participantDto -> participantDto.getCourseLevel().id(),
-        (participantDto, courseLevel) -> participantDto.setCourseLevel(courseLevelService.getCourseLevelById(courseLevel)),
+        dto -> dto.getCourseLevel().id(),
+        (dto, levelId) -> dto.setCourseLevel(
+            levelId == null ? CourseLevelDto.empty() : courseLevelService.getCourseLevelById(levelId)
+        ),
         binder,
         Optional.empty(),
         "Course Level",
-        options
+        courseLevelOptions
     );
 
-    return createLayoutFromComponents(courseLevelEntry);
+    final var courses = courseService.getAllCourses();
+    final var courseOptions = courses.stream()
+        .collect(Collectors.toMap(CourseDto::id, CourseDto::title));
+    final var courseEntry = entryFactory.createComboBoxEntry(
+        dto -> dto.getCourse() == null ? null : dto.getCourse().id(),
+        (dto, courseId) -> dto.setCourse(
+            courseId == null ? CourseDto.empty() : courseService.getCourseById(courseId)
+        ),
+        binder,
+        Optional.empty(),
+        "Course",
+        courseOptions
+    );
+
+    courseLevelEntry.addValueChangeListener(e -> {
+      final var selectedLevelId = e.getValue();
+
+      courseEntry.clear();
+
+      if (selectedLevelId == null) {
+        courseEntry.setItems(courseOptions.keySet());
+        return;
+      }
+
+      final var filteredCourses = courses.stream()
+          .filter(c -> !c.level().isEmpty() && selectedLevelId.equals(c.level().id()))
+          .toList();
+
+      final Map<Long, String> filteredCourseOptions = filteredCourses.stream()
+          .collect(Collectors.toMap(
+              CourseDto::id,
+              CourseDto::displayName
+          ));
+
+      courseEntry.setItems(filteredCourseOptions.keySet());
+
+      if (!filteredCourseOptions.isEmpty()) {
+        courseEntry.setValue(filteredCourseOptions.keySet().iterator().next());
+      }
+    });
+
+    if (!courseLevelOptions.isEmpty()) {
+      courseLevelEntry.setValue(courseLevelOptions.keySet().iterator().next());
+    }
+
+    return createLayoutFromComponents(courseLevelEntry, courseEntry);
   }
 
   @Nonnull
@@ -175,7 +220,5 @@ public class ParticipantsDetail extends VerticalLayout {
     }
 
     return layout;
-
   }
-
 }

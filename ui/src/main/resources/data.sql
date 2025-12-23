@@ -18,8 +18,8 @@ VALUES (CURRENT_TIMESTAMP, 'Hans', 'Müller', 'hans.mueller@example.com', '+4179
 INSERT INTO parent (created_at, firstname, lastname, email, phone, gender, address)
 VALUES (CURRENT_TIMESTAMP, 'Peter', 'Schmidt', 'peter.schmidt@example.com', '+41799876543', 1, 1);
 
-INSERT INTO course (created_at, title, capacity, location, course_schedule_id, duration, instructor)
-VALUES (CURRENT_TIMESTAMP, 'Grundkurs', 20, 'Schulzimmer 1', 1, 60, 1);
+INSERT INTO course (created_at, title, capacity, location, course_level_id, course_schedule_id, duration, instructor)
+VALUES (CURRENT_TIMESTAMP, 'Grundkurs', 20, 'Schulzimmer 1', 1, 1, 60, 1);
 
 INSERT INTO course_weekday (course_id, weekday)
 VALUES (1, 'MONDAY');

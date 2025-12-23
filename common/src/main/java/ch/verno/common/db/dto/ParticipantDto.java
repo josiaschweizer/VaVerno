@@ -25,7 +25,7 @@ public class ParticipantDto {
   PhoneNumber phone;
   @Nonnull
   CourseLevelDto courseLevel;
-  @Nonnull
+  @Nullable
   CourseDto course;
   @Nonnull
   AddressDto address;
@@ -41,8 +41,8 @@ public class ParticipantDto {
                         @Nonnull final GenderDto gender,
                         @Nonnull final String email,
                         @Nonnull final PhoneNumber phone,
-                        @Nonnull final CourseLevelDto courseLevel,
                         @Nonnull final CourseDto course,
+                        @Nonnull final CourseLevelDto courseLevel,
                         @Nonnull final AddressDto address,
                         @Nonnull final ParentDto parentOne,
                         @Nonnull final ParentDto parentTwo) {
@@ -53,8 +53,8 @@ public class ParticipantDto {
     this.gender = gender;
     this.email = email;
     this.phone = phone;
-    this.courseLevel = courseLevel;
     this.course = course;
+    this.courseLevel = courseLevel;
     this.address = address;
     this.parentOne = parentOne;
     this.parentTwo = parentTwo;
@@ -68,8 +68,8 @@ public class ParticipantDto {
     this.gender = GenderDto.empty();
     this.email = Publ.EMPTY_STRING;
     this.phone = PhoneNumber.empty();
-    this.courseLevel = CourseLevelDto.empty();
     this.course = CourseDto.empty();
+    this.courseLevel = CourseLevelDto.empty();
     this.address = AddressDto.empty();
     this.parentOne = ParentDto.empty();
     this.parentTwo = ParentDto.empty();
@@ -148,7 +148,7 @@ public class ParticipantDto {
     this.courseLevel = courseLevel;
   }
 
-  @Nonnull
+  @Nullable
   public CourseDto getCourse() {
     return course;
   }

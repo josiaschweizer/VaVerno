@@ -42,6 +42,10 @@ public class CourseEntity {
   private String location;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "course_level_id", nullable = false)
+  private CourseLevelEntity level;
+
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "course_schedule_id", nullable = false)
   private CourseScheduleEntity schedule;
 
@@ -68,6 +72,7 @@ public class CourseEntity {
   public CourseEntity(@Nonnull final String title,
                       @Nullable final Integer capacity,
                       @Nonnull final String location,
+                      @Nullable final CourseLevelEntity level,
                       @Nullable final CourseScheduleEntity schedule,
                       @Nonnull final Set<DayOfWeek> weekdays,
                       @Nullable final Integer duration,
@@ -75,6 +80,7 @@ public class CourseEntity {
     this.title = title;
     this.capacity = capacity;
     this.location = location;
+    this.level = level;
     this.schedule = schedule;
     this.weekdays = weekdays;
     this.duration = duration;
@@ -115,6 +121,14 @@ public class CourseEntity {
 
   public void setLocation(final String location) {
     this.location = location;
+  }
+
+  public CourseLevelEntity getLevel() {
+    return level;
+  }
+
+  public void setLevel(final CourseLevelEntity level) {
+    this.level = level;
   }
 
   public CourseScheduleEntity getSchedule() {

@@ -29,8 +29,8 @@ public final class ParticipantMapper {
         GenderMapper.toDto(entity.getGender()),
         entity.getEmail() == null ? Publ.EMPTY_STRING : entity.getEmail(),
         entity.getPhone() == null ? PhoneNumber.empty() : PhoneNumber.fromString(entity.getPhone()),
-        CourseLevelMapper.toDto(entity.getCourseLevel()),
         CourseMapper.toDto(entity.getCourse()),
+        CourseLevelMapper.toDto(entity.getCourseLevel()),
         AddressMapper.toDto(entity.getAddress()),
         ParentMapper.toDto(entity.getParentOne()),
         ParentMapper.toDto(entity.getParentTwo())

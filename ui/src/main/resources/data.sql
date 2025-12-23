@@ -8,6 +8,9 @@ VALUES (CURRENT_TIMESTAMP, 'Musterstrasse', '1', '8000', 'Zürich', 'Schweiz');
 
 INSERT INTO course_level (created_at, code, name, description, sorting_order)
 VALUES (CURRENT_TIMESTAMP, 'A1', 'Anfänger', 'Anfängerniveau', 1);
+INSERT INTO course_level (created_at, code, name, description, sorting_order)
+VALUES (CURRENT_TIMESTAMP, 'A2', 'Fortgeschritten', 'Fortgeschrittenesniveau', 2);
+
 
 INSERT INTO course_schedule (created_at, week_start, week_end)
 VALUES (CURRENT_TIMESTAMP, 1, 52);

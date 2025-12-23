@@ -179,10 +179,12 @@ public class ParticipantsDetail extends VerticalLayout {
     courseLevelEntry.addValueChangeListener(e -> {
       final var selectedLevelId = e.getValue();
 
+      final var currentValue = courseEntry.getValue();
       courseEntry.clear();
 
       if (selectedLevelId == null) {
         courseEntry.setItems(courseOptions.keySet());
+        courseEntry.setValue(currentValue);
         return;
       }
 

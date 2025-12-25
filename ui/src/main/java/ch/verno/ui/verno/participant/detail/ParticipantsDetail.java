@@ -97,13 +97,8 @@ public class ParticipantsDetail extends VerticalLayout implements HasUrlParamete
     setPadding(false);
     setSpacing(false);
 
-    final var participantLayout = new VerticalLayout();
-    participantLayout.setWidthFull();
-    participantLayout.add(createParticipantInfoLayout());
-    participantLayout.add(createParticipantContactLayout());
-    participantLayout.add(createParticipantCourseLayout());
-
-    final var addressLayout = new VerticalLayout(createAddressLayout());
+    final var participantLayout = createParticipantLayout();
+    final var addressLayout = createAddressLayout();
     final var parentsLayout = createParentsLayout();
 
     viewToolbar = getViewToolbar();
@@ -122,6 +117,16 @@ public class ParticipantsDetail extends VerticalLayout implements HasUrlParamete
 
     applyFormMode(FormMode.VIEW);
     updateSaveButtonState();
+  }
+
+  @Nonnull
+  private VerticalLayout createParticipantLayout() {
+    final var participantLayout = new VerticalLayout();
+    participantLayout.setWidthFull();
+    participantLayout.add(createParticipantInfoLayout());
+    participantLayout.add(createParticipantContactLayout());
+    participantLayout.add(createParticipantCourseLayout());
+    return participantLayout;
   }
 
   @Nonnull
@@ -321,7 +326,7 @@ public class ParticipantsDetail extends VerticalLayout implements HasUrlParamete
   }
 
   @Nonnull
-  private HorizontalLayout createAddressLayout() {
+  private VerticalLayout createAddressLayout() {
     final var streetEntry = entryFactory.createTextEntry(
         dto -> dto.getAddress().getStreet(),
         (dto, street) -> dto.getAddress().setStreet(street),
@@ -362,7 +367,7 @@ public class ParticipantsDetail extends VerticalLayout implements HasUrlParamete
         "Country"
     );
 
-    return createLayoutFromComponents(streetEntry, houseNumberEntry, zipCodeEntry, cityEntry, countryEntry);
+    return new VerticalLayout(createLayoutFromComponents(streetEntry, houseNumberEntry, zipCodeEntry, cityEntry, countryEntry));
   }
 
   @Nonnull

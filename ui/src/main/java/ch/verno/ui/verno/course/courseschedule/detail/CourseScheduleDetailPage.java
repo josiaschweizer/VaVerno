@@ -3,14 +3,20 @@ package ch.verno.ui.verno.course.courseschedule.detail;
 import ch.verno.common.db.dto.CourseScheduleDto;
 import ch.verno.common.util.VernoConstants;
 import ch.verno.server.service.CourseScheduleService;
+import ch.verno.ui.base.components.form.FormMode;
+import ch.verno.ui.base.components.schedulepicker.CourseScheduleWeekPicker;
 import ch.verno.ui.base.detail.BaseDetailPage;
 import ch.verno.ui.lib.Routes;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.Nonnull;
 import org.jspecify.annotations.NonNull;
+
+import java.util.Optional;
 
 @Route(Routes.COURSE_SCHEDULES + Routes.DETAIL)
 @PageTitle("Course Schedule Detail")
@@ -22,11 +28,32 @@ public class CourseScheduleDetailPage extends BaseDetailPage<CourseScheduleDto> 
 
   public CourseScheduleDetailPage(@Nonnull final CourseScheduleService courseScheduleService) {
     this.courseScheduleService = courseScheduleService;
+
+    init();
   }
 
   @Override
   protected void initUI() {
+    add(new VerticalLayout(createInfoLayout(), createSchedulePickerLayout()));
+  }
 
+  @Nonnull
+  private HorizontalLayout createInfoLayout() {
+    final var title = entryFactory.createTextEntry(
+            CourseScheduleDto::getTitle,
+            CourseScheduleDto::setTitle,
+            getBinder(),
+            Optional.of("Title is required"),
+            "Title"
+    );
+    return createLayoutFromComponents(title);
+  }
+
+  @Nonnull
+  private HorizontalLayout createSchedulePickerLayout() {
+    final var schedulePicker = new CourseScheduleWeekPicker();
+
+    return createLayoutFromComponents(schedulePicker);
   }
 
   @NonNull
@@ -57,6 +84,12 @@ public class CourseScheduleDetailPage extends BaseDetailPage<CourseScheduleDto> 
   @Override
   protected CourseScheduleDto updateBean(@NonNull final CourseScheduleDto bean) {
     return courseScheduleService.updateCourseSchedule(bean);
+  }
+
+  @NonNull
+  @Override
+  protected FormMode getDefaultFormMode() {
+    return FormMode.EDIT;
   }
 
   @NonNull

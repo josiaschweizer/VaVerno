@@ -7,7 +7,6 @@ import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
 import ch.verno.ui.base.components.toolbar.ViewToolbarResult;
 import ch.verno.ui.base.factory.EntryFactory;
 import ch.verno.ui.verno.FieldFactory;
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -46,12 +45,7 @@ public abstract class BaseDetailPage<T> extends VerticalLayout implements HasUrl
     this.fieldFactory = new FieldFactory<>(entryFactory);
   }
 
-  @Override
-  protected void onAttach(final AttachEvent attachEvent) {
-    init();
-  }
-
-  private void init() {
+  protected void init() {
     this.setWidthFull();
     this.setPadding(false);
     this.setSpacing(false);

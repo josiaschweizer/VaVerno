@@ -27,7 +27,7 @@ public class InstructorDto extends BaseDto {
   private AddressDto address;
 
   public InstructorDto() {
-    setId(0L);
+    setId(null);
     this.firstName = Publ.EMPTY_STRING;
     this.lastName = Publ.EMPTY_STRING;
     this.email = Publ.EMPTY_STRING;

@@ -19,10 +19,10 @@ public class CourseDto extends BaseDto {
   @Nonnull
   private String location;
 
-  @Nonnull
+  @Nullable
   private CourseLevelDto courseLevel;
 
-  @Nonnull
+  @Nullable
   private CourseScheduleDto courseSchedule;
 
   @Nonnull
@@ -35,7 +35,7 @@ public class CourseDto extends BaseDto {
   private InstructorDto instructor;
 
   public CourseDto() {
-    this(0L,
+    this(null,
             Publ.EMPTY_STRING,
             null,
             Publ.EMPTY_STRING,
@@ -111,29 +111,29 @@ public class CourseDto extends BaseDto {
     this.location = location;
   }
 
-  @Nonnull
+  @Nullable
   public CourseLevelDto getCourseLevel() {
     return courseLevel;
   }
 
-  public void setCourseLevel(@Nonnull final CourseLevelDto courseLevel) {
+  public void setCourseLevel(@Nullable final CourseLevelDto courseLevel) {
     this.courseLevel = courseLevel;
   }
 
   @Nonnull
   public String getCourseLevelAsString() {
-    if (courseLevel.isEmpty()) {
+    if (courseLevel == null || courseLevel.isEmpty()) {
       return Publ.EMPTY_STRING;
     }
     return courseLevel.displayName();
   }
 
-  @Nonnull
+  @Nullable
   public CourseScheduleDto getCourseSchedule() {
     return courseSchedule;
   }
 
-  public void setCourseSchedule(@Nonnull final CourseScheduleDto courseSchedule) {
+  public void setCourseSchedule(@Nullable final CourseScheduleDto courseSchedule) {
     this.courseSchedule = courseSchedule;
   }
 

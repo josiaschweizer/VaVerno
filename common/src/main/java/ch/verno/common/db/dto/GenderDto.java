@@ -14,7 +14,7 @@ public class GenderDto extends BaseDto {
   private String description;
 
   public GenderDto() {
-    this(0L,
+    this(null,
             Publ.EMPTY_STRING,
             Publ.EMPTY_STRING
     );

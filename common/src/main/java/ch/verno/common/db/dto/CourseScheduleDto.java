@@ -21,7 +21,7 @@ public class CourseScheduleDto extends BaseDto {
   private List<YearWeekDto> weeks;
 
   public CourseScheduleDto() {
-    setId(0L);
+    setId(null);
     this.createdAt = OffsetDateTime.now();
     this.title = Publ.EMPTY_STRING;
     this.weeks = new ArrayList<>();

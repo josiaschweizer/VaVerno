@@ -23,7 +23,7 @@ public class AddressDto extends BaseDto {
   private String country;
 
   public AddressDto() {
-    super.setId(0L);
+    super.setId(null);
     this.street = Publ.EMPTY_STRING;
     this.houseNumber = Publ.EMPTY_STRING;
     this.zipCode = Publ.EMPTY_STRING;

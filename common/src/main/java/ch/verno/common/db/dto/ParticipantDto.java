@@ -45,7 +45,7 @@ public class ParticipantDto extends BaseDto {
   private ParentDto parentTwo;
 
   public ParticipantDto() {
-    setId(0L);
+    setId(null);
     this.firstName = Publ.EMPTY_STRING;
     this.lastName = Publ.EMPTY_STRING;
     this.birthdate = null;

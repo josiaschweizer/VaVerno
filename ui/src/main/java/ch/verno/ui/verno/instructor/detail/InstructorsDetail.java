@@ -30,6 +30,8 @@ public class InstructorsDetail extends BaseDetailPage<InstructorDto> {
                            @Nonnull final GenderService genderService) {
     this.instructorService = instructorService;
     this.genderService = genderService;
+
+    init();
   }
 
   @Nonnull

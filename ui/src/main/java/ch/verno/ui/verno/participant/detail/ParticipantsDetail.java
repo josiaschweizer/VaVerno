@@ -51,6 +51,8 @@ public class ParticipantsDetail extends BaseDetailPage<ParticipantDto> {
     this.genderService = genderService;
     this.courseLevelService = courseLevelService;
     this.courseService = courseService;
+
+    init();
   }
 
   @Nonnull

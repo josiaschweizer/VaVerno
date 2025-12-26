@@ -36,6 +36,8 @@ public class CourseDetailPage extends BaseDetailPage<CourseDto> {
     this.courseService = courseService;
     this.courseLevelService = courseLevelService;
     this.courseScheduleService = courseScheduleService;
+
+    init();
   }
 
   @Nonnull
@@ -135,9 +137,9 @@ public class CourseDetailPage extends BaseDetailPage<CourseDto> {
             .collect(Collectors.toMap(CourseScheduleDto::getId, CourseScheduleDto::getTitle));
 
     final var courseScheduleEntry = entryFactory.createComboBoxEntry(
-            dto -> dto.getCourseSchedule().getId(),
+            dto -> dto.getCourseSchedule() != null ? dto.getCourseSchedule().getId() : null,
             (dto, value) -> dto.setCourseSchedule(value == null ?
-                    CourseScheduleDto.empty() :
+                    null :
                     courseScheduleService.getCourseScheduleById(value)),
             getBinder(),
             Optional.of("Course Schedule is required"),
@@ -151,9 +153,9 @@ public class CourseDetailPage extends BaseDetailPage<CourseDto> {
             .collect(Collectors.toMap(CourseLevelDto::getId, CourseLevelDto::getName));
 
     final var courseLevelEntry = fieldFactory.createCourseLevelField(
-            dto -> dto.getCourseLevel().getId(),
+            dto -> dto.getCourseLevel() != null ? dto.getCourseLevel().getId() : null,
             (dto, value) -> dto.setCourseLevel(value == null ?
-                    CourseLevelDto.empty() :
+                    null :
                     courseLevelService.getCourseLevelById(value)),
             getBinder(),
             courseLevelOptions

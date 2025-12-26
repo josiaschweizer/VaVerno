@@ -20,17 +20,20 @@ import jakarta.annotation.Nonnull;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 public class EntryFactory<DTO, TWOSELECTIONDTO> {
 
 
   @Nonnull
   public VATextField createTextEntry(@Nonnull final ValueProvider<DTO, String> valueProvider,
-                                   @Nonnull final Setter<DTO, String> valueSetter,
-                                   @Nonnull final Binder<DTO> binder,
-                                   @Nonnull final Optional<String> required,
-                                   @Nonnull final String label) {
+                                     @Nonnull final Setter<DTO, String> valueSetter,
+                                     @Nonnull final Binder<DTO> binder,
+                                     @Nonnull final Optional<String> required,
+                                     @Nonnull final String label) {
     final var textField = new VATextField(label);
     textField.setWidthFull();
     bindEntry(textField, valueProvider, valueSetter, binder, required);
@@ -63,13 +66,13 @@ public class EntryFactory<DTO, TWOSELECTIONDTO> {
     final var binding = binder.forField(phoneEntry);
     required.ifPresent(binding::asRequired);
     binding.withValidator(
-        pn -> pn == null
-            || pn.isEmpty()
-            || PhoneNumberFormatter.isValid(
-            pn.phoneNumber(),
-            pn.callingCode().regionCode()
-        ),
-        "Invalid phone number"
+            pn -> pn == null
+                    || pn.isEmpty()
+                    || PhoneNumberFormatter.isValid(
+                    pn.phoneNumber(),
+                    pn.callingCode().regionCode()
+            ),
+            "Invalid phone number"
     );
     binding.bind(valueProvider, valueSetter);
 
@@ -98,23 +101,7 @@ public class EntryFactory<DTO, TWOSELECTIONDTO> {
     final var numberField = new VANumberField(label);
     numberField.setWidthFull();
 
-    final boolean allowNull = required.isEmpty();
-
-    bindEntry(
-            numberField,
-            valueProvider,
-            valueSetter,
-            binder,
-            required,
-            (value, valueContext) -> {
-              if (value == null) {
-                return allowNull ? ValidationResult.ok()
-                        : ValidationResult.error(required.orElse("Required"));
-              }
-              return value > 0
-                      ? ValidationResult.ok()
-                      : ValidationResult.error("Value must be greater than 0");
-            }
+    bindEntry(numberField, valueProvider, valueSetter, binder, required, getDoubleValidator(required, required.isEmpty())
     );
 
     return numberField;
@@ -134,7 +121,7 @@ public class EntryFactory<DTO, TWOSELECTIONDTO> {
     comboBox.setItemLabelGenerator(id -> options.getOrDefault(id, String.valueOf(id)));
     comboBox.setClearButtonVisible(true);
 
-    bindEntry(comboBox, valueProvider, valueSetter, binder, required);
+    bindEntry(comboBox, valueProvider, valueSetter, binder, required/*, getLongValidator(required, required.isEmpty())*/);
 
     return comboBox;
   }
@@ -180,6 +167,34 @@ public class EntryFactory<DTO, TWOSELECTIONDTO> {
     );
 
     return weekOption;
+  }
+
+  @Nonnull
+  private Validator<Double> getDoubleValidator(@Nonnull final Optional<String> required,
+                                               final boolean allowNull) {
+    return (value, valueContext) -> {
+      if (value == null) {
+        return allowNull ? ValidationResult.ok()
+                : ValidationResult.error(required.orElse("Required"));
+      }
+      return value > 0
+              ? ValidationResult.ok()
+              : ValidationResult.error("Value must be greater than 0");
+    };
+  }
+
+  @Nonnull
+  private Validator<Long> getLongValidator(@Nonnull final Optional<String> required,
+                                           final boolean allowNull) {
+    return (value, valueContext) -> {
+      if (value == null) {
+        return allowNull ? ValidationResult.ok()
+                : ValidationResult.error(required.orElse("Required"));
+      }
+      return value > 0
+              ? ValidationResult.ok()
+              : ValidationResult.error("Value must be greater than 0");
+    };
   }
 
   private <FIELDVALUE> void bindEntry(@Nonnull final HasValue<?, FIELDVALUE> entry,

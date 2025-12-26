@@ -8,6 +8,17 @@ import jakarta.annotation.Nonnull;
 public class ViewToolbarFactory {
 
   /**
+   * creates a simple ViewToolbar with only a title
+   *
+   * @param title the title of the toolbar
+   * @return a simple ViewToolbar with the specified title
+   */
+  @Nonnull
+  public static ViewToolbar createSimpleToolbar(@Nonnull final String title) {
+    return new ViewToolbar(title);
+  }
+
+  /**
    * creates a ViewToolbar for a grid view of a specific object type with a create new createButton
    *
    * @param gridObjectName the name of the object displayed in the grid (e.g., "Participant")

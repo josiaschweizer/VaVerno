@@ -20,7 +20,7 @@ public class CourseLevelDto extends BaseDto {
   private Integer sortingOrder;
 
   public CourseLevelDto() {
-    setId(0L);
+    setId(null);
     this.code = Publ.EMPTY_STRING;
     this.name = Publ.EMPTY_STRING;
     this.description = Publ.EMPTY_STRING;
@@ -41,13 +41,7 @@ public class CourseLevelDto extends BaseDto {
 
   @Nonnull
   public static CourseLevelDto empty() {
-    return new CourseLevelDto(
-            0L,
-            Publ.EMPTY_STRING,
-            Publ.EMPTY_STRING,
-            Publ.EMPTY_STRING,
-            null
-    );
+    return new CourseLevelDto();
   }
 
   public boolean isEmpty() {

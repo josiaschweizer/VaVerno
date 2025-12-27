@@ -1,5 +1,6 @@
 package ch.verno.ui.verno.settings;
 
+import ch.verno.ui.base.settings.BaseSetting;
 import ch.verno.ui.base.settings.BaseSettingsPage;
 import ch.verno.ui.lib.Routes;
 import com.vaadin.flow.router.Menu;
@@ -7,6 +8,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.security.RolesAllowed;
+import org.jspecify.annotations.NonNull;
 
 @Route(Routes.MANDANT_SETTINGS)
 @PageTitle("Mandant Settings")
@@ -18,10 +20,12 @@ public class MandantSettings extends BaseSettingsPage {
 
   }
 
+  @NonNull
   @Override
-  protected void initUI() {
-
+  protected BaseSetting createSetting() {
+    return null;
   }
+
 
   @Nonnull
   @Override

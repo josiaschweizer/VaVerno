@@ -49,7 +49,7 @@ public class CourseLevelDetail extends BaseDetailView<CourseLevelDto> {
 
     initUI();
 
-    this.saveButton.addClickListener(event -> save()); //todo override save
+    this.saveButton.addClickListener(event -> save());
     getBinder().addValueChangeListener(event -> updateSaveButtonState());
     getBinder().addStatusChangeListener(event -> updateSaveButtonState());
 

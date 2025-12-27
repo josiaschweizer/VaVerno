@@ -7,14 +7,22 @@ import jakarta.annotation.Nonnull;
 public abstract class BaseSettingsPage extends VerticalLayout {
 
   public BaseSettingsPage() {
+  }
+
+  protected void init() {
     setSizeFull();
     setPadding(false);
     setSpacing(false);
 
     add(ViewToolbarFactory.createSimpleToolbar(getSettingsPageName()));
+
+    final var setting = createSetting();
+
+    add(setting);
   }
 
-  protected abstract void initUI();
+  @Nonnull
+  protected abstract BaseSetting createSetting();
 
   @Nonnull
   protected abstract String getSettingsPageName();

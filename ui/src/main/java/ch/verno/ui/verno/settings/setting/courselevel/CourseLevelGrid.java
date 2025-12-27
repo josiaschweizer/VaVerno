@@ -87,11 +87,6 @@ public class CourseLevelGrid extends VerticalLayout {
     return courseLevelService.getAllCourseLevels();
   }
 
-  @Nonnull
-  protected String getGridObjectName() {
-    return VernoConstants.COURSE_LEVEL;
-  }
-
   protected void setDefaultSorting() {
     Grid.Column<CourseLevelDto> column = columnsByKey.get("Sorting Order");
 

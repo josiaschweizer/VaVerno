@@ -2,7 +2,6 @@ package ch.verno.ui.verno.settings.setting.courselevel;
 
 import ch.verno.common.db.dto.CourseLevelDto;
 import ch.verno.ui.base.settings.VABaseSetting;
-import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
@@ -27,23 +26,27 @@ public class CourseLevelSetting extends VABaseSetting {
                             @Nonnull final CourseLevelDetail courseLevelDetail) {
     super("Course Levels");
     this.courseLevelGrid = courseLevelGrid;
-    this.courseLevelGrid.initUI();
-    this.courseLevelGrid.addItemDoubleClickListener(this::onGridItemDoubleClick);
+    configureGrid();
     this.courseLevelDetail = courseLevelDetail;
-    this.courseLevelDetail.setAfterSave(this::displayCourseLevelGrid);
+    configureDetailView();
 
     setActionButton(getAddCourseLevelButton());
+  }
+
+  private void configureGrid() {
+    this.courseLevelGrid.initUI();
+    this.courseLevelGrid.addItemDoubleClickListener(this::onGridItemDoubleClick);
+  }
+
+  private void configureDetailView() {
+    this.courseLevelDetail.setAfterSave(this::displayCourseLevelGrid);
   }
 
   @Nonnull
   private Button getAddCourseLevelButton() {
     final var button = new Button("Add Course Level", VaadinIcon.PLUS.create());
-    button.addClickListener(this::addCourseLevelButtonClicked);
+    button.addClickListener(clickEvent -> displayCourseLevelDetail(null));
     return button;
-  }
-
-  private void addCourseLevelButtonClicked(@Nonnull final ClickEvent<Button> clickEvent) {
-    displayCourseLevelDetail(null);
   }
 
   private void displayCourseLevelDetail(@Nullable final Long courseLevelId) {
@@ -54,7 +57,7 @@ public class CourseLevelSetting extends VABaseSetting {
 
   @Nonnull
   private Button createBackToGridButton() {
-    final var button = new Button("Back to Course Level Grid", VaadinIcon.ARROW_BACKWARD.create());
+    final var button = new Button("Back to Course Level", VaadinIcon.ARROW_BACKWARD.create());
     button.addClickListener(event -> displayCourseLevelGrid());
     return button;
   }

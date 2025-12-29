@@ -12,10 +12,7 @@ import ch.verno.server.repository.*;
 import ch.verno.server.spec.PageHelper;
 import ch.verno.server.spec.ParticipantSpec;
 import com.vaadin.flow.data.provider.QuerySortOrder;
-import com.vaadin.flow.data.provider.SortDirection;
 import jakarta.annotation.Nonnull;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -144,22 +141,7 @@ public class ParticipantService implements IParticipantService {
                                                final int offset,
                                                final int limit,
                                                @Nonnull final List<QuerySortOrder> sortOrders) {
-    final int page = offset / limit;
-
-    final var sort = sortOrders.isEmpty()
-            ? Sort.unsorted()
-            : Sort.by(
-            sortOrders.stream()
-                    .map(order -> new Sort.Order(
-                            order.getDirection() == SortDirection.ASCENDING
-                                    ? Sort.Direction.ASC
-                                    : Sort.Direction.DESC,
-                            order.getSorted()
-                    ))
-                    .toList()
-    );
-
-    final var pageable = PageRequest.of(page, limit, sort);
+    final var pageable = PageHelper.createPageRequest(offset, limit, sortOrders);
     final var spec = participantSpec.participantSpec(filter);
 
     return participantRepository.findAll(spec, pageable).stream()

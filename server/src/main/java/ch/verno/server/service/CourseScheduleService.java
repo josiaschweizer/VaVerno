@@ -8,11 +8,9 @@ import ch.verno.common.exceptions.NotFoundReason;
 import ch.verno.server.mapper.CourseScheduleMapper;
 import ch.verno.server.repository.CourseScheduleRepository;
 import ch.verno.server.spec.CourseScheduleSpec;
+import ch.verno.server.spec.PageHelper;
 import com.vaadin.flow.data.provider.QuerySortOrder;
-import com.vaadin.flow.data.provider.SortDirection;
 import jakarta.annotation.Nonnull;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,22 +98,7 @@ public class CourseScheduleService implements ICourseScheduleService {
                                                      final int offset,
                                                      final int limit,
                                                      @Nonnull final List<QuerySortOrder> sortOrders) {
-    final int page = offset / limit;
-
-    final var sort = sortOrders.isEmpty()
-            ? Sort.unsorted()
-            : Sort.by(
-            sortOrders.stream()
-                    .map(order -> new Sort.Order(
-                            order.getDirection() == SortDirection.ASCENDING
-                                    ? Sort.Direction.ASC
-                                    : Sort.Direction.DESC,
-                            order.getSorted()
-                    ))
-                    .toList()
-    );
-
-    final var pageable = PageRequest.of(page, limit, sort);
+    final var pageable = PageHelper.createPageRequest(offset, limit, sortOrders);
     final var spec = courseScheduleSpec.courseScheduleSpec(filter);
 
     return courseScheduleRepository.findAll(spec, pageable).stream()

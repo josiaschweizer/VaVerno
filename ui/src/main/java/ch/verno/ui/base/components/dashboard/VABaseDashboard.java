@@ -1,31 +1,51 @@
 package ch.verno.ui.base.components.dashboard;
 
-import com.vaadin.flow.component.dashboard.Dashboard;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import jakarta.annotation.Nonnull;
 
-import java.util.List;
+import java.util.Collection;
 
-public abstract class VABaseDashboard extends Div {
+@CssImport("./components/dashboard/va-base-dashboard.css")
+public class VABaseDashboard extends Composite<Div> {
 
   @Nonnull
-  protected Dashboard dashboard;
+  private final Div grid;
 
   public VABaseDashboard() {
-    initUI();
+    grid = new Div();
+    grid.addClassName("va-dashboard-grid");
+
+    getContent().add(grid);
   }
 
-  private void initUI() {
-    dashboard = createDashboard();
-    getDashboardWidgets().forEach(d -> dashboard.add(d));
+  public void addWidget(@Nonnull final VABaseDashboardWidget widget) {
+    grid.add(widget);
+  }
 
-    add(dashboard);
+  public void addWidgets(@Nonnull final Collection<VABaseDashboardWidget> widgets) {
+    grid.add(widgets.toArray(VABaseDashboardWidget[]::new));
+  }
+
+  public void removeWidget(@Nonnull final VABaseDashboardWidget widget) {
+    grid.remove(widget);
+  }
+
+  public void clearWidgets() {
+    grid.removeAll();
   }
 
   @Nonnull
-  protected abstract Dashboard createDashboard();
+  public Div getGrid() {
+    return grid;
+  }
 
-  @Nonnull
-  protected abstract List<VABaseDashboardWidget> getDashboardWidgets();
+  public void setGap(@Nonnull final String gapCss) {
+    grid.getStyle().set("--va-dashboard-gap", gapCss);
+  }
 
+  public void setRowHeight(@Nonnull final String minRowHeightCss) {
+    grid.getStyle().set("--va-dashboard-row-min-height", minRowHeightCss);
+  }
 }

@@ -53,6 +53,9 @@ public class ParticipantEntity {
   @Column(name = "note")
   private String note;
 
+  @Column(name = "active", nullable = false)
+  private boolean active = true;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_one")
   private ParentEntity parentOne;
@@ -70,7 +73,8 @@ public class ParticipantEntity {
                            @Nonnull final LocalDate birthdate,
                            @Nonnull final String email,
                            @Nonnull final String phone,
-                           @Nonnull final String note) {
+                           @Nonnull final String note,
+                           final boolean active) {
     this.firstname = firstname;
     this.lastname = lastname;
     this.birthdate = birthdate;
@@ -163,13 +167,20 @@ public class ParticipantEntity {
     this.phone = phone;
   }
 
-
   public String getNote() {
     return note;
   }
 
   public void setNote(final String note) {
     this.note = note;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(final boolean active) {
+    this.active = active;
   }
 
   public ParentEntity getParentOne() {

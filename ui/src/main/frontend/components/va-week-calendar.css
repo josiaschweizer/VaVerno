@@ -26,7 +26,15 @@
     height: 100%;
     min-height: 0;
     min-width: 0;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.va-week-calendar-stack::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 .va-week-calendar {
@@ -35,7 +43,7 @@
     height: 100%;
     min-height: 0;
     min-width: 0;
-    grid-template-rows: 44px repeat(24, minmax(60px, 1fr));
+    grid-template-rows: 44px repeat(24, minmax(0, 1fr));
     grid-template-columns: 72px repeat(7, minmax(0, 1fr));
     border-top: 1px solid var(--lumo-contrast-10pct);
     border-left: 1px solid var(--lumo-contrast-10pct);
@@ -45,7 +53,7 @@
     position: absolute;
     inset: 0;
     display: grid;
-    grid-template-rows: 44px repeat(24, minmax(60px, 1fr));
+    grid-template-rows: 44px repeat(24, minmax(0, 1fr));
     grid-template-columns: 72px repeat(7, minmax(0, 1fr));
     pointer-events: none;
 }

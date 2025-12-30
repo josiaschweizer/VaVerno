@@ -19,14 +19,18 @@ import java.util.List;
 @Menu(order = 97, icon = "vaadin:sliders", title = "User Settings") //todo user user_cog icon from external source
 public class UserSettings extends VABaseSettingsPage {
 
+  @Nonnull
+  private final MandantSettingService mandantSettingService;
+
   @Autowired
   public UserSettings(@Nonnull final MandantSettingService mandantSettingService) { //TODO delete course level setting from user setting and replace it with user specific settings (course setting is mandant specific)
+    this.mandantSettingService = mandantSettingService;
     initUI();
   }
 
   @Nonnull
   @Override
-  protected List<VABaseSetting> createSettings() {
+  protected List<VABaseSetting<?>> createSettings() {
     return List.of();
   }
 

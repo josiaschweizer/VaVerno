@@ -1,10 +1,10 @@
 .setting-card {
-    width: 90%;
+    width: 100%;
     max-width: 900px;
     min-width: 320px;
 
     margin-left: 0;
-    margin-right: auto;
+    margin-right: 0;
 
     background-color: var(--lumo-base-color);
     border-radius: var(--lumo-border-radius-l);

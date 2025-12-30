@@ -32,8 +32,8 @@ public class CourseOverview extends VerticalLayout {
   @Nonnull
   private final CourseService courseService;
 
-  public CourseOverview(@Nonnull final CourseScheduleService courseScheduleService,
-                        @Nonnull final CourseService courseService) {
+  public CourseOverview(@Nonnull final CourseService courseService,
+                        @Nonnull final CourseScheduleService courseScheduleService) {
     this.courseScheduleService = courseScheduleService;
     this.courseService = courseService;
 

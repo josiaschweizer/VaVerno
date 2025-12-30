@@ -14,7 +14,8 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 public class LoginView extends VerticalLayout {
 
   public LoginView() {
-    var login = new LoginForm();
+    final var login = new LoginForm();
+    login.setForgotPasswordButtonVisible(false);
     login.setAction("login");
 
     setSizeFull();

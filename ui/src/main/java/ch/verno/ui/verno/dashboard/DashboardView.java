@@ -19,6 +19,7 @@ public class DashboardView extends VerticalLayout {
     this.setSpacing(false);
 
     add(createViewToolBar());
+    add(new VADashboard());
 
     setSizeFull();
     setAlignItems(Alignment.CENTER);

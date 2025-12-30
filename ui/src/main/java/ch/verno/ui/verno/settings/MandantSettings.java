@@ -42,7 +42,7 @@ public class MandantSettings extends VABaseSettingsPage {
 
   @Nonnull
   @Override
-  protected List<VABaseSetting> createSettings() {
+  protected List<VABaseSetting<?>> createSettings() {
     return List.of(quantitySetting, sharedSetting, courseLevelGridSetting);
   }
 

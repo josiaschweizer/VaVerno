@@ -2,7 +2,6 @@ package ch.verno.ui.verno.dashboard;
 
 import ch.verno.ui.base.components.toolbar.ViewToolbar;
 import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -12,9 +11,9 @@ import jakarta.annotation.security.PermitAll;
 @Route("")
 @PermitAll
 @PageTitle("Dashboard")
-public class DashboardPage extends VerticalLayout {
+public class DashboardView extends VerticalLayout {
 
-  public DashboardPage() {
+  public DashboardView() {
     this.setWidthFull();
     this.setPadding(false);
     this.setSpacing(false);

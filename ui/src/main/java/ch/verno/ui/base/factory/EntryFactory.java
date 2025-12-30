@@ -1,6 +1,7 @@
 package ch.verno.ui.base.factory;
 
 import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
+import ch.verno.common.db.dto.GenderDto;
 import ch.verno.common.db.dto.YearWeekDto;
 import ch.verno.common.util.phonenumber.PhoneNumberFormatter;
 import ch.verno.ui.base.components.entry.combobox.VAComboBox;
@@ -11,6 +12,7 @@ import ch.verno.ui.base.components.entry.twooption.VATwoOptionEntry;
 import ch.verno.ui.base.components.entry.weekoption.VAWeekOption;
 import ch.verno.ui.base.components.schedulepicker.VAScheduleWeekPicker;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -29,7 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-public class EntryFactory<DTO, TWOSELECTIONDTO> {
+public class EntryFactory<DTO> {
 
 
   @Nonnull
@@ -142,6 +144,25 @@ public class EntryFactory<DTO, TWOSELECTIONDTO> {
   }
 
   @Nonnull
+  public CheckboxGroup<Long> createCheckboxGroupEntry(@Nonnull final ValueProvider<DTO, Set<Long>> valueProvider,
+                                                     @Nonnull final Setter<DTO, Set<Long>> valueSetter,
+                                                     @Nonnull final Binder<DTO> binder,
+                                                     @Nonnull final Optional<String> required,
+                                                     @Nonnull final String label,
+                                                     @Nonnull final Map<Long, String> options) {
+    final var checkboxGroup = new CheckboxGroup<Long>();
+    checkboxGroup.setLabel(label);
+    checkboxGroup.setWidthFull();
+
+    checkboxGroup.setItems(options.keySet());
+    checkboxGroup.setItemLabelGenerator(id -> options.getOrDefault(id, String.valueOf(id)));
+
+    bindEntry(checkboxGroup, valueProvider, valueSetter, binder, required);
+
+    return checkboxGroup;
+  }
+
+  @Nonnull
   public TimePicker createTimeEntry(@Nonnull final ValueProvider<DTO, LocalTime> valueProvider,
                                     @Nonnull final Setter<DTO, LocalTime> valueSetter,
                                     @Nonnull final Binder<DTO> binder,
@@ -195,11 +216,11 @@ public class EntryFactory<DTO, TWOSELECTIONDTO> {
   }
 
   @Nonnull
-  public VATwoOptionEntry<TWOSELECTIONDTO> createGenderEntry(@Nonnull final ValueProvider<DTO, TWOSELECTIONDTO> valueProvider,
-                                                             @Nonnull final Setter<DTO, TWOSELECTIONDTO> valueSetter,
+  public VATwoOptionEntry<GenderDto> createGenderEntry(@Nonnull final ValueProvider<DTO, GenderDto> valueProvider,
+                                                       @Nonnull final Setter<DTO, GenderDto> valueSetter,
                                                              @Nonnull final Binder<DTO> binder,
-                                                             @Nonnull final List<TWOSELECTIONDTO> options,
-                                                             @Nonnull final ValueProvider<TWOSELECTIONDTO, String> optionLabelProvider,
+                                                       @Nonnull final List<GenderDto> options,
+                                                       @Nonnull final ValueProvider<GenderDto, String> optionLabelProvider,
                                                              @Nonnull final Optional<String> required,
                                                              @Nonnull final String label) {
     final var entry = new VATwoOptionEntry<>(label, options, optionLabelProvider);

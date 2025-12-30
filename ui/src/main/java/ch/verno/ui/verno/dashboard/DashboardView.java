@@ -1,10 +1,13 @@
 package ch.verno.ui.verno.dashboard;
 
+import ch.verno.server.service.CourseService;
+import ch.verno.server.service.ParticipantService;
 import ch.verno.ui.base.components.toolbar.ViewToolbar;
 import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.security.PermitAll;
 
@@ -13,16 +16,19 @@ import jakarta.annotation.security.PermitAll;
 @PageTitle("Dashboard")
 public class DashboardView extends VerticalLayout {
 
-  public DashboardView() {
+  public DashboardView(@Nonnull final CourseService courseService,
+                       @Nonnull final ParticipantService participantService) {
     this.setWidthFull();
     this.setPadding(false);
     this.setSpacing(false);
 
     add(createViewToolBar());
-    add(new VADashboard());
+    final var dashboard = new VADashboard(courseService, participantService);
+    dashboard.addClassNames(LumoUtility.Padding.SMALL, LumoUtility.Margin.SMALL);
+    add(dashboard);
 
     setSizeFull();
-    setAlignItems(Alignment.CENTER);
+    setAlignItems(Alignment.STRETCH);
   }
 
   @Nonnull

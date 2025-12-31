@@ -1,12 +1,10 @@
 package ch.verno.ui.base.components.filter;
 
 import com.vaadin.flow.component.HasValue;
-import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Setter;
-import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.function.ValueProvider;
 import jakarta.annotation.Nonnull;
 
@@ -14,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class FilterEntryFactory<T, FILTER> {
+public class FilterEntryFactory<T> {
 
   @Nonnull
   public MultiSelectComboBox<Long> createComboboxFilter(@Nonnull final ValueProvider<T, Set<Long>> valueProvider,
@@ -38,14 +36,13 @@ public class FilterEntryFactory<T, FILTER> {
                                                       @Nonnull final Binder<T> binder,
                                                       @Nonnull final Optional<String> required,
                                                       @Nonnull final String label,
-                                                      @Nonnull final ConfigurableFilterDataProvider<Long, Void, FILTER> dataProvider,
-                                                      @Nonnull final ItemLabelGenerator<Long> itemLabelGenerator) {
+                                                      @Nonnull final Map<Long, String> options) {
     final var checkboxGroup = new CheckboxGroup<Long>();
     checkboxGroup.setLabel(label);
     checkboxGroup.setWidthFull();
 
-    checkboxGroup.setDataProvider(dataProvider);
-    checkboxGroup.setItemLabelGenerator(itemLabelGenerator);
+    checkboxGroup.setItems(options.keySet());
+    checkboxGroup.setItemLabelGenerator(options::get);
 
     bindEntry(checkboxGroup, valueProvider, valueSetter, binder, required);
 

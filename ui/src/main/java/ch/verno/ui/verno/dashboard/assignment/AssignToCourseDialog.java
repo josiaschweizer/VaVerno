@@ -2,15 +2,13 @@ package ch.verno.ui.verno.dashboard.assignment;
 
 import ch.verno.common.db.dto.CourseDto;
 import ch.verno.common.db.dto.ParticipantDto;
-import ch.verno.common.db.dto.base.BaseDto;
-import ch.verno.common.db.filter.ParticipantFilter;
 import ch.verno.common.util.Publ;
 import ch.verno.server.service.CourseService;
 import ch.verno.server.service.MandantSettingService;
 import ch.verno.server.service.ParticipantService;
 import ch.verno.ui.base.components.entry.combobox.VAComboBox;
-import ch.verno.ui.base.components.filter.FilterEntryFactory;
-import ch.verno.ui.base.components.filter.VAFilterBar;
+import ch.verno.ui.base.components.filter.VASearchFilter;
+import ch.verno.ui.base.components.notification.NotificationFactory;
 import ch.verno.ui.base.factory.EntryFactory;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -23,87 +21,53 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.provider.CallbackDataProvider;
-import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
-import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @CssImport("/components/assignment/assignment.css")
 public class AssignToCourseDialog extends Dialog {
 
   @Nonnull
-  private final Binder<AssignParticipantsToCourseDto> binder;
-  @Nonnull
   private final EntryFactory<AssignParticipantsToCourseDto> entryFactory;
-  @Nonnull
-  private final FilterEntryFactory<AssignParticipantsToCourseDto, ParticipantFilter> filterFactory;
   @Nonnull
   private final CourseService courseService;
   @Nonnull
   private final ParticipantService participantService;
   @Nonnull
-  private final Map<Long, String> participantLabelCache;
-  @Nullable
-  private final Button saveButton;
-  @Nonnull
-  private ParticipantFilter participantFilter;
-  @Nonnull
-  private final ConfigurableFilterDataProvider<Long, Void, ParticipantFilter> participantDataProvider;
+  private final MandantSettingService mandantSettingService;
+
   @Nullable
   private CheckboxGroup<Long> participantsGroup;
   @Nullable
   private VAComboBox<Long> courseComboBox;
+  @Nullable
+  private final Button saveButton;
+  @Nullable
+  private String searchTerm;
+  @Nonnull
+  private LinkedHashSet<Long> selectedParticipantIds;
+  @Nonnull
+  private final Map<Long, String> participantItems;
+
+  private boolean suppressSelectionSync;
 
   public AssignToCourseDialog(@Nonnull final CourseService courseService,
                               @Nonnull final ParticipantService participantService,
                               @Nonnull final MandantSettingService mandantSettingService) {
     this.courseService = courseService;
     this.participantService = participantService;
-    this.binder = new Binder<>(AssignParticipantsToCourseDto.class);
-    this.binder.setBean(new AssignParticipantsToCourseDto());
-
+    this.mandantSettingService = mandantSettingService;
     this.entryFactory = new EntryFactory<>();
-    this.filterFactory = new FilterEntryFactory<>();
 
-    this.participantLabelCache = new ConcurrentHashMap<>();
-    this.participantFilter = ParticipantFilter.emptyActive();
-
-    final CallbackDataProvider<Long, ParticipantFilter> base = DataProvider.fromFilteringCallbacks(
-            query -> {
-              final ParticipantFilter filter = query.getFilter().orElse(ParticipantFilter.emptyActive());
-
-              if (mandantSettingService.getSingleMandantSetting().isEnforceCourseLevelSettings() &&
-                      courseComboBox != null &&
-                      courseComboBox.getValue() != null) {
-                final var selectedCourse = courseService.getCourseById(courseComboBox.getValue());
-                filter.setCourseLevelIds(selectedCourse.getCourseLevels().stream()
-                        .map(BaseDto::getId)
-                        .collect(Collectors.toSet()));
-              }
-
-              final int offset = query.getOffset();
-              final int limit = query.getLimit();
-
-              final var dtos = participantService.findParticipants(filter, offset, limit, List.of());
-              dtos.forEach(p -> participantLabelCache.put(p.getId(), p.getFullName()));
-              return dtos.stream().map(ParticipantDto::getId);
-            },
-            query -> {
-              final ParticipantFilter filter = query.getFilter().orElse(ParticipantFilter.emptyActive());
-              return participantService.countParticipants(filter);
-            }
-    );
-    this.participantDataProvider = base.withConfigurableFilter();
-    this.participantDataProvider.setFilter(this.participantFilter);
+    this.selectedParticipantIds = new LinkedHashSet<>();
+    this.participantItems = new LinkedHashMap<>();
 
     setHeight("60vh");
 
@@ -136,7 +100,7 @@ public class AssignToCourseDialog extends Dialog {
   @Nonnull
   private VerticalLayout createCourseLayout() {
     final var title = createTitleSpan("Course");
-    this.courseComboBox = createCourseComboBox();
+    courseComboBox = createCourseComboBox();
 
     return createLayoutFromComponents(title, courseComboBox);
   }
@@ -144,19 +108,13 @@ public class AssignToCourseDialog extends Dialog {
   @Nonnull
   private VerticalLayout createParticipantLayout() {
     final var title = createTitleSpan("Participants");
-    final var filterBar = new VAFilterBar();
-    filterBar.setSearchHandler(this::setFilter);
+    final var searchBar = new VASearchFilter("Search participants…");
+    searchBar.addValueChangeListener(e -> searchChanged(e.getValue()));
     final var participants = createParticipantsCheckboxGroup();
 
-    final var layout = createLayoutFromComponents(title, filterBar, participants);
+    final var layout = createLayoutFromComponents(title, searchBar, participants);
     layout.setFlexGrow(1, participants);
     return layout;
-  }
-
-  private void setFilter(@Nullable final String searchText) {
-    participantFilter = ParticipantFilter.fromSearchTextAndActive(searchText, true);
-    participantDataProvider.setFilter(participantFilter);
-    participantDataProvider.refreshAll();
   }
 
   @Nonnull
@@ -167,13 +125,68 @@ public class AssignToCourseDialog extends Dialog {
     return title;
   }
 
+  private void searchChanged(@Nullable final String term) {
+    this.searchTerm = term == null ? null : term.trim();
+    applyParticipantFilterToUi();
+  }
+
+  private void applyParticipantFilterToUi() {
+    if (participantsGroup == null) {
+      return;
+    }
+
+    final var searchString = searchTerm == null ?
+            Publ.EMPTY_STRING :
+            searchTerm.toLowerCase(Locale.ROOT);
+
+    final var filtered = participantItems.entrySet().stream()
+            .filter(e -> searchString.isEmpty() || e.getValue().toLowerCase(Locale.ROOT).contains(searchString))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toCollection(LinkedHashSet::new))
+            .stream()
+            .filter(this::filterForInvalidCourseLevel)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+    selectedParticipantIds = selectedParticipantIds.stream()
+            .filter(this::filterForInvalidCourseLevel)
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+    filtered.addAll(selectedParticipantIds);
+
+    suppressSelectionSync = true;
+    try {
+      participantsGroup.setItems(filtered);
+      participantsGroup.setValue(selectedParticipantIds);
+    } finally {
+      suppressSelectionSync = false;
+    }
+  }
+
+  private boolean filterForInvalidCourseLevel(@Nonnull final Long id) {
+    if (mandantSettingService.getSingleMandantSetting().isEnforceCourseLevelSettings() &&
+            courseComboBox != null &&
+            courseComboBox.getValue() != null) {
+      final var course = courseService.getCourseById(courseComboBox.getValue());
+      final var participant = participantService.getParticipantById(id);
+
+      for (final var courseLevel : course.getCourseLevels()) {
+        if (courseLevel.getId() != null &&
+                participant.getCourseLevel().getId() != null &&
+                courseLevel.getId().equals(participant.getCourseLevel().getId())) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return true;
+  }
+
   @Nonnull
   private Button createSaveButton() {
-    final var button = new Button("Save");
-    button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-    button.setEnabled(false);
-    button.addClickListener(event -> save());
-    return button;
+    final var saveButton = new Button("Save");
+    saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+    saveButton.setEnabled(false);
+    saveButton.addClickListener(event -> save());
+    return saveButton;
   }
 
   private void updateSaveEnabled() {
@@ -188,14 +201,22 @@ public class AssignToCourseDialog extends Dialog {
   }
 
   private void save() {
-    final var participants = binder.getBean().getParticipants();
-    final var course = binder.getBean().getCourse();
+    if (courseComboBox == null) {
+      return;
+    }
 
-    participants.forEach(participant -> {
+    final var course = courseService.getCourseById(courseComboBox.getValue());
+    selectedParticipantIds.forEach(participantId -> {
+      final var participant = participantService.getParticipantById(participantId);
       participant.setCourse(course);
       participantService.updateParticipant(participant);
     });
 
+    NotificationFactory.showSuccessNotification("Assigned " + selectedParticipantIds.size()
+            + " participants to course '"
+            + course.getTitle()
+            + Publ.SIMPLE_QUOTE
+            + Publ.DOT);
     close();
   }
 
@@ -216,44 +237,46 @@ public class AssignToCourseDialog extends Dialog {
 
   @Nonnull
   private VAComboBox<Long> createCourseComboBox() {
-    final var courseComboBox = entryFactory.createComboBoxEntry(
-            dto -> dto.getCourse().getId(),
-            (dto, value) -> dto.setCourse(value != null ?
-                    courseService.getCourseById(value) :
-                    CourseDto.empty()),
-            binder,
-            Optional.of("Select Course"),
-            Publ.EMPTY_STRING,
-            courseService.getAllCourses().stream()
-                    .collect(Collectors.toMap(CourseDto::getId, CourseDto::getTitle))
-    );
-    courseComboBox.addValueChangeListener(e -> {
+    final var options = courseService.getAllCourses().stream()
+            .collect(Collectors.toMap(CourseDto::getId, CourseDto::getTitle));
+
+    courseComboBox = new VAComboBox<>();
+    courseComboBox.setWidthFull();
+
+    courseComboBox.setItems(options.keySet());
+    courseComboBox.setItemLabelGenerator(id -> options.getOrDefault(id, String.valueOf(id)));
+    courseComboBox.setClearButtonVisible(true);
+
+    this.courseComboBox.addValueChangeListener(e -> {
+      applyParticipantFilterToUi();
       updateSaveEnabled();
-      setFilter(participantFilter.getSearchText());
     });
-    return courseComboBox;
+    return this.courseComboBox;
   }
 
   @Nonnull
   private Scroller createParticipantsCheckboxGroup() {
-    participantsGroup = filterFactory.createCheckboxGroupEntry(
-            dto -> dto.getParticipants().stream().map(BaseDto::getId).collect(Collectors.toSet()),
-            (dto, value) -> {
-              final var selectedParticipants = value.stream()
-                      .map(participantService::getParticipantById)
-                      .collect(Collectors.toSet());
-              dto.setParticipants(selectedParticipants);
-            },
-            binder,
-            Optional.of("Select Participants"),
-            Publ.EMPTY_STRING,
-            participantDataProvider,
-            id -> participantLabelCache.getOrDefault(id, "Participant #" + id)
-    );
+    participantItems.clear();
+    participantService.getAllParticipants().stream()
+            .filter(ParticipantDto::isActive)
+            .forEach(p ->
+                    participantItems.put(p.getId(), p.getFullName())
+            );
 
-    participantsGroup.addValueChangeListener(e -> updateSaveEnabled());
+    participantsGroup = new CheckboxGroup<>();
+    participantsGroup.setItemLabelGenerator(id -> participantItems.getOrDefault(id, "Participant #" + id));
     participantsGroup.addClassName("participants-group");
     participantsGroup.setWidthFull();
+
+    participantsGroup.addValueChangeListener(e -> {
+      if (suppressSelectionSync) {
+        return;
+      }
+      selectedParticipantIds = new LinkedHashSet<>(e.getValue());
+      updateSaveEnabled();
+    });
+
+    applyParticipantFilterToUi();
 
     final var scroller = new Scroller();
     scroller.setWidthFull();

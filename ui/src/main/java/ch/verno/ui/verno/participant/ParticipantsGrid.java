@@ -5,7 +5,6 @@ import ch.verno.common.db.dto.CourseLevelDto;
 import ch.verno.common.db.dto.ParticipantDto;
 import ch.verno.common.db.dto.base.BaseDto;
 import ch.verno.common.db.filter.ParticipantFilter;
-import ch.verno.common.util.Publ;
 import ch.verno.server.service.CourseLevelService;
 import ch.verno.server.service.CourseService;
 import ch.verno.server.service.ParticipantService;
@@ -101,8 +100,8 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
     columnsMap.put(ParticipantDto::getEmail, getTranslation("shared.e.mail"));
     columnsMap.put(ParticipantDto::getPhoneString, getTranslation("shared.phone"));
     columnsMap.put(ParticipantDto::getNote, getTranslation("participant.note"));
-    columnsMap.put(dto -> dto.getCourseLevel().getName(), getTranslation("courseLevel.course_level"));
-    columnsMap.put(dto -> dto.getCourse() != null ? dto.getCourse().displayName() : Publ.EMPTY_STRING, getTranslation("course.course"));
+    columnsMap.put(dto -> dto.getCourseLevels().stream().map(CourseLevelDto::displayName), getTranslation("courseLevel.course_level"));
+    columnsMap.put(dto -> dto.getCourses().stream().map(CourseDto::displayName), getTranslation("course.course"));
     columnsMap.put(dto -> dto.getParentOne().displayName(), getTranslation("participant.parent_one"));
     columnsMap.put(dto -> dto.getParentTwo().displayName(), getTranslation("participant.parent_two"));
     columnsMap.put(dto -> dto.getAddress().getFullAddressAsString(), getTranslation("shared.address"));

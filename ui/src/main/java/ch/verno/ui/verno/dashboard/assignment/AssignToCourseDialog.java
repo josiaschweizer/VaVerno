@@ -78,7 +78,10 @@ public class AssignToCourseDialog extends Dialog {
     this.unselectedParticipantIds = new LinkedHashSet<>();
     this.participantItems = new LinkedHashMap<>();
 
-    setHeight("60vh");
+    setHeight("80vh");
+    setWidth("min(1500px, 95vw)");
+    setMaxWidth("1500px");
+    setMinWidth("320px");
 
     saveButton = createSaveButton();
     final var cancelButton = createCancelButton();
@@ -92,13 +95,18 @@ public class AssignToCourseDialog extends Dialog {
   @Nonnull
   private HorizontalLayout createContent() {
     final var left = createCourseLayout();
+    left.getElement().getStyle().set("min-width", "260px");
+    left.getElement().getStyle().set("flex", "1 1 260px");
     final var right = createParticipantLayout();
+    right.getElement().getStyle().set("min-width", "260px");
+    right.getElement().getStyle().set("flex", "1 1 260px");
 
     final var layout = new HorizontalLayout(left, right);
     layout.setWidthFull();
     layout.setHeightFull();
     layout.setAlignItems(FlexComponent.Alignment.STRETCH);
     layout.addClassNames(LumoUtility.Gap.XLARGE);
+    layout.getStyle().set("flex-wrap", "wrap");
 
     right.setHeightFull();
     layout.setFlexGrow(1, left, right);

@@ -13,6 +13,9 @@ target/
 *.class
 .DS_Store
 
+# Build output
+*.jar
+
 # The following files are generated/updated by vaadin-maven-plugin
 node_modules/
 ui/src/main/frontend/generated/

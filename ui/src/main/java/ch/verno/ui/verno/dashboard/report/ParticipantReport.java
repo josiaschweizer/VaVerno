@@ -14,6 +14,9 @@ public class ParticipantReport extends VABaseReport<ReportParticipant> {
   public ParticipantReport(@Nonnull final ParticipantService participantService) {
     this.participantService = participantService;
 
+    setTitle("Participants Report");
+    setSubtitle("Total Participants: " + participantService.getAllParticipants().size());
+
     initUI();
   }
 

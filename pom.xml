@@ -15,6 +15,7 @@
     <module>server</module>
     <module>ui</module>
     <module>report</module>
+    <module>publ</module>
   </modules>
 
   <parent>
@@ -60,6 +61,16 @@
       <dependency>
         <groupId>ch.verno</groupId>
         <artifactId>ui</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.verno</groupId>
+        <artifactId>publ</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.verno</groupId>
+        <artifactId>report</artifactId>
         <version>${project.version}</version>
       </dependency>
 

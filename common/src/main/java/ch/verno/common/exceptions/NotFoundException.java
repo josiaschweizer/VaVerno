@@ -1,6 +1,6 @@
 package ch.verno.common.exceptions;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import jakarta.annotation.Nonnull;
 
 public class NotFoundException extends IllegalArgumentException {

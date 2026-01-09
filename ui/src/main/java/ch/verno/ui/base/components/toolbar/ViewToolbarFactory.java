@@ -1,6 +1,6 @@
 package ch.verno.ui.base.components.toolbar;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.filter.VASearchFilter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;

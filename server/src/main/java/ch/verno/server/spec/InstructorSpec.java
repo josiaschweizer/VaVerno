@@ -1,7 +1,7 @@
 package ch.verno.server.spec;
 
 import ch.verno.common.db.filter.InstructorFilter;
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.db.entity.InstructorEntity;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.criteria.*;

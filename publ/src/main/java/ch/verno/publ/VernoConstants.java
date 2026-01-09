@@ -1,4 +1,4 @@
-package ch.verno.common.util;
+package ch.verno.publ;
 
 public class VernoConstants {
 

@@ -1,6 +1,6 @@
 package ch.verno.ui.base.settings.fields;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import jakarta.annotation.Nonnull;

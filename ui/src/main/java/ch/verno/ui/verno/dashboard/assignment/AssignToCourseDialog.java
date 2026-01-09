@@ -3,7 +3,7 @@ package ch.verno.ui.verno.dashboard.assignment;
 import ch.verno.common.db.dto.CourseDto;
 import ch.verno.common.db.dto.CourseLevelDto;
 import ch.verno.common.db.dto.ParticipantDto;
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.server.service.CourseService;
 import ch.verno.server.service.MandantSettingService;
 import ch.verno.server.service.ParticipantService;

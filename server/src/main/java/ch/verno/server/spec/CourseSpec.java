@@ -1,7 +1,7 @@
 package ch.verno.server.spec;
 
 import ch.verno.common.db.filter.CourseFilter;
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.db.entity.CourseEntity;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;

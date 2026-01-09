@@ -30,6 +30,10 @@
       <groupId>ch.verno</groupId>
       <artifactId>server</artifactId>
     </dependency>
+    <dependency>
+      <groupId>ch.verno</groupId>
+      <artifactId>publ</artifactId>
+    </dependency>
 
     <!-- vaadin ui dependencies -->
     <dependency>

@@ -1,6 +1,6 @@
 package ch.verno.db.entity;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

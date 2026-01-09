@@ -1,6 +1,6 @@
 package ch.verno.ui.lib;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;

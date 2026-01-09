@@ -5,7 +5,7 @@ import ch.verno.common.db.dto.CourseLevelDto;
 import ch.verno.common.db.dto.ParticipantDto;
 import ch.verno.common.db.dto.base.BaseDto;
 import ch.verno.common.db.filter.ParticipantFilter;
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.server.service.CourseLevelService;
 import ch.verno.server.service.CourseService;
 import ch.verno.server.service.ParticipantService;

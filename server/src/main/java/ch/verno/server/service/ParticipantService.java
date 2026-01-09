@@ -5,7 +5,7 @@ import ch.verno.common.db.filter.ParticipantFilter;
 import ch.verno.common.db.service.IParticipantService;
 import ch.verno.common.exceptions.NotFoundException;
 import ch.verno.common.exceptions.NotFoundReason;
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.db.entity.ParticipantEntity;
 import ch.verno.server.mapper.ParticipantMapper;
 import ch.verno.server.repository.*;

@@ -1,6 +1,6 @@
 package ch.verno.ui.verno.security;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.db.entity.user.AppUserEntity;
 import ch.verno.server.repository.AppUserRepository;
 import jakarta.annotation.Nonnull;

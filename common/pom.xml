@@ -18,6 +18,10 @@
       <groupId>ch.verno</groupId>
       <artifactId>report</artifactId>
     </dependency>
+    <dependency>
+      <groupId>ch.verno</groupId>
+      <artifactId>publ</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.googlecode.libphonenumber</groupId>

@@ -1,6 +1,6 @@
 package ch.verno.common.util.calling;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import jakarta.annotation.Nonnull;
 

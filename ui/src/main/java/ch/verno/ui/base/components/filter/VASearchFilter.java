@@ -1,6 +1,6 @@
 package ch.verno.ui.base.components.filter;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.entry.textfield.VATextField;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.data.value.ValueChangeMode;

@@ -2,7 +2,6 @@ package ch.verno.ui.verno.course.courses.detail;
 
 import ch.verno.common.db.dto.*;
 import ch.verno.common.db.filter.ParticipantFilter;
-import ch.verno.common.util.VernoConstants;
 import ch.verno.server.service.*;
 import ch.verno.ui.base.components.form.FormMode;
 import ch.verno.ui.base.detail.BaseDetailView;
@@ -15,7 +14,6 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Menu;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.security.PermitAll;

@@ -1,7 +1,7 @@
 package ch.verno.ui.verno.settings.setting.courselevel;
 
 import ch.verno.common.db.dto.CourseLevelDto;
-import ch.verno.common.util.VernoConstants;
+import ch.verno.publ.VernoConstants;
 import ch.verno.server.service.CourseLevelService;
 import ch.verno.ui.base.components.form.FormMode;
 import ch.verno.ui.base.detail.BaseDetailView;

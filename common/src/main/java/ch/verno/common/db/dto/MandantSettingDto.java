@@ -1,7 +1,7 @@
 package ch.verno.common.db.dto;
 
 import ch.verno.common.db.dto.base.BaseDto;
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 

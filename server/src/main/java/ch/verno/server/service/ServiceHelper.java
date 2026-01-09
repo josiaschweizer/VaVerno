@@ -3,7 +3,7 @@ package ch.verno.server.service;
 import ch.verno.common.db.dto.*;
 import ch.verno.common.exceptions.NotFoundException;
 import ch.verno.common.exceptions.NotFoundReason;
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.db.entity.*;
 import ch.verno.server.repository.*;
 import jakarta.annotation.Nonnull;

@@ -1,7 +1,6 @@
 package ch.verno.ui.verno.instructor.detail;
 
 import ch.verno.common.db.dto.InstructorDto;
-import ch.verno.common.util.VernoConstants;
 import ch.verno.server.service.GenderService;
 import ch.verno.server.service.InstructorService;
 import ch.verno.ui.base.components.form.FormMode;

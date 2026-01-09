@@ -1,6 +1,6 @@
 package ch.verno.common.base.components.entry.phonenumber;
 
-import ch.verno.common.util.Publ;
+import ch.verno.publ.Publ;
 import ch.verno.common.util.calling.CallingCode;
 import jakarta.annotation.Nonnull;
 

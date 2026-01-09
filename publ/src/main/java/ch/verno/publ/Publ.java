@@ -1,4 +1,4 @@
-package ch.verno.common.util;
+package ch.verno.publ;
 
 import java.util.regex.Pattern;
 

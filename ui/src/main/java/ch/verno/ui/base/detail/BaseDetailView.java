@@ -1,6 +1,6 @@
 package ch.verno.ui.base.detail;
 
-import ch.verno.common.util.VernoConstants;
+import ch.verno.publ.VernoConstants;
 import ch.verno.ui.base.components.form.FormMode;
 import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
 import ch.verno.ui.base.components.toolbar.ViewToolbarResult;
@@ -10,7 +10,6 @@ import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;

@@ -6,8 +6,8 @@
 
     <style>
         @page {
-            size: A4;
-            margin: 20mm;
+            size: A4 landscape;
+            margin: 5mm;
         }
 
         body {
@@ -60,10 +60,10 @@
         <td><strong>Kapazität</strong></td>
         <td th:text="${course.capacity}">0</td>
 
-        <td><strong>Level</strong></td>
+        <td><strong>Kurslevel</strong></td>
         <td th:text="${course.courseLevels}">-</td>
 
-        <td><strong>Rhythmus</strong></td>
+        <td><strong>Kursplanung</strong></td>
         <td th:text="${course.courseSchedule}">-</td>
 
         <td><strong>Zeit</strong></td>

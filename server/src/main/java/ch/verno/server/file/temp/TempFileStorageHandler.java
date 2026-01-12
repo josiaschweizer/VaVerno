@@ -1,0 +1,98 @@
+package ch.verno.server.file.temp;
+
+import ch.verno.common.report.ReportDto;
+import ch.verno.publ.Publ;
+import jakarta.annotation.Nonnull;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+public final class TempFileStorageHandler {
+
+  public static final String BASE_DIR = "verno-temp-";
+
+  private final Path baseDir;
+  private final Map<String, TempFileEntry> index;
+
+  public TempFileStorageHandler() {
+    index = new ConcurrentHashMap<>();
+
+    try {
+      this.baseDir = Files.createTempDirectory(BASE_DIR);
+    } catch (IOException e) {
+      throw new IllegalStateException("Could not create temp directory", e);
+    }
+  }
+
+  @Nonnull
+  public String store(@Nonnull final String filename,
+                      @Nonnull final byte[] data) {
+    final String token = UUID.randomUUID().toString();
+    final String safeName = sanitizeFilename(filename);
+
+    final Path file = baseDir.resolve(token + Publ.MINUS + safeName);
+
+    try {
+      Files.write(file, data, StandardOpenOption.CREATE_NEW);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to write temp file: " + file, e);
+    }
+
+    index.put(token, new TempFileEntry(safeName, file));
+    return token;
+  }
+
+  @Nonnull
+  public ReportDto load(@Nonnull final String token) {
+    final TempFileEntry entry = resolveEntry(token);
+    try {
+      final var pdfBytes = Files.readAllBytes(entry.path());
+      return new ReportDto(entry.filename(), pdfBytes);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read temp file: " + entry.path(), e);
+    }
+  }
+
+  @Nonnull
+  public TempFileEntry resolveEntry(@Nonnull final String token) {
+    return requireEntry(token);
+  }
+
+  public void delete(@Nonnull final String token) {
+    final TempFileEntry entry = index.remove(token);
+    if (entry == null) {
+      return;
+    }
+    try {
+      Files.deleteIfExists(entry.path());
+    } catch (IOException ignored) {
+      // Temp-Cleanup soll nichts blockieren
+    }
+  }
+
+  @Nonnull
+  private TempFileEntry requireEntry(@Nonnull final String token) {
+    final TempFileEntry entry = index.get(token);
+    if (entry == null) {
+      throw new IllegalArgumentException("Temp file not found for token: " + token);
+    }
+    if (!Files.exists(entry.path())) {
+      index.remove(token);
+      throw new IllegalArgumentException("Temp file missing on disk for token: " + token);
+    }
+    return entry;
+  }
+
+  @Nonnull
+  private static String sanitizeFilename(@Nonnull final String filename) {
+    final String name = filename.replace("\\", "/");
+    final String base = name.substring(name.lastIndexOf('/') + 1);
+    final String cleaned = base.replaceAll("[^a-zA-Z0-9._-]", "_");
+    return cleaned.isBlank() ? "file" : cleaned;
+  }
+}

@@ -8,8 +8,12 @@ import java.util.List;
 
 public interface ReportServerGate {
 
-  @Nonnull
-  ReportDto generateCourseReportPdf(@Nonnull CourseDto course);
+  String generateCourseReportWithTempFile(@Nonnull CourseDto course,
+                                          @Nonnull List<ParticipantDto> participants);
+
+  ReportDto loadTempFile(@Nonnull String token);
+
+  void deleteTempFile(@Nonnull String token);
 
   @Nonnull
   ReportDto generateCourseReportPdf(@Nonnull CourseDto course,

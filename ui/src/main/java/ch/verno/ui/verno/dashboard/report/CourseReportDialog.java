@@ -3,31 +3,28 @@ package ch.verno.ui.verno.dashboard.report;
 import ch.verno.common.db.dto.CourseDto;
 import ch.verno.common.db.dto.ParticipantDto;
 import ch.verno.common.report.ReportServerGate;
-import ch.verno.common.report.ReportDto;
+import ch.verno.publ.ApiUrl;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.dialog.VADialog;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.IFrame;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.dom.Style;
-import com.vaadin.flow.server.streams.DownloadHandler;
-import com.vaadin.flow.server.streams.DownloadResponse;
 import jakarta.annotation.Nonnull;
 
-import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.List;
 
 public class CourseReportDialog extends VADialog {
 
+
   @Nonnull private final ReportServerGate reportServerGate;
   @Nonnull private final CourseDto currentCourse;
   @Nonnull private final List<ParticipantDto> participantsInCourse;
 
-  @Nonnull private ReportDto pdfDto;
+  @Nonnull private String reportToken;
 
   public CourseReportDialog(@Nonnull final ReportServerGate reportServerGate,
                             @Nonnull final CourseDto currentCourse,
@@ -36,63 +33,31 @@ public class CourseReportDialog extends VADialog {
     this.currentCourse = currentCourse;
     this.participantsInCourse = participantsInCourse;
 
-    generatePdf();
+    generateToken();
     initUI(getTranslation("shared.generate.report"));
 
-    addDetachListener(e -> revokeBlobUrl());
-    addDialogCloseActionListener(e -> revokeBlobUrl());
+    setWidth("80%");
+    setHeight("90%");
+
+    addDetachListener(e -> deleteTempOnServer());
+    addDialogCloseActionListener(e -> deleteTempOnServer());
   }
 
   @Nonnull
   @Override
   protected HorizontalLayout createContent() {
-    final byte[] pdfBytes = pdfDto.pdfBytes();
-
-    final var previewFetchHandler = DownloadHandler
-            .fromInputStream(event -> new DownloadResponse(
-                    new ByteArrayInputStream(pdfBytes),
-                    pdfDto.filename(),
-                    "application/pdf",
-                    pdfBytes.length
-            ))
-            .inline();
-
     final var preview = new IFrame();
     preview.setSizeFull();
+    preview.setWidth("100%");
+    preview.setHeight("100%");
+    preview.setMinHeight("600px");
 
-    final var hidden = new Anchor(previewFetchHandler, Publ.EMPTY_STRING);
-    hidden.getStyle().set("display", "none");
-    add(hidden);
+    final String pdfUrl = buildInlineUrl(reportToken);
+    preview.setSrc(pdfUrl);
 
-    preview.addAttachListener(e -> {
-      preview.getElement().executeJs("""
-                const iframe = this;
-                const a = $0;
-              
-                if (window.__vernoPdfBlobUrl) {
-                  URL.revokeObjectURL(window.__vernoPdfBlobUrl);
-                  window.__vernoPdfBlobUrl = null;
-                }
-              
-                const url = a.href;
-                console.log("PDF fetch url:", url);
-              
-                fetch(url, { credentials: 'include' })
-                  .then(r => {
-                    if (!r.ok) {
-                      throw new Error("HTTP " + r.status);
-                    }
-                    return r.blob();
-                  })
-                  .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    window.__vernoPdfBlobUrl = blobUrl;
-                    iframe.src = blobUrl;
-                    console.log("Blob URL set for iframe");
-                  })
-                  .catch(err => console.error("PDF blob fetch failed:", err));
-              """, hidden.getElement());
-    });
+    preview.getElement().setAttribute("type", "application/pdf");
+    preview.getElement().setAttribute("allow", "fullscreen");
+    preview.getElement().setAttribute("frameborder", "0");
 
     final var layout = new HorizontalLayout(preview);
     layout.setSizeFull();
@@ -104,49 +69,42 @@ public class CourseReportDialog extends VADialog {
   @Nonnull
   @Override
   protected Collection<Button> createActionButtons() {
-    final var cancelButton = new Button("Cancel", event -> close());
-    final var downloadButton = createDownloadButton(pdfDto);
+    final var cancelButton = new Button(getTranslation("shared.cancel"), e -> close());
+    final var downloadButton = createDownloadButton();
     return List.of(cancelButton, downloadButton);
   }
 
-  private void generatePdf() {
-    pdfDto = reportServerGate.generateCourseReportPdf(currentCourse, participantsInCourse);
+  private void generateToken() {
+    reportToken = reportServerGate.generateCourseReportWithTempFile(currentCourse, participantsInCourse);
   }
 
   @Nonnull
-  private Button createDownloadButton(@Nonnull final ReportDto reportDto) {
-    final var downloadHandler = DownloadHandler
-            .fromInputStream(event -> new DownloadResponse(
-                    new ByteArrayInputStream(reportDto.pdfBytes()),
-                    reportDto.filename(),
-                    "application/pdf",
-                    reportDto.pdfBytes().length
-            ));
-
-    final var hidden = new Anchor(downloadHandler, getTranslation("shared.download"));
+  private Button createDownloadButton() {
+    final var hidden = new Anchor(buildAttachmentUrl(reportToken), getTranslation("shared.download"));
     hidden.getElement().setAttribute("download", true);
     hidden.getStyle().setDisplay(Style.Display.NONE);
     add(hidden);
 
     final var downloadButton = new Button(getTranslation("shared.download"));
     downloadButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-    downloadButton.addClickListener(event -> {
+    downloadButton.addClickListener(e -> {
       hidden.getElement().callJsFunction("click");
       close();
     });
     return downloadButton;
   }
 
-  private void revokeBlobUrl() {
-    UI ui = getUI().orElse(null);
-    if (ui == null) {
-      return;
-    }
-    ui.getPage().executeJs("""
-              if (window.__vernoPdfBlobUrl) {
-                URL.revokeObjectURL(window.__vernoPdfBlobUrl);
-                window.__vernoPdfBlobUrl = null;
-              }
-            """);
+  private void deleteTempOnServer() {
+    reportServerGate.deleteTempFile(reportToken);
+  }
+
+  @Nonnull
+  private String buildInlineUrl(@Nonnull final String token) {
+    return ApiUrl.TEMP_FILE_REPORT + Publ.SLASH + token + ApiUrl.DISPOSITION_INLINE;
+  }
+
+  @Nonnull
+  private String buildAttachmentUrl(@Nonnull final String token) {
+    return ApiUrl.TEMP_FILE_REPORT + Publ.SLASH + token + ApiUrl.DISPOSITION_ATTACHMENT;
   }
 }

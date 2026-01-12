@@ -114,7 +114,7 @@ public class CourseLevelDetail extends BaseDetailView<CourseLevelDto> {
   @Nonnull
   @Override
   protected String getDetailPageName() {
-    return VernoConstants.COURSE_LEVEL;
+    return getTranslation("courseLevel.course_level");
   }
 
   @Nonnull

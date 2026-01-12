@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.Normalizer;
+import java.time.Instant;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,13 +46,19 @@ public final class TempFileStorageHandler {
       throw new RuntimeException("Failed to write temp file: " + file, e);
     }
 
-    index.put(token, new TempFileEntry(safeName, file));
+    index.put(token, new TempFileEntry(safeName, file, Instant.now().plusSeconds(360)));
     return token;
   }
 
   @Nonnull
   public ReportDto load(@Nonnull final String token) {
     final TempFileEntry entry = resolveEntry(token);
+
+    if (Instant.now().isAfter(entry.expiresAt())) {
+      delete(token);
+      throw new IllegalArgumentException("Temp file token has expired: " + token);
+    }
+
     try {
       final var pdfBytes = Files.readAllBytes(entry.path());
       return new ReportDto(entry.filename(), pdfBytes);
@@ -90,9 +99,20 @@ public final class TempFileStorageHandler {
 
   @Nonnull
   private static String sanitizeFilename(@Nonnull final String filename) {
-    final String name = filename.replace("\\", "/");
-    final String base = name.substring(name.lastIndexOf('/') + 1);
-    final String cleaned = base.replaceAll("[^a-zA-Z0-9._-]", "_");
-    return cleaned.isBlank() ? "file" : cleaned;
+    final var name = filename.replace("\\", "/");
+    final var base = name.substring(name.lastIndexOf('/') + 1);
+
+    String normalized = Normalizer.normalize(base, Normalizer.Form.NFD);
+
+    normalized = normalized.replaceAll("\\p{M}", "");
+
+    normalized = normalized
+            .toLowerCase(Locale.ROOT)
+            .replaceAll("\\s+", "_")
+            .replaceAll("[^a-z0-9._-]", "_")
+            .replaceAll("_+", "_")
+            .replaceAll("^_|_$", "");
+
+    return normalized.isBlank() ? "file" : normalized;
   }
 }

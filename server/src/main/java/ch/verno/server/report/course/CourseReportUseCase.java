@@ -41,7 +41,7 @@ public class CourseReportUseCase {
 
 
     final var prefix = mandantSettingService.getSingleMandantSetting().getCourseReportName();
-    final var filename = prefix + course.getTitle() + ".pdf";
+    final var filename = prefix.toLowerCase() + course.getTitle().toLowerCase() + ".pdf";
     final var pdfBytes = courseReportRenderer.renderReportPdf(reportData);
     return new ReportDto(filename, pdfBytes);
   }

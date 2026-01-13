@@ -92,8 +92,11 @@ public class CourseWidget extends AccordionPanel {
                       participantsInCurrentCourse.stream().map(ParticipantDto::getId).toList() :
                       List.of());
 
-      dialog.addClosedListener(e -> refreshGrid());
-      dialog.addDialogCloseActionListener(e -> refreshGrid());
+      dialog.addOpenedChangeListener(e -> {
+        if (!e.isOpened()) {
+          reloadParticipantsFromDb();
+        }
+      });
 
       dialog.open();
     });
@@ -158,19 +161,12 @@ public class CourseWidget extends AccordionPanel {
     add(participantsGrid);
   }
 
-  private void refreshGrid() {
-    if (participantsGrid == null) {
-      return;
+  private void reloadParticipantsFromDb() {
+    participantsInCurrentCourse = participantService.findParticipantsByCourse(currentCourse);
+
+    if (participantsGrid != null) {
+      participantsGrid.getGrid().setItems(participantsInCurrentCourse);
     }
-
-    participantsGrid.getGrid()
-            .getDataProvider()
-            .refreshAll();
-
-    participantsInCurrentCourse = participantsGrid.getGrid()
-            .getDataProvider()
-            .fetch(new Query<>())
-            .toList();
   }
 
   @Nonnull

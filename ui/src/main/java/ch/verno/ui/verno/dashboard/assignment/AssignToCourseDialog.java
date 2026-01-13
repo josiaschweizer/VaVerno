@@ -24,7 +24,6 @@ import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -105,8 +104,9 @@ public class AssignToCourseDialog extends VADialog {
     return layout;
   }
 
+  @Nonnull
   @Override
-  protected @NonNull Collection<Button> createActionButtons() {
+  protected Collection<Button> createActionButtons() {
     saveButton = createSaveButton();
     final var cancelButton = createCancelButton();
     return List.of(cancelButton, saveButton);

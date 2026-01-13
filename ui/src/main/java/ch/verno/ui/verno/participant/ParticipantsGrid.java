@@ -149,7 +149,7 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
     columns.add(new ObjectGridColumn<>("birthdate", ParticipantDto::getAgeFromBirthday, getTranslation("shared.age"), true));
     columns.add(new ObjectGridColumn<>("email", ParticipantDto::getEmail, getTranslation("shared.e.mail"), true));
     columns.add(new ObjectGridColumn<>("phone", ParticipantDto::getPhoneString, getTranslation("shared.phone"), true));
-    columns.add(new ObjectGridColumn<>("note", ParticipantDto::getNote, getTranslation("participant.note"), true));
+    columns.add(new ObjectGridColumn<>("note", ParticipantDto::getNote, getTranslation("shared.note"), true));
     columns.add(new ObjectGridColumn<>("courseLevels", dto -> joinDisplayNamesFromList(dto.getCourseLevels(), CourseLevelDto::displayName),
             getTranslation("courseLevel.course_level"), true));
     columns.add(new ObjectGridColumn<>("courses", dto -> joinDisplayNamesFromList(dto.getCourses(), CourseDto::displayName),

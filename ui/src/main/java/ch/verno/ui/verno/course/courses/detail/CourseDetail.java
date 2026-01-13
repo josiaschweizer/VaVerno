@@ -133,8 +133,9 @@ public class CourseDetail extends BaseDetailView<CourseDto> implements HasDynami
   protected void initUI() {
     final var infoPanel = createInfoLayout();
     final var coursePanel = createCourseLayout();
+    final var notePanel = createNoteLayout();
     final var datePanel = createDateLayout();
-    final var verticalLayout = new VerticalLayout(infoPanel, coursePanel, datePanel);
+    final var verticalLayout = new VerticalLayout(infoPanel, coursePanel, notePanel, datePanel);
 
     if (!showPaddingAroundDetail) {
       verticalLayout.setPadding(false);
@@ -225,6 +226,20 @@ public class CourseDetail extends BaseDetailView<CourseDto> implements HasDynami
     );
 
     return createLayoutFromComponents(courseScheduleEntry, courseLevelEntry, instructorEntry);
+  }
+
+  @Nonnull
+  private HorizontalLayout createNoteLayout() {
+    final var noteEntry = entryFactory.createTextEntry(
+            CourseDto::getNote,
+            CourseDto::setNote,
+            getBinder(),
+            Optional.empty(),
+            getTranslation("shared.note"),
+            true
+    );
+
+    return createLayoutFromComponents(noteEntry);
   }
 
   @Nonnull

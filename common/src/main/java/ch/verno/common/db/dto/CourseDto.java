@@ -39,6 +39,9 @@ public class CourseDto extends BaseDto {
   @Nullable
   private InstructorDto instructor;
 
+  @Nonnull
+  private String note;
+
   public CourseDto() {
     this(
             null,
@@ -50,7 +53,8 @@ public class CourseDto extends BaseDto {
             List.of(),
             null,
             null,
-            null
+            null,
+            Publ.EMPTY_STRING
     );
   }
 
@@ -63,7 +67,8 @@ public class CourseDto extends BaseDto {
                    @Nonnull final List<DayOfWeek> weekdays,
                    @Nullable final LocalTime startTime,
                    @Nullable final LocalTime endTime,
-                   @Nullable final InstructorDto instructor) {
+                   @Nullable final InstructorDto instructor,
+                   @Nonnull final String note) {
     super.setId(id);
     this.title = title;
     this.capacity = capacity;
@@ -74,6 +79,7 @@ public class CourseDto extends BaseDto {
     this.startTime = startTime;
     this.endTime = endTime;
     this.instructor = instructor;
+    this.note = note;
   }
 
   public static CourseDto empty() {
@@ -92,7 +98,8 @@ public class CourseDto extends BaseDto {
             && this.weekdays.isEmpty()
             && this.startTime == null
             && this.endTime == null
-            && (this.instructor == null || this.instructor.isEmpty());
+            && (this.instructor == null || this.instructor.isEmpty())
+            && this.note.isEmpty();
   }
 
   @Nonnull
@@ -239,6 +246,15 @@ public class CourseDto extends BaseDto {
       return Publ.EMPTY_STRING;
     }
     return instructor.displayName();
+  }
+
+  @Nonnull
+  public String getNote() {
+    return note;
+  }
+
+  public void setNote(@Nonnull final String note) {
+    this.note = note;
   }
 
   @Nonnull

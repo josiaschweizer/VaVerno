@@ -41,7 +41,8 @@ public final class CourseMapper {
             weekdays,
             entity.getStartTime(),
             entity.getEndTime(),
-            InstructorMapper.toDto(entity.getInstructor())
+            InstructorMapper.toDto(entity.getInstructor()),
+            entity.getNote()
     );
   }
 
@@ -60,7 +61,8 @@ public final class CourseMapper {
             dto.getWeekdays(),
             dto.getStartTime(),
             dto.getEndTime(),
-            InstructorMapper.toEntity(dto.getInstructor())
+            InstructorMapper.toEntity(dto.getInstructor()),
+            dto.getNote()
     );
 
     if (dto.getId() != null && dto.getId() != 0) {

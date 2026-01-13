@@ -72,6 +72,10 @@ public class CourseEntity {
   @JoinColumn(name = "instructor_id")
   private InstructorEntity instructor;
 
+  @Nonnull
+  @Column(name = "note", columnDefinition = "TEXT")
+  private String note;
+
   protected CourseEntity() {
   }
 
@@ -83,7 +87,8 @@ public class CourseEntity {
                       @Nonnull final List<DayOfWeek> weekdays,
                       @Nullable final LocalTime startTime,
                       @Nullable final LocalTime endTime,
-                      @Nullable final InstructorEntity instructor) {
+                      @Nullable final InstructorEntity instructor,
+                      @Nonnull final String note) {
     this.title = title;
     this.capacity = capacity;
     this.location = location;
@@ -95,6 +100,7 @@ public class CourseEntity {
     this.startTime = startTime;
     this.endTime = endTime;
     this.instructor = instructor;
+    this.note = note;
   }
 
   @Nonnull
@@ -198,5 +204,14 @@ public class CourseEntity {
 
   public void setInstructor(@Nullable final InstructorEntity instructor) {
     this.instructor = instructor;
+  }
+
+  @Nonnull
+  public String getNote() {
+    return note;
+  }
+
+  public void setNote(@Nonnull final String note) {
+    this.note = note;
   }
 }

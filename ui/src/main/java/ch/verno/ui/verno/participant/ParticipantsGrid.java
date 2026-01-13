@@ -18,7 +18,7 @@ import ch.verno.ui.base.grid.ObjectGridColumn;
 import ch.verno.ui.lib.Routes;
 import ch.verno.ui.verno.dashboard.report.ParticipantsReportDialog;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.combobox.ComboBoxBase;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.Query;
@@ -30,6 +30,7 @@ import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -188,16 +189,16 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
             .map(mapper)
             .filter(s -> s != null && !s.isBlank())
             .distinct()
-            .collect(Collectors.joining(", "));
+            .collect(Collectors.joining(Publ.COMMA + Publ.SPACE));
   }
 
   @Nonnull
   @Override
-  public List<MultiSelectComboBox<Long>> getFilterComponents() {
+  public List<ComboBoxBase<?, ?, ?>> getFilterComponents() {
     final var courses = courseService.getAllCourses().stream()
             .collect(Collectors.toMap(CourseDto::getId, CourseDto::getTitle));
 
-    final var courseFilter = filterEntryFactory.createComboboxFilter(
+    final var courseFilter = filterEntryFactory.createMultiSelectComboboxFilter(
             ParticipantFilter::getCourseIds,
             ParticipantFilter::setCourseIds,
             courses,
@@ -206,21 +207,25 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
 
     final var courseLevels = courseLevelService.getAllCourseLevels().stream()
             .collect(Collectors.toMap(BaseDto::getId, CourseLevelDto::getName));
-    final var courseLevelFilter = filterEntryFactory.createComboboxFilter(
+    final var courseLevelFilter = filterEntryFactory.createMultiSelectComboboxFilter(
             ParticipantFilter::getCourseLevelIds,
             ParticipantFilter::setCourseLevelIds,
             courseLevels,
             filterBinder,
             getTranslation("filter.course_level_filter"));
 
-    //todo create active filter
-//    final var activeFilter = filterEntryFactory.createBooleanFilter(
-//            ParticipantFilter::getActive,
-//            ParticipantFilter::setActive,
-//            filterBinder,
-//            "Active Filter");
+    final var options = new HashMap<Long, String>();
+    options.put(0L, getTranslation("shared.inactive"));
+    options.put(1L, getTranslation("shared.active"));
+    
+    final var activeFilter = filterEntryFactory.createComboBoxFilter(
+            ParticipantFilter::getActiveAsLong,
+            ParticipantFilter::setActiveFromLong,
+            options,
+            filterBinder,
+            getTranslation("participant.active.filter"));
 
-    return List.of(courseFilter, courseLevelFilter);
+    return List.of(courseFilter, courseLevelFilter, activeFilter);
   }
 
   @Nonnull

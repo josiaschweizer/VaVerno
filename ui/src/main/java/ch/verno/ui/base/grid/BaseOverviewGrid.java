@@ -9,6 +9,7 @@ import ch.verno.ui.lib.Routes;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.combobox.ComboBoxBase;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
@@ -164,7 +165,7 @@ public abstract class BaseOverviewGrid<T extends BaseDto, F> extends VerticalLay
   }
 
   @Nonnull
-  public List<MultiSelectComboBox<Long>> getFilterComponents() {
+  public List<ComboBoxBase<?, ?, ?>> getFilterComponents() {
     return List.of();
   }
 

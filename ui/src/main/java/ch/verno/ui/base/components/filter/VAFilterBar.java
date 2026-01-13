@@ -2,6 +2,8 @@ package ch.verno.ui.base.components.filter;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.ComboBoxBase;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -85,7 +87,7 @@ public class VAFilterBar extends VerticalLayout {
     this.onFiltersChanged = onFiltersChanged;
   }
 
-  public void addFilterComponent(@Nonnull final MultiSelectComboBox<Long> comboBox) {
+  public void addFilterComponent(@Nonnull final ComboBoxBase<?, ?, ?> comboBox) {
     advancedFiltersRow.add(comboBox);
     toggleFiltersButton.setVisible(true);
 

@@ -58,8 +58,19 @@ public class EntryFactory<DTO> {
                                      @Nonnull final Binder<DTO> binder,
                                      @Nonnull final Optional<String> required,
                                      @Nonnull final String label) {
+    return createTextEntry(valueProvider, valueSetter, binder, required, label, false);
+  }
+
+  @Nonnull
+  public VATextField createTextEntry(@Nonnull final ValueProvider<DTO, String> valueProvider,
+                                     @Nonnull final Setter<DTO, String> valueSetter,
+                                     @Nonnull final Binder<DTO> binder,
+                                     @Nonnull final Optional<String> required,
+                                     @Nonnull final String label,
+                                     final boolean showClearButton) {
     final var textField = new VATextField(label);
     textField.setWidthFull();
+    textField.setClearButtonVisible(showClearButton);
     bindEntry(textField, valueProvider, valueSetter, binder, required);
     return textField;
   }

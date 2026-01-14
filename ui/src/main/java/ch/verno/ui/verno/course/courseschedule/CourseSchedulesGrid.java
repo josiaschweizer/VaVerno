@@ -44,12 +44,6 @@ public class CourseSchedulesGrid extends BaseOverviewGrid<CourseScheduleDto, Cou
     return courseScheduleService.findCourseSchedules(filter, offset, limit, sortOrders).stream();
   }
 
-  @Override
-  protected int count(@Nonnull final Query<CourseScheduleDto, CourseScheduleFilter> query,
-                      @Nonnull final CourseScheduleFilter filter) {
-    return courseScheduleService.countCourseSchedules(filter);
-  }
-
   @Nonnull
   @Override
   protected String getGridObjectName() {

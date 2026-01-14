@@ -43,12 +43,6 @@ public class CoursesGrid extends BaseOverviewGrid<CourseDto, CourseFilter> imple
     return courseService.findCourses(filter, offset, limit, sortOrders).stream();
   }
 
-  @Override
-  protected int count(@Nonnull final Query<CourseDto, CourseFilter> query,
-                      @Nonnull final CourseFilter filter) {
-    return courseService.countCourses(filter);
-  }
-
   @Nonnull
   @Override
   protected String getGridObjectName() {

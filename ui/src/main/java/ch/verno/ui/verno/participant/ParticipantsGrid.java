@@ -19,9 +19,11 @@ import ch.verno.ui.lib.Routes;
 import ch.verno.ui.verno.dashboard.report.ParticipantsReportDialog;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBoxBase;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
@@ -84,12 +86,6 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
     return participantService.findParticipants(filter, offset, limit, sortOrders).stream();
   }
 
-  @Override
-  protected int count(@Nonnull final Query<ParticipantDto, ParticipantFilter> query,
-                      @Nonnull final ParticipantFilter filter) {
-    return participantService.countParticipants(filter);
-  }
-
   @Nonnull
   @Override
   protected String getGridObjectName() {
@@ -145,8 +141,8 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
   @Override
   protected List<ObjectGridColumn<ParticipantDto>> getColumns() {
     final var columns = new ArrayList<ObjectGridColumn<ParticipantDto>>();
-    columns.add(new ObjectGridColumn<>("firstname", ParticipantDto::getFirstName, getTranslation("shared.first.name"), true));
     columns.add(new ObjectGridColumn<>("lastname", ParticipantDto::getLastName, getTranslation("shared.last.name"), true));
+    columns.add(new ObjectGridColumn<>("firstname", ParticipantDto::getFirstName, getTranslation("shared.first.name"), true));
     columns.add(new ObjectGridColumn<>("birthdate", ParticipantDto::getAgeFromBirthday, getTranslation("shared.age"), true));
     columns.add(new ObjectGridColumn<>("email", ParticipantDto::getEmail, getTranslation("shared.e.mail"), true));
     columns.add(new ObjectGridColumn<>("phone", ParticipantDto::getPhoneString, getTranslation("shared.phone"), true));
@@ -245,6 +241,16 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
   @Override
   protected ParticipantFilter withSearchText(@Nonnull final String searchText) {
     return ParticipantFilter.fromSearchText(searchText);
+  }
+
+  @Override
+  protected void setDefaultSorting() {
+    final var lastNameCol = columnsByKey.get("lastname");
+    if (lastNameCol == null) {
+      return;
+    }
+
+    grid.sort(List.of(new GridSortOrder<>(lastNameCol, SortDirection.ASCENDING)));
   }
 
   @Override

@@ -6,7 +6,7 @@ import ch.verno.common.db.filter.CourseScheduleFilter;
 import ch.verno.common.db.service.ICourseScheduleService;
 import ch.verno.common.exceptions.db.DBNotFoundException;
 import ch.verno.common.exceptions.db.DBNotFoundReason;
-import ch.verno.common.util.WeekKey;
+import ch.verno.common.lib.WeekKey;
 import ch.verno.server.mapper.CourseScheduleMapper;
 import ch.verno.server.repository.CourseScheduleRepository;
 import ch.verno.server.spec.CourseScheduleSpec;

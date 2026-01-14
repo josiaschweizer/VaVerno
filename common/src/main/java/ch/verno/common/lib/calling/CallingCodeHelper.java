@@ -1,4 +1,4 @@
-package ch.verno.common.util.calling;
+package ch.verno.common.lib.calling;
 
 import ch.verno.publ.Publ;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;

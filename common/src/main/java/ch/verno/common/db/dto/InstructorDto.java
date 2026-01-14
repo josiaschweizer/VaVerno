@@ -3,7 +3,7 @@ package ch.verno.common.db.dto;
 import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
 import ch.verno.common.db.dto.base.BaseDto;
 import ch.verno.publ.Publ;
-import ch.verno.common.util.phonenumber.PhoneNumberFormatter;
+import ch.verno.common.lib.phonenumber.PhoneNumberFormatter;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 

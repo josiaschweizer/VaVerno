@@ -1,11 +1,11 @@
 package ch.verno.ui.base.components.toolbar;
 
+import ch.verno.common.lib.i18n.TranslationHelper;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.filter.VASearchFilter;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.i18n.I18NProvider;
-import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -33,9 +33,7 @@ public class ViewToolbarFactory {
   public static ViewToolbar createGridToolbar(@Nonnull final String gridObjectName,
                                               @Nonnull final String url,
                                               @Nullable final VASearchFilter filter) {
-    final var translation = getI18NProvider() != null ?
-            getI18NProvider().getTranslation("base.grid", UI.getCurrent().getLocale()) :
-            "Grid";
+    final var translation = TranslationHelper.getTranslation("base.grid", UI.getCurrent().getLocale());
 
     if (filter != null) {
       return new ViewToolbar(
@@ -58,9 +56,7 @@ public class ViewToolbarFactory {
                                                       @Nonnull final String url) {
     final var newButton = createNewButton(objectName, url);
 
-    final var translation = getI18NProvider() != null ?
-            getI18NProvider().getTranslation("base.detail", UI.getCurrent().getLocale()) :
-            "Detail";
+    final var translation = TranslationHelper.getTranslation("base.detail", UI.getCurrent().getLocale());
 
     return new ViewToolbarResult(
             new ViewToolbar(objectName + Publ.SPACE + translation, newButton),
@@ -72,24 +68,14 @@ public class ViewToolbarFactory {
   @Nonnull
   private static Button createNewButton(@Nonnull final String gridObjectName,
                                         @Nonnull final String url) {
-    final var translation = getI18NProvider() != null ?
-            getI18NProvider().getTranslation("common.new", UI.getCurrent().getLocale()) :
-            "New";
+    final var translation = TranslationHelper.getTranslation("common.new", UI.getCurrent().getLocale());
 
-    final var createButton = new Button(translation + Publ.SPACE + gridObjectName);
+    final var createButton = new Button(translation, VaadinIcon.PLUS.create());
     createButton.addClickListener(event -> UI.getCurrent().navigate(url.toLowerCase()));
     return createButton;
   }
 
-  @Nullable
-  protected static I18NProvider getI18NProvider() {
-    final var service = VaadinService.getCurrent();
-    if (service != null && service.getInstantiator() != null) {
-      return service.getInstantiator().getI18NProvider();
-    }
 
-    return null;
-  }
 
 
 }

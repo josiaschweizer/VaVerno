@@ -197,7 +197,6 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
   public List<ComboBoxBase<?, ?, ?>> getFilterComponents() {
     final var courses = courseService.getAllCourses().stream()
             .collect(Collectors.toMap(CourseDto::getId, CourseDto::getTitle));
-
     final var courseFilter = filterEntryFactory.createMultiSelectComboboxFilter(
             ParticipantFilter::getCourseIds,
             ParticipantFilter::setCourseIds,
@@ -215,15 +214,14 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
             getTranslation("filter.course_level_filter"));
 
     final var options = new HashMap<Long, String>();
-    options.put(0L, getTranslation("shared.inactive"));
     options.put(1L, getTranslation("shared.active"));
-    
+    options.put(0L, getTranslation("shared.inactive"));
     final var activeFilter = filterEntryFactory.createComboBoxFilter(
             ParticipantFilter::getActiveAsLong,
             ParticipantFilter::setActiveFromLong,
             options,
             filterBinder,
-            getTranslation("participant.active.filter"));
+            getTranslation("filter.active.filter"));
 
     return List.of(courseFilter, courseLevelFilter, activeFilter);
   }

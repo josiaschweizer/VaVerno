@@ -2,9 +2,9 @@ package ch.verno.ui.base.components.entry.phonenumber;
 
 import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
 import ch.verno.publ.Publ;
-import ch.verno.common.util.calling.CallingCode;
-import ch.verno.common.util.calling.CallingCodeHelper;
-import ch.verno.common.util.phonenumber.PhoneNumberFormatter;
+import ch.verno.common.lib.calling.CallingCode;
+import ch.verno.common.lib.calling.CallingCodeHelper;
+import ch.verno.common.lib.phonenumber.PhoneNumberFormatter;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;

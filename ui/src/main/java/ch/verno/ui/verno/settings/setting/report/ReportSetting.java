@@ -2,15 +2,13 @@ package ch.verno.ui.verno.settings.setting.report;
 
 import ch.verno.common.db.dto.MandantSettingDto;
 import ch.verno.common.db.service.IMandantSettingService;
+import ch.verno.common.lib.i18n.TranslationHelper;
 import ch.verno.ui.base.factory.EntryFactory;
 import ch.verno.ui.base.settings.VABaseSetting;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.i18n.I18NProvider;
-import com.vaadin.flow.server.VaadinService;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 import java.util.Optional;
 
@@ -26,7 +24,7 @@ public class ReportSetting extends VABaseSetting<MandantSettingDto> {
 
     this.mandantSettingService = mandantSettingService;
     this.dto = mandantSettingService.getSingleMandantSetting();
-    this.entryFactory = new EntryFactory<>(getI18NProvider());
+    this.entryFactory = new EntryFactory<>(TranslationHelper.getI18NProvider());
   }
 
   @Nonnull
@@ -37,7 +35,7 @@ public class ReportSetting extends VABaseSetting<MandantSettingDto> {
             MandantSettingDto::setCourseReportName,
             binder,
             Optional.empty(),
-            "PDF Course Report Name"
+            getTranslation("course.pdf.course.report.name")
     );
 
     final var contentLayout = new VerticalLayout(courseReport);
@@ -63,14 +61,5 @@ public class ReportSetting extends VABaseSetting<MandantSettingDto> {
     if (binder.writeBeanIfValid(dto)) {
       mandantSettingService.saveSingleMandantSetting(dto);
     }
-  }
-
-  @Nullable
-  protected I18NProvider getI18NProvider() {
-    final var service = VaadinService.getCurrent();
-    if (service != null && service.getInstantiator() != null) {
-      return service.getInstantiator().getI18NProvider();
-    }
-    return null;
   }
 }

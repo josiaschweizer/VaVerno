@@ -3,7 +3,7 @@ package ch.verno.ui.base.factory;
 import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
 import ch.verno.common.db.dto.GenderDto;
 import ch.verno.common.db.dto.YearWeekDto;
-import ch.verno.common.util.phonenumber.PhoneNumberFormatter;
+import ch.verno.common.lib.phonenumber.PhoneNumberFormatter;
 import ch.verno.ui.base.components.entry.combobox.VAComboBox;
 import ch.verno.ui.base.components.entry.numberfield.VANumberField;
 import ch.verno.ui.base.components.entry.phonenumber.PhoneEntry;

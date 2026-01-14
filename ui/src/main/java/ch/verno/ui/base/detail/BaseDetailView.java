@@ -1,5 +1,6 @@
 package ch.verno.ui.base.detail;
 
+import ch.verno.common.lib.i18n.TranslationHelper;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.form.FormMode;
 import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
@@ -68,7 +69,7 @@ public abstract class BaseDetailView<T> extends VerticalLayout implements HasUrl
 
     this.formMode = getDefaultFormMode();
     this.binder = createBinder();
-    this.i18nProvider = getI18NProvider();
+    this.i18nProvider = TranslationHelper.getI18NProvider();
     this.entryFactory = new EntryFactory<>(i18nProvider);
     this.fieldFactory = new FieldFactory<>(entryFactory, i18nProvider);
     this.viewToolbar = createViewToolbar();
@@ -141,14 +142,14 @@ public abstract class BaseDetailView<T> extends VerticalLayout implements HasUrl
     saveButton.setVisible(saveVisible);
 
     if (formMode == FormMode.CREATE) {
-      saveButton.setText(getTranslation("shared.create") + Publ.SPACE + getDetailPageName());
+      saveButton.setText(getTranslation("shared.create"));
 
       if (viewToolbar.createButton() != null) {
         viewToolbar.createButton().setVisible(false);
       }
       setAddOnVisible(false);
     } else if (formMode == FormMode.EDIT) {
-      saveButton.setText(getTranslation("shared.update") + Publ.SPACE + getDetailPageName());
+      saveButton.setText(getTranslation("shared.update"));
       setAddOnVisible(true);
     } else {
       saveButton.setText(getTranslation("common.save"));
@@ -337,14 +338,5 @@ public abstract class BaseDetailView<T> extends VerticalLayout implements HasUrl
 
   public void setAfterSave(@Nonnull final Runnable afterSave) {
     this.afterSave = afterSave;
-  }
-
-  @Nullable
-  protected I18NProvider getI18NProvider() {
-    final var service = VaadinService.getCurrent();
-    if (service != null && service.getInstantiator() != null) {
-      return service.getInstantiator().getI18NProvider();
-    }
-    return null;
   }
 }

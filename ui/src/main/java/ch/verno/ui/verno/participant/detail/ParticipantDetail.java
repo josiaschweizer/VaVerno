@@ -221,7 +221,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             ParticipantDto::setNote,
             getBinder(),
             Optional.empty(),
-            getTranslation("participants.note")
+            getTranslation("shared.note")
     );
 
     return createLayoutFromComponents(note);
@@ -309,7 +309,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             firstNameSetter,
             getBinder(),
             Optional.empty(),
-            getTranslation("participant.firstName")
+            getTranslation("shared.first.name")
     );
 
     final var lastNameEntry = entryFactory.createTextEntry(
@@ -317,7 +317,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             lastNameSetter,
             getBinder(),
             Optional.empty(),
-            getTranslation("participant.lastName")
+            getTranslation("shared.last.name")
     );
 
     final var genderEntry = fieldFactory.createGenderField(
@@ -332,7 +332,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             emailSetter,
             getBinder(),
             Optional.empty(),
-            getTranslation("shared.email")
+            getTranslation("shared.e.mail")
     );
 
     final var phoneEntry = entryFactory.createPhoneNumberEntry(
@@ -340,7 +340,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             phoneSetter,
             getBinder(),
             Optional.empty(),
-            getTranslation("participant.phone_number")
+            getTranslation("shared.phone")
     );
 
     return new VerticalLayout(

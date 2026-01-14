@@ -259,8 +259,6 @@ public abstract class BaseOverviewGrid<T extends BaseDto, F> extends VerticalLay
   @Nonnull
   protected abstract Stream<T> fetch(@Nonnull Query<T, F> query, @Nonnull F filter);
 
-  protected abstract int count(@Nonnull Query<T, F> query, @Nonnull F filter);
-
   @Nonnull
   protected abstract String getGridObjectName();
 

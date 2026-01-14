@@ -158,6 +158,10 @@ public class AssignToCourseDialog extends VADialog {
             .collect(Collectors.toCollection(LinkedHashSet::new))
             .stream()
             .filter(this::filterForInvalidCourseLevel)
+            .sorted(Comparator.comparing(
+                    id -> participantItems.getOrDefault(id, ""),
+                    String.CASE_INSENSITIVE_ORDER
+            ))
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
     selectedParticipantIds = selectedParticipantIds.stream()

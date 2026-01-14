@@ -86,7 +86,7 @@ html, body {
 }
 
 vaadin-app-layout.main-layout::part(drawer) {
-    width: 350px;
+    width: 320px;
 }
 
 .va-text-field[required]::part(label)::after,
@@ -109,5 +109,9 @@ vaadin-app-layout.main-layout::part(drawer) {
 }
 
 vaadin-button {
+    cursor: pointer;
+}
+
+vaadin-drawer-toggle {
     cursor: pointer;
 }

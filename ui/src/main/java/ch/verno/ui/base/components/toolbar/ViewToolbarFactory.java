@@ -91,8 +91,8 @@ public class ViewToolbarFactory {
     final var ui = UI.getCurrent();
     final var userBadge = new UserActionBadge(currentUser.getUsername())
 //            .addItem(VaadinIcon.USER, "Profil", () -> ui.navigate(Routes.PROFILE))
-            .addItem(VaadinIcon.SLIDER, "Einstellungen", () -> ui.navigate(Routes.USER_SETTINGS))
-            .addItem(VaadinIcon.SIGN_OUT, "Logout", LogoutHelper::logout);
+            .addItemWithTranslationKey(VaadinIcon.SLIDER, "setting.user_settings", () -> ui.navigate(Routes.USER_SETTINGS))
+            .addItemWithTranslationKey(VaadinIcon.SIGN_OUT, "shared.logout", LogoutHelper::logout);
 
     toolbar.addUserAction(userBadge);
   }

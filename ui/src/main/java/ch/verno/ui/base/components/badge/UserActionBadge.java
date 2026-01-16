@@ -60,10 +60,16 @@ public final class UserActionBadge extends Composite<HorizontalLayout> {
   }
 
   @Nonnull
+  public UserActionBadge addItemWithTranslationKey(@Nonnull final VaadinIcon icon,
+                                                   @Nonnull final String key,
+                                                   @Nonnull final Runnable onClick) {
+    return addItem(icon, getTranslation(key), onClick);
+  }
+
+  @Nonnull
   public UserActionBadge addItem(@Nonnull final VaadinIcon icon,
                                  @Nonnull final String text,
                                  @Nonnull final Runnable onClick) {
-
     final var iconComponent = icon.create();
     final var textSpan = new Span(text);
 

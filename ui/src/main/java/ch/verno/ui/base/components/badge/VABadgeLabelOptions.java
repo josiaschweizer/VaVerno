@@ -11,14 +11,14 @@ public enum VABadgeLabelOptions {
   ;
 
   @Nonnull
-  private final String className;
+  private final String theme;
 
-  VABadgeLabelOptions(@Nonnull final String className) {
-    this.className = className;
+  VABadgeLabelOptions(@Nonnull final String theme) {
+    this.theme = theme;
   }
 
   @Nonnull
-  public String getClassName() {
-    return className;
+  public String getTheme() {
+    return theme;
   }
 }

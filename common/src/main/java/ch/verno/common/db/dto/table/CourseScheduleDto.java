@@ -1,5 +1,6 @@
 package ch.verno.common.db.dto.table;
 
+import ch.verno.common.base.components.colorpicker.Colors;
 import ch.verno.common.db.dto.YearWeekDto;
 import ch.verno.common.db.dto.base.BaseDto;
 import ch.verno.common.db.enums.CourseScheduleStatus;
@@ -17,18 +18,17 @@ public class CourseScheduleDto extends BaseDto {
   @Nonnull
   private OffsetDateTime createdAt;
 
-  @Nonnull
-  private String title;
-  @Nonnull
-  private CourseScheduleStatus status;
-  @Nonnull
-  private List<YearWeekDto> weeks;
+  @Nonnull private String title;
+  @Nonnull private CourseScheduleStatus status;
+  @Nonnull private String color;
+  @Nonnull private List<YearWeekDto> weeks;
 
   public CourseScheduleDto() {
     setId(null);
     this.createdAt = OffsetDateTime.now();
-    this.status = CourseScheduleStatus.PLANNED;
     this.title = Publ.EMPTY_STRING;
+    this.status = CourseScheduleStatus.PLANNED;
+    this.color = Colors.PRIMARY_COLOR;
     this.weeks = new ArrayList<>();
   }
 
@@ -41,6 +41,7 @@ public class CourseScheduleDto extends BaseDto {
     this.createdAt = createdAt;
     this.title = title;
     this.status = status;
+    this.color = Colors.PRIMARY_COLOR;
     this.weeks = weeks;
   }
 
@@ -82,6 +83,15 @@ public class CourseScheduleDto extends BaseDto {
 
   public void setStatus(@Nonnull final CourseScheduleStatus status) {
     this.status = status;
+  }
+
+  @Nonnull
+  public String getColor() {
+    return color;
+  }
+
+  public void setColor(@Nonnull final String color) {
+    this.color = color;
   }
 
   @Nonnull

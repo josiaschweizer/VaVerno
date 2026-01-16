@@ -13,6 +13,7 @@ import ch.verno.ui.base.components.entry.weekoption.VAWeekOption;
 import ch.verno.ui.base.components.schedulepicker.VAScheduleWeekPicker;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -207,6 +208,17 @@ public class EntryFactory<DTO> {
 
     bindEntry(timePicker, valueProvider, valueSetter, binder, required);
     return timePicker;
+  }
+
+  @Nonnull
+  public Checkbox createCheckBoxEntry(@Nonnull final ValueProvider<DTO, Boolean> valueProvider,
+                                      @Nonnull final Setter<DTO, Boolean> valueSetter,
+                                      @Nonnull final Binder<DTO> binder,
+                                      @Nonnull final String label) {
+    final var checkbox = new Checkbox(label);
+    checkbox.setWidthFull();
+    bindEntry(checkbox, valueProvider, valueSetter, binder, Optional.empty());
+    return checkbox;
   }
 
   @Nonnull

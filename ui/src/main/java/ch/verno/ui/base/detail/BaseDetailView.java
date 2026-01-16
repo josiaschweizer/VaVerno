@@ -1,7 +1,7 @@
 package ch.verno.ui.base.detail;
 
 import ch.verno.common.lib.i18n.TranslationHelper;
-import ch.verno.publ.Publ;
+import ch.verno.ui.base.components.badge.VABadgeLabel;
 import ch.verno.ui.base.components.form.FormMode;
 import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
 import ch.verno.ui.base.components.toolbar.ViewToolbarResult;
@@ -20,7 +20,6 @@ import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
-import com.vaadin.flow.server.VaadinService;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -31,30 +30,22 @@ public abstract class BaseDetailView<T> extends VerticalLayout implements HasUrl
   @Nonnull
   public FormMode formMode;
 
-  @Nonnull
-  private final Binder<T> binder;
-  @Nonnull
-  protected EntryFactory<T> entryFactory;
-  @Nonnull
-  protected FieldFactory<T> fieldFactory;
-  @Nullable
-  protected I18NProvider i18nProvider;
+  @Nonnull private final Binder<T> binder;
+  @Nonnull protected EntryFactory<T> entryFactory;
+  @Nonnull protected FieldFactory<T> fieldFactory;
+  @Nullable protected I18NProvider i18nProvider;
 
-  @Nonnull
-  protected Button saveButton;
-  @Nonnull
-  protected Runnable afterSave;
+  @Nonnull protected Button saveButton;
+  @Nonnull protected Runnable afterSave;
 
-  @Nonnull
-  protected ViewToolbarResult viewToolbar;
-  @Nullable
-  protected VerticalLayout addOnLayout;
+  @Nullable protected ViewToolbarResult viewToolbar;
+  @Nullable protected VerticalLayout addOnLayout;
 
   protected boolean showHeaderToolbar;
   protected boolean showPaddingAroundDetail;
 
-  @Nullable
-  private FormMode pendingFormMode;
+  @Nullable protected FormMode pendingFormMode;
+  @Nullable protected VABadgeLabel infoLabel;
 
   protected BaseDetailView() {
     this(true);
@@ -72,7 +63,6 @@ public abstract class BaseDetailView<T> extends VerticalLayout implements HasUrl
     this.i18nProvider = TranslationHelper.getI18NProvider();
     this.entryFactory = new EntryFactory<>(i18nProvider);
     this.fieldFactory = new FieldFactory<>(entryFactory, i18nProvider);
-    this.viewToolbar = createViewToolbar();
   }
 
   @Override
@@ -87,8 +77,11 @@ public abstract class BaseDetailView<T> extends VerticalLayout implements HasUrl
     setPadding(false);
     setSpacing(false);
 
+    this.viewToolbar = createViewToolbar();
+
     if (showHeaderToolbar) {
-      add(viewToolbar.toolbar());
+      final var toolbar = viewToolbar.toolbar();
+      add(toolbar);
     }
 
     initUI();
@@ -115,7 +108,29 @@ public abstract class BaseDetailView<T> extends VerticalLayout implements HasUrl
       result.editButton().addClickListener(this::onEditButtonClick);
     }
 
+    final var toolbar = result.toolbar();
+    infoLabel = getInfoBadge();
+    final var actionMenu = getToolbarContextMenu();
+    if (infoLabel != null) {
+      toolbar.addActionButton(infoLabel, true);
+    }
+    if (actionMenu != null) {
+      toolbar.addAction(actionMenu);
+    }
+
     return result;
+  }
+
+  @Nullable
+  protected VABadgeLabel getInfoBadge() {
+    // can be overridden by subclasses to add an info label to the toolbar
+    return null;
+  }
+
+  @Nullable
+  protected Component getToolbarContextMenu() {
+    // can be overridden by subclasses to add an action menu to the toolbar
+    return null;
   }
 
   protected void updateSaveButtonState() {

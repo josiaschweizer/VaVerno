@@ -108,10 +108,8 @@ vaadin-app-layout.main-layout::part(drawer) {
     display: none;
 }
 
-vaadin-button {
-    cursor: pointer;
-}
-
+vaadin-button,
+vaadin-context-menu-item,
 vaadin-drawer-toggle {
     cursor: pointer;
 }

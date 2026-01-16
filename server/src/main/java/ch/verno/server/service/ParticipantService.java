@@ -62,47 +62,66 @@ public class ParticipantService implements IParticipantService {
   @Nonnull
   @Override
   @Transactional
-  public ParticipantDto createParticipant(@Nonnull final ParticipantDto participantDto) {
+  public ParticipantDto createParticipant(@Nonnull final ParticipantDto participant) {
     final var entity = new ParticipantEntity(
-            ServiceHelper.safeString(participantDto.getFirstName()),
-            ServiceHelper.safeString(participantDto.getLastName()),
-            participantDto.getBirthdate() != null ? participantDto.getBirthdate() : LocalDate.now(),
-            ServiceHelper.safeString(participantDto.getEmail()),
-            !participantDto.getPhone().isEmpty()
-                    ? participantDto.getPhone().toString()
+            ServiceHelper.safeString(participant.getFirstName()),
+            ServiceHelper.safeString(participant.getLastName()),
+            participant.getBirthdate() != null ? participant.getBirthdate() : LocalDate.now(),
+            ServiceHelper.safeString(participant.getEmail()),
+            !participant.getPhone().isEmpty()
+                    ? participant.getPhone().toString()
                     : Publ.EMPTY_STRING,
-            ServiceHelper.safeString(participantDto.getNote()),
-            participantDto.isActive()
+            ServiceHelper.safeString(participant.getNote()),
+            participant.isActive()
     );
 
-    final var savedParticipant = saveParticipant(participantDto, entity);
+    final var savedParticipant = saveParticipant(participant, entity);
     return ParticipantMapper.toDto(savedParticipant);
   }
 
   @Nonnull
   @Override
   @Transactional
-  public ParticipantDto updateParticipant(@Nonnull final ParticipantDto participantDto) {
-    if (participantDto.getId() == null || participantDto.getId() == 0) {
+  public ParticipantDto updateParticipant(@Nonnull final ParticipantDto participant) {
+    if (participant.getId() == null || participant.getId() == 0) {
       throw new IllegalArgumentException("Participant ID is required for update");
     }
 
-    final var existing = participantRepository.findById(participantDto.getId())
-            .orElseThrow(() -> new DBNotFoundException(DBNotFoundReason.PARTICIPANT_BY_ID_NOT_FOUND, participantDto.getId()));
+    final var existing = participantRepository.findById(participant.getId())
+            .orElseThrow(() -> new DBNotFoundException(DBNotFoundReason.PARTICIPANT_BY_ID_NOT_FOUND, participant.getId()));
 
-    existing.setFirstname(ServiceHelper.safeString(participantDto.getFirstName()));
-    existing.setLastname(ServiceHelper.safeString(participantDto.getLastName()));
-    existing.setBirthdate(participantDto.getBirthdate() != null ? participantDto.getBirthdate() : LocalDate.now());
-    existing.setEmail(ServiceHelper.safeString(participantDto.getEmail()));
-    existing.setPhone(!participantDto.getPhone().isEmpty()
-            ? participantDto.getPhone().toString()
+    existing.setFirstname(ServiceHelper.safeString(participant.getFirstName()));
+    existing.setLastname(ServiceHelper.safeString(participant.getLastName()));
+    existing.setBirthdate(participant.getBirthdate() != null ? participant.getBirthdate() : LocalDate.now());
+    existing.setEmail(ServiceHelper.safeString(participant.getEmail()));
+    existing.setPhone(!participant.getPhone().isEmpty()
+            ? participant.getPhone().toString()
             : Publ.EMPTY_STRING
     );
-    existing.setNote(ServiceHelper.safeString(participantDto.getNote()));
-    existing.setActive(participantDto.isActive());
+    existing.setNote(ServiceHelper.safeString(participant.getNote()));
+    existing.setActive(participant.isActive());
 
-    final var savedParticipant = saveParticipant(participantDto, existing);
-    return ParticipantMapper.toDto(savedParticipant);
+    final var savedParticipantEntity = saveParticipant(participant, existing);
+    return ParticipantMapper.toDto(savedParticipantEntity);
+  }
+
+  @Nonnull
+  @Override
+  @Transactional
+  public ParticipantDto disableParticipant(@Nonnull final ParticipantDto participant,
+                                           final boolean disabled) {
+    if (participant.getId() == null || participant.getId() == 0) {
+      throw new IllegalArgumentException("Participant ID is required to disable/enable");
+    }
+
+    final var existing = participantRepository.findById(participant.getId())
+            .orElseThrow(() -> new DBNotFoundException(DBNotFoundReason.PARTICIPANT_BY_ID_NOT_FOUND, participant.getId()));
+
+    existing.setActive(!disabled);
+
+    final var savedParticipantEntity = participantRepository.save(existing);
+
+    return ParticipantMapper.toDto(savedParticipantEntity);
   }
 
   @Nonnull

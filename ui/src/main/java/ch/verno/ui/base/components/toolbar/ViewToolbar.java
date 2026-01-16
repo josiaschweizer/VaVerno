@@ -21,6 +21,7 @@ public final class ViewToolbar extends Composite<HorizontalLayout> {
     layout.setWrap(true);
     layout.setWidthFull();
     layout.addClassName(LumoUtility.Border.BOTTOM);
+    layout.addClassName(LumoUtility.Margin.Top.MEDIUM);
     layout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
     final var drawerToggle = new DrawerToggle();

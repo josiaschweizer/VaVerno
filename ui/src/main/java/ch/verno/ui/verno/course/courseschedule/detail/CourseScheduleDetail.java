@@ -70,7 +70,6 @@ public class CourseScheduleDetail extends BaseDetailView<CourseScheduleDto> impl
             getTranslation("shared.color")
     );
 
-
     return createLayoutFromComponents(title, status, colorPicker);
   }
 

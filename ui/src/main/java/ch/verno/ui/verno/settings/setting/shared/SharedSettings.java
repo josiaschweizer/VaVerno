@@ -41,8 +41,8 @@ public class SharedSettings extends VABaseSetting<MandantSettingDto> {
             MandantSettingDto::setEnforceCourseLevelSettings
     );
     final var limitCourses = settingEntryFactory.createBooleanSetting(
-            "Limit course assignment to planned or active courses",
-            Optional.of("When enabled, participants can only be assigned to courses that are currently planned or active. Archived, completed, or inactive courses are excluded from selection."),
+            getTranslation("setting.limit.course.assignment.to.planned.or.active.courses"),
+            Optional.of(getTranslation("setting.when.enabled.participants.can.only.be.assigned.to.courses.that.are.currently.planned.or.active.archived.completed.or.inactive.courses.are.excluded.from.selection")),
             binder,
             MandantSettingDto::isLimitCourseAssignmentsToActive,
             MandantSettingDto::setLimitCourseAssignmentsToActive

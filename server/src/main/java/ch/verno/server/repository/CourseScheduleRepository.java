@@ -57,3 +57,4 @@ public class CourseScheduleRepository {
     return jpaRepository.save(entity);
   }
 }
+

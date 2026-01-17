@@ -8,15 +8,19 @@ import ch.verno.common.exceptions.db.DBNotFoundException;
 import ch.verno.common.exceptions.db.DBNotFoundReason;
 import ch.verno.common.lib.WeekKey;
 import ch.verno.server.mapper.CourseScheduleMapper;
+import ch.verno.server.mapper.YearWeekMapper;
 import ch.verno.server.repository.CourseScheduleRepository;
 import ch.verno.server.spec.CourseScheduleSpec;
 import ch.verno.server.spec.PageHelper;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import jakarta.annotation.Nonnull;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,6 +30,9 @@ public class CourseScheduleService implements ICourseScheduleService {
   private final CourseScheduleRepository courseScheduleRepository;
   @Nonnull
   private final CourseScheduleSpec courseScheduleSpec;
+
+  @PersistenceContext
+  private EntityManager entityManager;
 
   public CourseScheduleService(@Nonnull final CourseScheduleRepository courseScheduleRepository) {
     this.courseScheduleRepository = courseScheduleRepository;
@@ -62,14 +69,20 @@ public class CourseScheduleService implements ICourseScheduleService {
                     courseScheduleDto.getId()
             ));
 
-    final var updated = CourseScheduleMapper.toEntity(courseScheduleDto);
-    if (updated == null) {
-      throw new IllegalArgumentException("CourseScheduleDto is empty");
-    }
+    existing.setTitle(courseScheduleDto.getTitle());
+    existing.setColor(courseScheduleDto.getColor());
+    existing.setStatus(courseScheduleDto.getStatus());
 
-    updated.setId(existing.getId());
+    // Replace the weeks list with a new ArrayList
+    // This signals to Hibernate that the collection should be fully replaced
+    final var weekStrings = YearWeekMapper.mapWeeksToStrings(courseScheduleDto.getWeeks());
+    existing.setWeeks(new ArrayList<>(weekStrings));
 
-    final var saved = courseScheduleRepository.save(updated);
+    // Flush immediately to execute DELETE operations before INSERT
+    // This prevents unique constraint violations
+    entityManager.flush();
+
+    final var saved = courseScheduleRepository.save(existing);
     return CourseScheduleMapper.toDto(saved);
   }
 

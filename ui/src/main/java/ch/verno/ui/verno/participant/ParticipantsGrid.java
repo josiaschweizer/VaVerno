@@ -44,7 +44,7 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
   @Nonnull private final IParticipantService participantService;
   @Nonnull private final ICourseService courseService;
   @Nonnull private final ICourseLevelService courseLevelService;
-  @Nonnull private ReportServerGate reportServerGate;
+  @Nonnull private final ReportServerGate reportServerGate;
 
   public ParticipantsGrid(@Nonnull final IParticipantService participantService,
                           @Nonnull final ICourseService courseService,
@@ -57,6 +57,7 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
     this.participantService = participantService;
     this.courseService = courseService;
     this.courseLevelService = courseLevelService;
+    this.reportServerGate = reportServerGate;
   }
 
   @Autowired

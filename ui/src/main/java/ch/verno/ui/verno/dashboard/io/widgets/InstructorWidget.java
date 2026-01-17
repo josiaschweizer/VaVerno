@@ -1,0 +1,56 @@
+package ch.verno.ui.verno.dashboard.io.widgets;
+
+import ch.verno.common.db.service.IInstructorService;
+import ch.verno.common.file.FileServerGate;
+import ch.verno.ui.base.components.notification.NotificationFactory;
+import ch.verno.ui.base.components.widget.VAAccordionWidgetBase;
+import ch.verno.ui.verno.dashboard.io.dialog.ImportDialog;
+import ch.verno.ui.verno.instructor.InstructorsGrid;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
+
+public class InstructorWidget extends VAAccordionWidgetBase {
+
+  @Nonnull private final FileServerGate fileServerGate;
+  @Nonnull private final IInstructorService instructorService;
+
+  public InstructorWidget(@Nonnull final FileServerGate fileServerGate,
+                          @Nonnull final IInstructorService instructorService) {
+    this.instructorService = instructorService;
+    this.fileServerGate = fileServerGate;
+
+    build();
+  }
+
+  @Nonnull
+  @Override
+  protected String getTitleText() {
+    return getTranslation("shared.instructor");
+  }
+
+  @Override
+  protected void buildHeaderActions(@NonNull final HorizontalLayout header) {
+    final var importButton = createHeaderButton(
+            getTranslation("shared.import"),
+            VaadinIcon.DOWNLOAD,
+            e -> {
+              final var importDialog = new ImportDialog(fileServerGate);
+              importDialog.open();
+            });
+    final var exportButton = createHeaderButton(
+            getTranslation("shared.export"),
+            VaadinIcon.UPLOAD,
+            e -> NotificationFactory.showInfoNotification("This feature is not implemented yet."));
+
+    header.add(importButton, exportButton);
+  }
+
+  @Override
+  protected void initContent() {
+    final var instructorGrid = new InstructorsGrid(instructorService, false, false);
+    instructorGrid.getGrid().setAllRowsVisible(true);
+    add(instructorGrid);
+  }
+}

@@ -1,6 +1,7 @@
 package ch.verno.ui.verno.dashboard;
 
 import ch.verno.common.db.service.*;
+import ch.verno.common.file.FileServerGate;
 import ch.verno.common.report.ReportServerGate;
 import ch.verno.ui.base.components.toolbar.ViewToolbar;
 import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
@@ -21,13 +22,22 @@ public class DashboardView extends VerticalLayout {
                        @Nonnull final ICourseLevelService courseLevelService,
                        @Nonnull final ICourseScheduleService courseScheduleService,
                        @Nonnull final IMandantSettingService mandantSettingService,
-                       @Nonnull final ReportServerGate reportServerGate) {
+                       @Nonnull final ReportServerGate reportServerGate,
+                       @Nonnull final FileServerGate fileServerGate) {
     setSizeFull();
     setPadding(false);
     setSpacing(false);
     setAlignItems(Alignment.STRETCH);
 
-    final var dashboard = new Dashboard(courseService, instructorService, participantService, courseLevelService, courseScheduleService, mandantSettingService, reportServerGate);
+    final var dashboard = new Dashboard(
+            courseService,
+            instructorService,
+            participantService,
+            courseLevelService,
+            courseScheduleService,
+            mandantSettingService,
+            reportServerGate,
+            fileServerGate);
 
     add(createViewToolBar());
     add(dashboard);

@@ -1,0 +1,67 @@
+.va-file-upload__drop {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--lumo-space-m);
+    border: 1px dashed var(--lumo-contrast-30pct);
+    border-radius: var(--lumo-border-radius-l);
+    padding: var(--lumo-space-xl);
+    text-align: center;
+    cursor: pointer;
+    pointer-events: all;
+    position: relative;
+    z-index: 1;
+    background-color: var(--lumo-base-color);
+    min-height: 200px;
+}
+
+.va-file-upload__drop span {
+    color: var(--lumo-contrast-90pct);
+    font-size: var(--lumo-font-size-m);
+    line-height: 1.5;
+    display: block;
+    pointer-events: none;
+    opacity: 1;
+    visibility: visible;
+}
+
+.va-file-upload__drop span:first-child {
+    font-weight: 500;
+    font-size: var(--lumo-font-size-l);
+    color: var(--lumo-contrast-90pct);
+}
+
+.va-file-upload__drop div {
+    pointer-events: none;
+    opacity: 1;
+    visibility: visible;
+}
+
+vaadin-upload.va-file-upload {
+    width: 100%;
+    height: 100%;
+}
+
+vaadin-upload.va-file-upload::part(add-button),
+vaadin-upload.va-file-upload::part(primary-buttons),
+vaadin-upload.va-file-upload::part(drop-label-icon),
+vaadin-upload.va-file-upload::part(file-list) {
+    display: none !important;
+}
+
+vaadin-upload.va-file-upload::part(drop-label) {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+}
+
+/* Verstecke das Upload-Icon und andere Standard-Elemente */
+vaadin-upload.va-file-upload [part="drop-label-icon"],
+vaadin-upload.va-file-upload vaadin-button {
+    display: none !important;
+}
+

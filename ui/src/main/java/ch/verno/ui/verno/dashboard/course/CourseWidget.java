@@ -6,20 +6,13 @@ import ch.verno.common.db.filter.ParticipantFilter;
 import ch.verno.common.db.service.*;
 import ch.verno.common.report.ReportServerGate;
 import ch.verno.publ.Publ;
+import ch.verno.ui.base.components.widget.VAAccordionWidgetBase;
 import ch.verno.ui.verno.dashboard.assignment.AssignToCourseDialog;
 import ch.verno.ui.verno.dashboard.report.CourseReportDialog;
 import ch.verno.ui.verno.participant.ParticipantsGrid;
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.accordion.AccordionPanel;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.Query;
-import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -27,8 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-@CssImport("./components/dashboard/course-widget.css")
-public class CourseWidget extends AccordionPanel {
+public class CourseWidget extends VAAccordionWidgetBase {
 
   @Nonnull private final CourseDto currentCourse;
   @Nonnull private final ICourseService courseService;
@@ -39,10 +31,8 @@ public class CourseWidget extends AccordionPanel {
   @Nonnull private final ICourseScheduleService courseScheduleService;
   @Nonnull private final ReportServerGate reportServerGate;
 
-  @Nullable
-  private ParticipantsGrid participantsGrid;
-  @Nullable
-  private List<ParticipantDto> participantsInCurrentCourse;
+  @Nullable private ParticipantsGrid participantsGrid;
+  @Nullable private List<ParticipantDto> participantsInCurrentCourse;
 
   public CourseWidget(@Nonnull final Long currentCourseId,
                       @Nonnull final ICourseService courseService,
@@ -58,87 +48,74 @@ public class CourseWidget extends AccordionPanel {
     this.courseLevelService = courseLevelService;
     this.mandantSettingService = mandantSettingService;
     this.courseScheduleService = courseScheduleService;
-    this.currentCourse = courseService.getCourseById(currentCourseId);
     this.reportServerGate = reportServerGate;
 
-    setWidthFull();
+    this.currentCourse = courseService.getCourseById(currentCourseId);
 
-    initSummary();
-    initContent();
-  }
-
-  private void initSummary() {
-    final var header = new HorizontalLayout();
-    header.addClassName("course-widget-header");
-    header.setAlignItems(FlexComponent.Alignment.CENTER);
-    header.setPadding(false);
-    header.setSpacing(true);
-    header.setWidthFull();
-
-    final var title = new Span(getTitle());
-    title.addClassName(LumoUtility.FontWeight.SEMIBOLD);
-
-    final var reporButton = createHeaderButton("Report", VaadinIcon.FILE_TEXT, event -> {
-      final var dialog = new CourseReportDialog(reportServerGate, currentCourse, participantsInCurrentCourse);
-      dialog.open();
-    });
-    final var titleButton = createHeaderButton(getTranslation("participant.edit.participant"), VaadinIcon.COG, event -> {
-      final var dialog = new AssignToCourseDialog(
-              courseService,
-              participantService,
-              mandantSettingService,
-              currentCourse.getId(),
-              participantsInCurrentCourse != null ?
-                      participantsInCurrentCourse.stream().map(ParticipantDto::getId).toList() :
-                      List.of());
-
-      dialog.addClosedListener(e -> refreshGrid());
-      dialog.addDialogCloseActionListener(e -> refreshGrid());
-
-      dialog.open();
-    });
-    final var courseDetailButton = createHeaderButton(Publ.EMPTY_STRING, VaadinIcon.EXTERNAL_LINK, event -> {
-      final var courseDetailDialog = new CourseDetailDialog(
-              courseService,
-              instructorService,
-              courseLevelService,
-              courseScheduleService,
-              participantService,
-              reportServerGate,
-              currentCourse
-      );
-      courseDetailDialog.open();
-    });
-
-    header.add(title, reporButton, titleButton, courseDetailButton);
-    header.setFlexGrow(1, title);
-
-    setSummary(header);
+    build();
   }
 
   @Nonnull
-  private Button createHeaderButton(@Nonnull final String text,
-                                    @Nonnull final VaadinIcon icon,
-                                    @Nonnull final ComponentEventListener<ClickEvent<Button>> listener) {
-    final var button = new Button(text, icon.create());
-    button.addClassName("course-widget-header__button");
-
-    button.getElement()
-            .addEventListener("click", e -> {
-            })
-            .addEventData("event.stopPropagation()");
-    button.addClickListener(listener);
-    return button;
+  @Override
+  protected String getTitleText() {
+    return currentCourse.getTitle();
   }
 
-  private void initContent() {
-    this.participantsGrid = new ParticipantsGrid(participantService,
+  @Override
+  protected void buildHeaderActions(@Nonnull final HorizontalLayout header) {
+    final var reportButton = createHeaderButton("Report", VaadinIcon.FILE_TEXT, e -> {
+      final var dialog = new CourseReportDialog(
+              reportServerGate,
+              currentCourse,
+              participantsInCurrentCourse != null ?
+                      participantsInCurrentCourse :
+                      List.of());
+      dialog.open();
+    });
+
+    final var assignButton = createHeaderButton(getTranslation("participant.edit.participant"),
+            VaadinIcon.COG, e -> {
+              final var dialog = new AssignToCourseDialog(
+                      courseService,
+                      participantService,
+                      mandantSettingService,
+                      currentCourse.getId(),
+                      participantsInCurrentCourse != null
+                              ? participantsInCurrentCourse.stream().map(ParticipantDto::getId).toList()
+                              : List.of()
+              );
+
+              dialog.addClosedListener(ev -> refresh());
+              dialog.addDialogCloseActionListener(ev -> refresh());
+              dialog.open();
+            });
+
+    final var detailButton = createHeaderButton(Publ.EMPTY_STRING,
+            VaadinIcon.EXTERNAL_LINK, e -> {
+              final var courseDetailDialog = new CourseDetailDialog(
+                      courseService,
+                      instructorService,
+                      courseLevelService,
+                      courseScheduleService,
+                      participantService,
+                      reportServerGate,
+                      currentCourse
+              );
+              courseDetailDialog.open();
+            });
+
+    header.add(reportButton, assignButton, detailButton);
+  }
+
+  @Override
+  protected void initContent() {
+    this.participantsGrid = new ParticipantsGrid(
+            participantService,
             courseService,
             courseLevelService,
             reportServerGate,
             false,
             false) {
-
       @Nonnull
       @Override
       protected Stream<ParticipantDto> fetch(@Nonnull final Query<ParticipantDto, ParticipantFilter> query,
@@ -154,27 +131,19 @@ public class CourseWidget extends AccordionPanel {
     };
 
     participantsGrid.getGrid().setAllRowsVisible(true);
-
     add(participantsGrid);
   }
 
-  private void refreshGrid() {
+  @Override
+  protected void refresh() {
     if (participantsGrid == null) {
       return;
     }
 
-    participantsGrid.getGrid()
-            .getDataProvider()
-            .refreshAll();
-
+    participantsGrid.setFilter(participantsGrid.getFilter());
     participantsInCurrentCourse = participantsGrid.getGrid()
             .getDataProvider()
             .fetch(new Query<>())
             .toList();
-  }
-
-  @Nonnull
-  public String getTitle() {
-    return currentCourse.getTitle();
   }
 }

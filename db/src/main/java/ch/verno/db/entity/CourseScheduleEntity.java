@@ -30,13 +30,13 @@ public class CourseScheduleEntity {
   @Column(name = "status", nullable = false, length = 16)
   private CourseScheduleStatus status = CourseScheduleStatus.PLANNED;
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(
           name = "course_schedule_week",
           joinColumns = @JoinColumn(name = "course_schedule_id")
   )
-  @Column(name = "week", nullable = false)
   @OrderColumn(name = "sort_index")
+  @Column(name = "week")
   private List<String> weeks;
 
   protected CourseScheduleEntity() {

@@ -40,6 +40,14 @@ public class SharedSettings extends VABaseSetting<MandantSettingDto> {
             MandantSettingDto::isEnforceCourseLevelSettings,
             MandantSettingDto::setEnforceCourseLevelSettings
     );
+    final var limitCourses = settingEntryFactory.createBooleanSetting(
+            "Limit course assignment to planned or active courses",
+            Optional.of("When enabled, participants can only be assigned to courses that are currently planned or active. Archived, completed, or inactive courses are excluded from selection."),
+            binder,
+            MandantSettingDto::isLimitCourseAssignmentsToActive,
+            MandantSettingDto::setLimitCourseAssignmentsToActive
+    );
+
     final var mainParentSetting = settingEntryFactory.createToggleSetting(
             getTranslation("setting.which.parent.is.the.main.parent"),
             getTranslation("participant.parent_one"),
@@ -50,7 +58,7 @@ public class SharedSettings extends VABaseSetting<MandantSettingDto> {
             MandantSettingDto::setParentOneMainParent
     );
 
-    final var content = new VerticalLayout(enforceQuantityLimits, enforceCourseLevel, mainParentSetting);
+    final var content = new VerticalLayout(enforceQuantityLimits, enforceCourseLevel, limitCourses, mainParentSetting);
     content.setPadding(false);
 
     return content;

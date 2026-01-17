@@ -84,7 +84,16 @@ public class MandantSettingService implements IMandantSettingService {
     return mandantSettingRepository.findAll().stream()
             .findFirst()
             .map(MandantSettingMapper::toDto)
-            .orElse(saveSingleMandantSetting(new MandantSettingDto(1L, 8, 12, false, false, true, "Course Report")));
+            .orElse(saveSingleMandantSetting(
+                    new MandantSettingDto(1L,
+                            8,
+                            12,
+                            false,
+                            false,
+                            true,
+                            "Course Report",
+                            false)
+            ));
   }
 
   @Nonnull

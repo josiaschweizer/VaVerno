@@ -13,9 +13,10 @@ public class MandantSettingDto extends BaseDto {
   private boolean enforceCourseLevelSettings;
   private boolean isParentOneMainParent;
   @Nonnull private String courseReportName;
+  private boolean limitCourseAssignmentsToActive;
 
   public MandantSettingDto() {
-    this(null, Publ.ZERO, Publ.ZERO, false, false, true, Publ.EMPTY_STRING);
+    this(null, Publ.ZERO, Publ.ZERO, false, false, true, Publ.EMPTY_STRING, false);
   }
 
   public MandantSettingDto(@Nullable final Long id,
@@ -24,7 +25,8 @@ public class MandantSettingDto extends BaseDto {
                            final boolean enforceQuantitySettings,
                            final boolean enforceCourseLevelSettings,
                            final boolean isParentOneMainParent,
-                           @Nonnull final String courseReportName) {
+                           @Nonnull final String courseReportName,
+                           final boolean limitCourseAssignmentsToActive) {
     setId(id);
     this.courseDaysPerSchedule = courseDaysPerSchedule;
     this.maxParticipantsPerCourse = maxParticipantsPerCourse;
@@ -32,6 +34,7 @@ public class MandantSettingDto extends BaseDto {
     this.enforceCourseLevelSettings = enforceCourseLevelSettings;
     this.isParentOneMainParent = isParentOneMainParent;
     this.courseReportName = courseReportName;
+    this.limitCourseAssignmentsToActive = limitCourseAssignmentsToActive;
   }
 
   @Nonnull
@@ -83,5 +86,13 @@ public class MandantSettingDto extends BaseDto {
 
   public void setCourseReportName(@Nonnull final String courseReportName) {
     this.courseReportName = courseReportName;
+  }
+
+  public boolean isLimitCourseAssignmentsToActive() {
+    return limitCourseAssignmentsToActive;
+  }
+
+  public void setLimitCourseAssignmentsToActive(final boolean limitCourseAssignmentsToActive) {
+    this.limitCourseAssignmentsToActive = limitCourseAssignmentsToActive;
   }
 }

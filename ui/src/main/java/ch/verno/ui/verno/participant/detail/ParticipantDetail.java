@@ -5,13 +5,14 @@ import ch.verno.common.db.dto.table.CourseDto;
 import ch.verno.common.db.dto.table.CourseLevelDto;
 import ch.verno.common.db.dto.table.GenderDto;
 import ch.verno.common.db.dto.table.ParticipantDto;
+import ch.verno.common.db.enums.CourseScheduleStatus;
 import ch.verno.common.db.service.*;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.badge.VABadgeLabel;
 import ch.verno.ui.base.components.badge.VABadgeLabelOptions;
 import ch.verno.ui.base.components.form.FormMode;
-import ch.verno.ui.base.pages.detail.BaseDetailView;
 import ch.verno.ui.base.factory.BadgeLabelFactory;
+import ch.verno.ui.base.pages.detail.BaseDetailView;
 import ch.verno.ui.lib.Routes;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -35,6 +36,7 @@ import jakarta.annotation.security.PermitAll;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -250,14 +252,21 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             CourseLevelDto::displayName
     );
 
-    final var courses = courseService.getAllCourses();
+    final var courses = new ArrayList<CourseDto>();
+    if (mandantSettingService.getSingleMandantSetting().isLimitCourseAssignmentsToActive()) {
+      courses.addAll(courseService.getCoursesByCourseScheduleStatus(CourseScheduleStatus.PLANNED));
+      courses.addAll(courseService.getCoursesByCourseScheduleStatus(CourseScheduleStatus.ACTIVE));
+    } else {
+      courses.addAll(courseService.getAllCourses());
+    }
+
     final var coursesEntry = entryFactory.createMultiSelectComboBoxEntry(
             ParticipantDto::getCourses,
             ParticipantDto::setCourses,
             getBinder(),
             Optional.empty(),
             getTranslation(getTranslation("course.courses")),
-            courseService.getAllCourses(),
+            courses,
             CourseDto::displayName
     );
 

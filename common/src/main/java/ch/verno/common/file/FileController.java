@@ -1,5 +1,6 @@
-package ch.verno.common.report;
+package ch.verno.common.file;
 
+import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.publ.ApiUrl;
 import jakarta.annotation.Nonnull;
 import org.springframework.core.io.ByteArrayResource;
@@ -10,19 +11,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(ApiUrl.TEMP_FILE_REPORT)
-public class ReportController {
+@RequestMapping(ApiUrl.TEMP_FILE_IMPORT)
+public class FileController {
 
-  @Nonnull private final ReportServerGate reportServerGate;
+  @Nonnull private final FileServerGate fileServerGate;
 
-  public ReportController(@Nonnull ReportServerGate reportServerGate) {
-    this.reportServerGate = reportServerGate;
+  public FileController(@Nonnull VernoApplicationGate vernoApplicationGate) {
+    fileServerGate = vernoApplicationGate.getGate(FileServerGate.class);
   }
 
   @GetMapping(value = "/{token}", produces = MediaType.APPLICATION_PDF_VALUE)
   public ResponseEntity<ByteArrayResource> get(@PathVariable String token,
                                                @RequestParam(defaultValue = "inline") String disposition) {
-    final var reportDto = reportServerGate.loadTempFile(token);
+    final var reportDto = fileServerGate.loadFile(token);
 
     ContentDisposition cd = ContentDisposition
             .builder("attachment".equalsIgnoreCase(disposition) ? "attachment" : "inline")

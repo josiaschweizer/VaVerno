@@ -5,7 +5,9 @@ import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.server.io.importing.dto.DbField;
 import ch.verno.server.io.importing.dto.DbFieldTyped;
 import ch.verno.ui.verno.dashboard.io.widgets.ImportEntityConfig;
+import ch.verno.ui.verno.dashboard.io.widgets.ImportResult;
 import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -33,10 +35,10 @@ public class InstructorImportConfig implements ImportEntityConfig<InstructorDto>
   }
 
   @Override
-  public boolean performImport(@Nonnull final String fileToken,
-                               @Nonnull final Map<String, String> mapping) {
+  public @NonNull ImportResult performImport(@Nonnull final String fileToken,
+                                             @Nonnull final Map<String, String> mapping) {
     // TODO: Implement actual instructor import logic
     // Example: vernoApplicationGate.getService(IInstructorService.class).importFromCsv(fileToken, mapping);
-    return true;
+    return ImportResult.completeSuccessInstance();
   }
 }

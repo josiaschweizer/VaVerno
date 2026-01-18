@@ -5,18 +5,22 @@ import ch.verno.common.db.dto.AddressDto;
 import ch.verno.common.db.dto.ParentDto;
 import ch.verno.common.db.dto.ParticipantDto;
 import ch.verno.common.db.service.IParticipantService;
+import ch.verno.common.file.CsvMapDto;
 import ch.verno.common.file.FileServerGate;
 import ch.verno.common.gate.VernoApplicationGate;
+import ch.verno.publ.Publ;
 import ch.verno.server.io.importing.dto.DbField;
 import ch.verno.server.io.importing.dto.DbFieldNested;
 import ch.verno.server.io.importing.dto.DbFieldTyped;
 import ch.verno.server.mapper.csv.ParticipantCsvMapper;
 import ch.verno.server.service.AddressService;
 import ch.verno.server.service.ParentService;
-import ch.verno.ui.base.components.notification.NotificationFactory;
 import ch.verno.ui.verno.dashboard.io.widgets.ImportEntityConfig;
+import ch.verno.ui.verno.dashboard.io.widgets.ImportResult;
 import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -123,8 +127,8 @@ public class ParticipantImportConfig implements ImportEntityConfig<ParticipantDt
   }
 
   @Override
-  public boolean performImport(@Nonnull final String fileToken,
-                               @Nonnull final Map<String, String> mapping) {
+  public @NonNull ImportResult performImport(@Nonnull final String fileToken,
+                                             @Nonnull final Map<String, String> mapping) {
     final var fileServerGate = vernoApplicationGate.getService(FileServerGate.class);
     final var fileDto = fileServerGate.loadFile(fileToken);
     final var csvRows = fileServerGate.parseRows(fileDto);
@@ -147,10 +151,19 @@ public class ParticipantImportConfig implements ImportEntityConfig<ParticipantDt
     }
 
     if (!result.errors().isEmpty()) {
-      NotificationFactory.showErrorNotification("Bei der Importierung gab es Fehler auf einigen Datensätzen. Diejenigen Datensätze wurden in ein neues File gepackt und ihnen als Download zur Verfügung gestellt.");
+      final var errorCsvRows = new ArrayList<CsvMapDto>();
+      for (final var error : result.errors()) {
+        final var csvRow = csvRows.get(error.rowIndex() - 1);
+        csvRow.row().put("import_error", String.join(Publ.COMMA, error.message()));
+        errorCsvRows.add(csvRow);
+      }
+
+      final var errorFile = fileServerGate.parseRows(errorCsvRows, "participant_import_errors.csv");
+      final var token = fileServerGate.store(errorFile);
+      return ImportResult.partialSuccess(token, errorFile.filename());
     }
 
-    return true;
+    return ImportResult.completeSuccessInstance();
   }
 
   private void processNestedEntities(@Nonnull final ParticipantDto participant) {

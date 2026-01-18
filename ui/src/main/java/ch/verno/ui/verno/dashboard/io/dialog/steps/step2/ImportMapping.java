@@ -7,6 +7,7 @@ import ch.verno.ui.base.components.notification.NotificationFactory;
 import ch.verno.ui.base.dialog.stepdialog.BaseDialogStep;
 import ch.verno.ui.verno.dashboard.io.dto.ImportField;
 import ch.verno.ui.verno.dashboard.io.widgets.ImportEntityConfig;
+import ch.verno.ui.verno.dashboard.io.widgets.ImportResult;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -115,9 +116,9 @@ public class ImportMapping<T> extends BaseDialogStep {
     return panel.getMapping();
   }
 
-  public boolean performImport() {
+  public ImportResult performImport() {
     if (fileToken == null) {
-      return false;
+      return ImportResult.completeFailure();
     }
 
     return entityConfig.performImport(fileToken, getMapping());

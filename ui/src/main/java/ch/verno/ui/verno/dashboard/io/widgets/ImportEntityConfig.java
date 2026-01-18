@@ -20,6 +20,7 @@ public interface ImportEntityConfig<T> {
     return Collections.emptyList();
   }
 
-  boolean performImport(@Nonnull String fileToken, @Nonnull Map<String, String> mapping);
+  @Nonnull
+  ImportResult performImport(@Nonnull String fileToken, @Nonnull Map<String, String> mapping);
 
 }

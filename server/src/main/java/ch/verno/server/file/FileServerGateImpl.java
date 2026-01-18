@@ -21,8 +21,14 @@ public class FileServerGateImpl implements FileServerGate {
 
   @Nonnull
   @Override
-  public String store(final String filename, final byte[] fileBytes) {
+  public String store(final @NonNull String filename, final byte @NonNull [] fileBytes) {
     return fileStorageHandler.storeFileTemporary(filename, fileBytes);
+  }
+
+  @Nonnull
+  @Override
+  public String store(@Nonnull final FileDto file) {
+    return fileStorageHandler.storeFileTemporary(file.filename(), file.pdfBytes());
   }
 
   @Nonnull
@@ -35,6 +41,12 @@ public class FileServerGateImpl implements FileServerGate {
   @Override
   public List<CsvMapDto> parseRows(@NonNull final FileDto fileDto) {
     return CsvImportUtil.parseRows(fileDto.pdfBytes());
+  }
+
+  @NonNull
+  @Override
+  public FileDto parseRows(@NonNull final List<CsvMapDto> rows, @NonNull final String fileName) {
+    return new FileDto(fileName, CsvImportUtil.createFileDtoFromRows(rows));
   }
 
   @Override

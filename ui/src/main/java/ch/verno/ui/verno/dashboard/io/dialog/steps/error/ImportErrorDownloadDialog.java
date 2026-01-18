@@ -1,11 +1,10 @@
-package ch.verno.ui.verno.dashboard.report;
+package ch.verno.ui.verno.dashboard.io.dialog.steps.error;
 
-import ch.verno.common.report.ReportServerGate;
 import ch.verno.publ.ApiUrl;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.dialog.DialogSize;
 import ch.verno.ui.base.dialog.VADialog;
-import ch.verno.ui.base.pdf.PdfPreview;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
@@ -16,33 +15,25 @@ import jakarta.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
-public class ParticipantsReportDialog extends VADialog {
+public class ImportErrorDownloadDialog extends VADialog {
 
-  @Nonnull private final ReportServerGate reportServerGate;
+  @Nonnull private final String errorFileToken;
+  @Nonnull private final String fileName;
 
-  @Nonnull private String reportToken;
+  public ImportErrorDownloadDialog(@Nonnull final String errorFileToken,
+                                   @Nonnull final String fileName) {
+    this.errorFileToken = errorFileToken;
+    this.fileName = fileName;
 
-  public ParticipantsReportDialog(@Nonnull final ReportServerGate reportServerGate) {
-    this.reportServerGate = reportServerGate;
-
-    generateReport();
-    initUI(getTranslation("shared.generate.report"));
-
-    setWidth("80%");
-    setHeight("90%");
-
-    addDetachListener(e -> deleteTempOnServer());
-    addDialogCloseActionListener(e -> deleteTempOnServer());
+    initUI(getTranslation("shared.download"), DialogSize.SMALL);
   }
 
   @Nonnull
   @Override
   protected HorizontalLayout createContent() {
-    final var preview = new PdfPreview(buildInlineUrl(reportToken));
-    preview.applyDefaultStyle();
-
-    final var layout = new HorizontalLayout(preview);
-    layout.setSizeFull();
+    final var text = new Text("Beim Import konnten nicht alle Datensätze erfolgreich verarbeitet werden. Die betroffenen Einträge wurden in einer separaten Datei zusammengefasst und können hier heruntergeladen werden.");
+    final var layout = new HorizontalLayout(text);
+    layout.setWidthFull();
     layout.setPadding(false);
     layout.setSpacing(false);
     return layout;
@@ -56,13 +47,9 @@ public class ParticipantsReportDialog extends VADialog {
     return List.of(cancelButton, downloadButton);
   }
 
-  private void generateReport() {
-    reportToken = reportServerGate.generateParticipantsReport();
-  }
-
   @Nonnull
   private Button createDownloadButton() {
-    final var hidden = new Anchor(buildAttachmentUrl(reportToken), getTranslation("shared.download"));
+    final var hidden = new Anchor(buildAttachmentUrl(errorFileToken), fileName);
     hidden.getElement().setAttribute("download", true);
     hidden.getStyle().setDisplay(Style.Display.NONE);
     add(hidden);
@@ -73,20 +60,12 @@ public class ParticipantsReportDialog extends VADialog {
       hidden.getElement().callJsFunction("click");
       close();
     });
+
     return downloadButton;
-  }
-
-  private void deleteTempOnServer() {
-    reportServerGate.deleteTempFile(reportToken);
-  }
-
-  @Nonnull
-  private String buildInlineUrl(@Nonnull final String token) {
-    return ApiUrl.TEMP_FILE_REPORT + Publ.SLASH + token + ApiUrl.DISPOSITION_INLINE;
   }
 
   @Nonnull
   private String buildAttachmentUrl(@Nonnull final String token) {
-    return ApiUrl.TEMP_FILE_REPORT + Publ.SLASH + token + ApiUrl.DISPOSITION_ATTACHMENT;
+    return ApiUrl.TEMP_FILE_IMPORT + Publ.SLASH + token + ApiUrl.DISPOSITION_ATTACHMENT;
   }
 }

@@ -21,6 +21,11 @@ public class VernoApplicationGate {
   }
 
   @Nonnull
+  public <T> T getGate(@Nonnull final Class<T> serviceClass) {
+    return context.getBean(serviceClass);
+  }
+
+  @Nonnull
   public <T> T getService(@Nonnull final Class<T> serviceClass) {
     return context.getBean(serviceClass);
   }

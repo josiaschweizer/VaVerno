@@ -2,6 +2,7 @@ package ch.verno.ui.verno.dashboard.io.dialog;
 
 import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.ui.verno.dashboard.io.dialog.steps.DialogStepDto;
+import ch.verno.ui.verno.dashboard.io.dialog.steps.error.ImportErrorDownloadDialog;
 import ch.verno.ui.verno.dashboard.io.dialog.steps.step1.ImportFile;
 import ch.verno.ui.verno.dashboard.io.dialog.steps.step2.ImportMapping;
 import ch.verno.ui.verno.dashboard.io.widgets.ImportEntityConfig;
@@ -121,8 +122,15 @@ public class ImportDialog extends Dialog {
 
       if (importMappingStep.isPresent()) {
         final var importMapping = (ImportMapping) importMappingStep.get().content();
-        if (importMapping.performImport()) {
+        final var importResult = importMapping.performImport();
+
+        if (importResult.completeSuccess()) {
           close();
+        } else if (importResult.fileToken() != null && !importResult.fileToken().isBlank()) {
+          final var fileName = importResult.fileName() != null ? importResult.fileName() : "import_errors.csv";
+          final var errorDialog = new ImportErrorDownloadDialog(importResult.fileToken(), fileName);
+          errorDialog.addClosedListener(c -> close());
+          errorDialog.open();
         }
       }
     });

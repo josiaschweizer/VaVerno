@@ -3,7 +3,8 @@ package ch.verno.ui.verno.course.courses.detail;
 import ch.verno.common.db.dto.table.*;
 import ch.verno.common.db.filter.ParticipantFilter;
 import ch.verno.common.db.service.*;
-import ch.verno.common.report.ReportServerGate;
+import ch.verno.common.gate.VernoApplicationGate;
+import ch.verno.server.service.*;
 import ch.verno.ui.base.components.form.FormMode;
 import ch.verno.ui.base.pages.detail.BaseDetailView;
 import ch.verno.ui.lib.Routes;
@@ -31,49 +32,34 @@ import java.util.stream.Stream;
 @Menu(order = 3.11, icon = "vaadin:mobile", title = "course.course.detail")
 public class CourseDetail extends BaseDetailView<CourseDto> implements HasDynamicTitle {
 
+  @Nonnull private final VernoApplicationGate vernoApplicationGate;
   @Nonnull private final ICourseService courseService;
   @Nonnull private final IInstructorService instructorService;
   @Nonnull private final ICourseLevelService courseLevelService;
   @Nonnull private final ICourseScheduleService courseScheduleService;
   @Nonnull private final IParticipantService participantService;
-  @Nonnull private ReportServerGate reportServerGate;
 
 
-  public CourseDetail(@Nonnull final ICourseService courseService,
-                      @Nonnull final IInstructorService instructorService,
-                      @Nonnull final ICourseLevelService courseLevelService,
-                      @Nonnull final ICourseScheduleService courseScheduleService,
-                      @Nonnull final IParticipantService participantService,
-                      @Nonnull final ReportServerGate reportServerGate,
+  public CourseDetail(@Nonnull final VernoApplicationGate vernoApplicationGate,
                       final boolean showHeaderToolbar,
                       final boolean showPaddingAroundDetail) {
-    this(courseService,
-            instructorService,
-            courseLevelService,
-            courseScheduleService,
-            participantService,
-            reportServerGate);
+    this(vernoApplicationGate);
 
     this.setShowHeaderToolbar(showHeaderToolbar);
     this.setShowPaddingAroundDetail(showPaddingAroundDetail);
   }
 
   @Autowired
-  public CourseDetail(@Nonnull final ICourseService courseService,
-                      @Nonnull final IInstructorService instructorService,
-                      @Nonnull final ICourseLevelService courseLevelService,
-                      @Nonnull final ICourseScheduleService courseScheduleService,
-                      @Nonnull final IParticipantService participantService,
-                      @Nonnull final ReportServerGate reportServerGate) {
-    this.courseService = courseService;
-    this.instructorService = instructorService;
-    this.courseLevelService = courseLevelService;
-    this.courseScheduleService = courseScheduleService;
-    this.participantService = participantService;
+  public CourseDetail(@Nonnull final VernoApplicationGate vernoApplicationGate) {
+    this.vernoApplicationGate = vernoApplicationGate;
+    this.courseService = vernoApplicationGate.getService(CourseService.class);
+    this.instructorService = vernoApplicationGate.getService(InstructorService.class);
+    this.courseLevelService = vernoApplicationGate.getService(CourseLevelService.class);
+    this.courseScheduleService = vernoApplicationGate.getService(CourseScheduleService.class);
+    this.participantService = vernoApplicationGate.getService(ParticipantService.class);
 
     this.setShowHeaderToolbar(true);
     this.setShowPaddingAroundDetail(true);
-    this.reportServerGate = reportServerGate;
   }
 
   @Nonnull
@@ -283,7 +269,9 @@ public class CourseDetail extends BaseDetailView<CourseDto> implements HasDynami
     final var title = new Span(getTranslation("course.participants.in.this.course"));
     title.getStyle().setFontWeight("bold");
 
-    final var participantsGrid = new ParticipantsGrid(participantService, courseService, courseLevelService, reportServerGate, false, false) {
+    final var participantsGrid = new ParticipantsGrid(vernoApplicationGate,
+            false,
+            false) {
 
       @Nonnull
       @Override

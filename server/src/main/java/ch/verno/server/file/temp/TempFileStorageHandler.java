@@ -1,6 +1,6 @@
 package ch.verno.server.file.temp;
 
-import ch.verno.common.report.ReportDto;
+import ch.verno.common.file.FileDto;
 import ch.verno.publ.Publ;
 import jakarta.annotation.Nonnull;
 
@@ -51,7 +51,7 @@ public final class TempFileStorageHandler {
   }
 
   @Nonnull
-  public ReportDto load(@Nonnull final String token) {
+  public FileDto load(@Nonnull final String token) {
     final TempFileEntry entry = resolveEntry(token);
 
     if (Instant.now().isAfter(entry.expiresAt())) {
@@ -61,7 +61,7 @@ public final class TempFileStorageHandler {
 
     try {
       final var pdfBytes = Files.readAllBytes(entry.path());
-      return new ReportDto(entry.filename(), pdfBytes);
+      return new FileDto(entry.filename(), pdfBytes);
     } catch (IOException e) {
       throw new RuntimeException("Failed to read temp file: " + entry.path(), e);
     }

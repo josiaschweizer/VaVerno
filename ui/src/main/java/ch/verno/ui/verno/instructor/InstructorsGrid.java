@@ -14,6 +14,7 @@ import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,16 @@ public class InstructorsGrid extends BaseOverviewGrid<InstructorDto, InstructorF
   @Nonnull
   private final IInstructorService instructorService;
 
+  public InstructorsGrid(@Nonnull final IInstructorService instructorService,
+                         final boolean showGridToolbar,
+                         final boolean showFilterToolbar) {
+    super(InstructorFilter.empty(), showGridToolbar, showFilterToolbar);
+    this.instructorService = instructorService;
+  }
+
+  @Autowired
   public InstructorsGrid(@Nonnull final IInstructorService instructorService) {
-    super(InstructorFilter.empty());
+    super(InstructorFilter.empty(), true, true);
     this.instructorService = instructorService;
   }
 

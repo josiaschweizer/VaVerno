@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface SpringDataParticipantJpaRepository extends
         JpaRepository<ParticipantEntity, Long>,
@@ -16,7 +17,7 @@ public interface SpringDataParticipantJpaRepository extends
 
   List<ParticipantEntity> findByCoursesAndActiveTrue(@Nonnull CourseEntity course);
 
-  boolean existsByCourses_Id(@Nonnull Long courseId);
+  Optional<ParticipantEntity> findByEmail(@Nonnull String email);
 
-  long countByCourses_Id(@Nonnull Long courseId);
+  boolean existsByCourses_Id(@Nonnull Long courseId);
 }

@@ -2,7 +2,7 @@ package ch.verno.server.report;
 
 import ch.verno.common.db.dto.table.CourseDto;
 import ch.verno.common.db.dto.table.ParticipantDto;
-import ch.verno.common.report.ReportDto;
+import ch.verno.common.file.FileDto;
 import ch.verno.common.report.ReportServerGate;
 import ch.verno.server.file.FileStorageHandler;
 import ch.verno.server.report.course.CourseReportUseCase;
@@ -44,7 +44,7 @@ public class ReportServerGateImpl implements ReportServerGate {
 
   @Nonnull
   @Override
-  public ReportDto loadTempFile(@Nonnull final String token) {
+  public FileDto loadTempFile(@Nonnull final String token) {
     return fileStorageHandler.loadTemporaryFile(token);
   }
 

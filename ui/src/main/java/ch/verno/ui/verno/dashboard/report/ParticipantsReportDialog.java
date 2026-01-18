@@ -3,6 +3,7 @@ package ch.verno.ui.verno.dashboard.report;
 import ch.verno.common.report.ReportServerGate;
 import ch.verno.publ.ApiUrl;
 import ch.verno.publ.Publ;
+import ch.verno.ui.base.dialog.DialogSize;
 import ch.verno.ui.base.dialog.VADialog;
 import ch.verno.ui.base.pdf.PdfPreview;
 import com.vaadin.flow.component.button.Button;

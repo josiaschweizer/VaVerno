@@ -41,7 +41,7 @@ public class AddressService implements IAddressService {
   @Nonnull
   @Override
   public AddressDto updateAddress(@Nonnull final AddressDto addressDto) {
-    return null;
+    throw new UnsupportedOperationException("Update address not yet implemented");
   }
 
   @Nonnull
@@ -62,5 +62,23 @@ public class AddressService implements IAddressService {
             .stream()
             .map(AddressMapper::toDto)
             .toList();
+  }
+
+  @Nonnull
+  public AddressDto findOrCreateAddress(@Nonnull final AddressDto addressDto) {
+    final var street = ServiceHelper.safeString(addressDto.getStreet());
+    final var houseNumber = ServiceHelper.safeString(addressDto.getHouseNumber());
+    final var zipCode = ServiceHelper.safeString(addressDto.getZipCode());
+    final var city = ServiceHelper.safeString(addressDto.getCity());
+    final var country = ServiceHelper.safeString(addressDto.getCountry());
+
+    final var existing = addressRepository.findByFields(street, houseNumber, zipCode, city, country);
+    if (existing.isPresent()) {
+      return AddressMapper.toDto(existing.get());
+    }
+
+    final var entity = new AddressEntity(street, houseNumber, zipCode, city, country);
+    final var saved = addressRepository.save(entity);
+    return AddressMapper.toDto(saved);
   }
 }

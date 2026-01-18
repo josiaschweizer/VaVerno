@@ -12,10 +12,15 @@ import java.util.Collection;
 public abstract class VADialog extends Dialog {
 
   protected void initUI(@Nonnull final String title) {
-    setHeight("90vh");
-    setWidth("min(1500px, 95vw)");
-    setMaxWidth("1500px");
-    setMinWidth("320px");
+    initUI(title, DialogSize.BIG);
+  }
+
+  protected void initUI(@Nonnull final String title,
+                        @Nonnull final DialogSize dialogSize) {
+    setHeight(dialogSize.getHeight());
+    setWidth(dialogSize.getWidth());
+    setMaxWidth(dialogSize.getMaxWidth());
+    setMinWidth(dialogSize.getMinWidth());
 
     setHeaderTitle(title);
     add(createContent());

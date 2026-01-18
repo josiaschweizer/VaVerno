@@ -1,8 +1,7 @@
 package ch.verno.ui.verno.dashboard.course;
 
 import ch.verno.common.db.dto.table.CourseDto;
-import ch.verno.common.db.service.*;
-import ch.verno.common.report.ReportServerGate;
+import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.ui.verno.course.courses.detail.CourseDetail;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -10,27 +9,12 @@ import jakarta.annotation.Nonnull;
 
 public class CourseDetailDialog extends Dialog {
 
-  @Nonnull private final ICourseService courseService;
-  @Nonnull private final IInstructorService instructorService;
-  @Nonnull private final ICourseLevelService courseLevelService;
-  @Nonnull private final ICourseScheduleService courseScheduleService;
-  @Nonnull private final IParticipantService participantService;
-  @Nonnull private final ReportServerGate reportServerGate;
+  @Nonnull private final VernoApplicationGate vernoApplicationGate;
   @Nonnull private final CourseDto currentCourse;
 
-  public CourseDetailDialog(@Nonnull final ICourseService courseService,
-                            @Nonnull final IInstructorService instructorService,
-                            @Nonnull final ICourseLevelService courseLevelService,
-                            @Nonnull final ICourseScheduleService courseScheduleService,
-                            @Nonnull final IParticipantService participantService,
-                            @Nonnull final ReportServerGate reportServerGate,
+  public CourseDetailDialog(@Nonnull final VernoApplicationGate vernoApplicationGate,
                             @Nonnull final CourseDto currentCourse) {
-    this.courseService = courseService;
-    this.instructorService = instructorService;
-    this.courseLevelService = courseLevelService;
-    this.courseScheduleService = courseScheduleService;
-    this.participantService = participantService;
-    this.reportServerGate = reportServerGate;
+    this.vernoApplicationGate = vernoApplicationGate;
     this.currentCourse = currentCourse;
 
     initUI();
@@ -50,13 +34,7 @@ public class CourseDetailDialog extends Dialog {
 
   @Nonnull
   private VerticalLayout createCourseDetail() {
-    final var courseDetail = new CourseDetail(
-            courseService,
-            instructorService,
-            courseLevelService,
-            courseScheduleService,
-            participantService,
-            reportServerGate,
+    final var courseDetail = new CourseDetail(vernoApplicationGate,
             false,
             false);
     courseDetail.setParameter(null, currentCourse.getId());

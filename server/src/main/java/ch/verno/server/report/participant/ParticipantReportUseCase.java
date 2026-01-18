@@ -1,13 +1,12 @@
 package ch.verno.server.report.participant;
 
 import ch.verno.common.db.dto.table.ParticipantDto;
-import ch.verno.common.report.ReportDto;
+import ch.verno.common.file.FileDto;
 import ch.verno.report.dto.ParticipantListReportDto;
 import ch.verno.report.dto.ParticipantReportDto;
 import ch.verno.server.report.base.usecase.BaseListReportUseCase;
 import ch.verno.server.service.ParticipantService;
 import jakarta.annotation.Nonnull;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,13 +24,13 @@ public class ParticipantReportUseCase implements BaseListReportUseCase<Participa
     this.reportRenderer = participantReportRenderer;
   }
 
-  public ReportDto generate() {
+  public FileDto generate() {
     final var participants = participantService.getAllParticipants();
     return generate(participants);
   }
 
   @Override
-  public ReportDto generate(@NonNull final List<ParticipantDto> dtos) {
+  public FileDto generate(@Nonnull final List<ParticipantDto> dtos) {
     final var dtoList = new ArrayList<ParticipantReportDto>();
     for (final var dto : dtos) {
       dtoList.add(ParticipantReportMapper.map(dto));
@@ -42,6 +41,6 @@ public class ParticipantReportUseCase implements BaseListReportUseCase<Participa
     final var filename = "participant_list_report.pdf";
     final var pdfBytes = reportRenderer.renderReportPdf(reportData);
 
-    return new ReportDto(filename, pdfBytes);
+    return new FileDto(filename, pdfBytes);
   }
 }

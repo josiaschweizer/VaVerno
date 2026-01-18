@@ -32,4 +32,14 @@ public class ParentRepository {
   public ParentEntity save(@Nonnull final ParentEntity entity) {
     return springDataParentJpaRepository.save(entity);
   }
+
+  @Nonnull
+  public Optional<ParentEntity> findByFields(@Nonnull final String firstname,
+                                              @Nonnull final String lastname,
+                                              @Nonnull final String email,
+                                              @Nonnull final String phone) {
+    return springDataParentJpaRepository.findByFirstnameAndLastnameAndEmailAndPhone(
+            firstname, lastname, email, phone
+    );
+  }
 }

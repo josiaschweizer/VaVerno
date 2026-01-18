@@ -22,7 +22,6 @@ public class ReportController {
   @GetMapping(value = "/{token}", produces = MediaType.APPLICATION_PDF_VALUE)
   public ResponseEntity<ByteArrayResource> get(@PathVariable String token,
                                                @RequestParam(defaultValue = "inline") String disposition) {
-
     final var reportDto = reportServerGate.loadTempFile(token);
 
     ContentDisposition cd = ContentDisposition

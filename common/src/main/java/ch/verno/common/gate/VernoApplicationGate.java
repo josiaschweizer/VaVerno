@@ -6,18 +6,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VernoServerGate {
+public class VernoApplicationGate {
 
   private static ApplicationContext context;
 
   @Autowired
-  public VernoServerGate(@Nonnull final ApplicationContext applicationContext) {
+  public VernoApplicationGate(@Nonnull final ApplicationContext applicationContext) {
     context = applicationContext;
   }
 
   @Nonnull
-  public static VernoServerGate getInstance() {
-    return context.getBean(VernoServerGate.class);
+  public static VernoApplicationGate getInstance() {
+    return context.getBean(VernoApplicationGate.class);
   }
 
   @Nonnull

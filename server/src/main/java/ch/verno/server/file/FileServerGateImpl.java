@@ -1,6 +1,7 @@
 package ch.verno.server.file;
 
 import ch.verno.common.file.FileServerGate;
+import ch.verno.common.file.FileDto;
 import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,12 @@ public class FileServerGateImpl implements FileServerGate {
   @Override
   public String store(final String filename, final byte[] fileBytes) {
     return fileStorageHandler.storeFileTemporary(filename, fileBytes);
+  }
+
+  @Nonnull
+  @Override
+  public FileDto loadFile(@Nonnull final String token) {
+    return fileStorageHandler.getFileByToken(token);
   }
 
   @Override

@@ -1,7 +1,7 @@
-package ch.verno.ui.verno.dashboard.io.widgets;
+package ch.verno.ui.verno.dashboard.io.widgets.instructor;
 
 import ch.verno.common.db.service.IInstructorService;
-import ch.verno.common.gate.VernoServerGate;
+import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.notification.NotificationFactory;
 import ch.verno.ui.base.components.widget.VAAccordionWidgetBase;
@@ -14,12 +14,12 @@ import org.jspecify.annotations.NonNull;
 
 public class InstructorWidget extends VAAccordionWidgetBase {
 
-  @Nonnull private final VernoServerGate vernoServerGate;
+  @Nonnull private final VernoApplicationGate vernoApplicationGate;
   @Nonnull private final IInstructorService instructorService;
 
-  public InstructorWidget(@Nonnull final VernoServerGate vernoServerGate) {
-    this.vernoServerGate = vernoServerGate;
-    this.instructorService = vernoServerGate.getService(IInstructorService.class);
+  public InstructorWidget(@Nonnull final VernoApplicationGate vernoApplicationGate) {
+    this.vernoApplicationGate = vernoApplicationGate;
+    this.instructorService = vernoApplicationGate.getService(IInstructorService.class);
 
     build();
   }
@@ -36,7 +36,12 @@ public class InstructorWidget extends VAAccordionWidgetBase {
             getTranslation("shared.import"),
             VaadinIcon.DOWNLOAD,
             e -> {
-              final var importDialog = new ImportDialog(vernoServerGate, getTranslation("shared.import") + Publ.SPACE + getTranslation("shared.instructor"));
+              final var config = new InstructorImportConfig(vernoApplicationGate);
+              final var importDialog = new ImportDialog(
+                      vernoApplicationGate,
+                      getTranslation("shared.import") + Publ.SPACE + getTranslation("shared.instructor"),
+                      config
+              );
               importDialog.open();
             });
     final var exportButton = createHeaderButton(

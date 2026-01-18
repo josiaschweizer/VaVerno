@@ -4,7 +4,7 @@ import ch.verno.common.db.dto.CourseDto;
 import ch.verno.common.db.dto.ParticipantDto;
 import ch.verno.common.db.service.IMandantSettingService;
 import ch.verno.common.db.service.IParticipantService;
-import ch.verno.common.report.ReportDto;
+import ch.verno.common.file.FileDto;
 import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Service;
 
@@ -28,21 +28,21 @@ public class CourseReportUseCase {
   }
 
   @Nonnull
-  public ReportDto generate(@Nonnull final CourseDto course) {
+  public FileDto generate(@Nonnull final CourseDto course) {
     final var participants = participantService.findParticipantsByCourse(course);
     return generate(course, participants);
   }
 
   @Nonnull
-  public ReportDto generate(@Nonnull final CourseDto course,
-                            @Nonnull final List<ParticipantDto> participants) {
+  public FileDto generate(@Nonnull final CourseDto course,
+                          @Nonnull final List<ParticipantDto> participants) {
     final var courseDates = new ArrayList<LocalDate>(); //todo liste ergänzen -> auflösen nach course & course schedule
     final var reportData = CourseReportMapper.map(course, participants, courseDates);
 
     final var prefix = mandantSettingService.getSingleMandantSetting().getCourseReportName();
     final var filename = prefix.toLowerCase() + course.getTitle().toLowerCase() + ".pdf";
     final var pdfBytes = courseReportRenderer.renderReportPdf(reportData);
-    return new ReportDto(filename, pdfBytes);
+    return new FileDto(filename, pdfBytes);
   }
 
 }

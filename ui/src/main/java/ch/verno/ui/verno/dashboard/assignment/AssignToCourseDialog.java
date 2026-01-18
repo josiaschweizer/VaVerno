@@ -6,7 +6,7 @@ import ch.verno.common.db.dto.ParticipantDto;
 import ch.verno.common.db.service.ICourseService;
 import ch.verno.common.db.service.IMandantSettingService;
 import ch.verno.common.db.service.IParticipantService;
-import ch.verno.common.gate.VernoServerGate;
+import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.publ.Publ;
 import ch.verno.server.service.CourseService;
 import ch.verno.server.service.MandantSettingService;
@@ -63,16 +63,16 @@ public class AssignToCourseDialog extends VADialog {
 
   private boolean suppressSelectionSync;
 
-  public AssignToCourseDialog(@Nonnull final VernoServerGate vernoServerGate) {
-    this(vernoServerGate, null, List.of());
+  public AssignToCourseDialog(@Nonnull final VernoApplicationGate vernoApplicationGate) {
+    this(vernoApplicationGate, null, List.of());
   }
 
-  public AssignToCourseDialog(@Nonnull final VernoServerGate vernoServerGate,
+  public AssignToCourseDialog(@Nonnull final VernoApplicationGate vernoApplicationGate,
                               @Nullable final Long preSelectedCourseId,
                               @Nonnull final List<Long> preSelectedParticipantIds) {
-    this.courseService = vernoServerGate.getService(CourseService.class);
-    this.participantService = vernoServerGate.getService(ParticipantService.class);
-    this.mandantSettingService = vernoServerGate.getService(MandantSettingService.class);
+    this.courseService = vernoApplicationGate.getService(CourseService.class);
+    this.participantService = vernoApplicationGate.getService(ParticipantService.class);
+    this.mandantSettingService = vernoApplicationGate.getService(MandantSettingService.class);
     this.preSelectedCourseId = preSelectedCourseId;
 
     this.selectedParticipantIds = new LinkedHashSet<>(preSelectedParticipantIds);

@@ -3,12 +3,22 @@ package ch.verno.ui.verno.dashboard.io.dialog.steps.step2;
 
 import ch.verno.ui.base.components.mapping.VABaseColumnMappingPanel;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImportColumnMappingPanel extends VABaseColumnMappingPanel<ImportColumnMappingPanel.DbField> {
 
-  public record DbField(@Nonnull String key, @Nonnull String label) {
+  private final List<Runnable> validationChangeListeners;
+
+  public record DbField(@Nonnull String key,
+                        @Nonnull String label,
+                        boolean required) {
+
+    public DbField(@Nonnull String key, @Nonnull String label) {
+      this(key, label, false);
+    }
   }
 
   public ImportColumnMappingPanel(@Nonnull final List<String> csvColumns,
@@ -16,15 +26,10 @@ public class ImportColumnMappingPanel extends VABaseColumnMappingPanel<ImportCol
     super(
             csvColumns,
             dbFields,
-            false,
-            "Ignorieren"
+            true,
+            "shared.ignorieren"
     );
-  }
-
-  @Nonnull
-  @Override
-  protected String getTargetHeader() {
-    return "Map to DB field";
+    validationChangeListeners = new ArrayList<>();
   }
 
   @Nonnull
@@ -37,5 +42,21 @@ public class ImportColumnMappingPanel extends VABaseColumnMappingPanel<ImportCol
   @Override
   protected String getFieldLabel(@Nonnull final DbField field) {
     return field.label();
+  }
+
+  @Override
+  protected void onMappingChanged(@Nonnull final String csvColumn,
+                                  @Nullable final String oldFieldKey,
+                                  @Nullable final String newFieldKey) {
+    super.onMappingChanged(csvColumn, oldFieldKey, newFieldKey);
+    notifyValidationChangeListeners();
+  }
+
+  public void addValidationChangeListener(@Nonnull final Runnable listener) {
+    validationChangeListeners.add(listener);
+  }
+
+  private void notifyValidationChangeListeners() {
+    validationChangeListeners.forEach(Runnable::run);
   }
 }

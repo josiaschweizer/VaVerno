@@ -2,21 +2,21 @@ package ch.verno.ui.verno.dashboard.course;
 
 import ch.verno.common.db.enums.CourseScheduleStatus;
 import ch.verno.common.db.service.ICourseService;
-import ch.verno.common.gate.VernoServerGate;
+import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.ui.base.Refreshable;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import jakarta.annotation.Nonnull;
 
 public class CourseWidgetGroup extends VerticalLayout implements Refreshable {
 
-  @Nonnull private final VernoServerGate vernoServerGate;
+  @Nonnull private final VernoApplicationGate vernoApplicationGate;
   @Nonnull private final CourseScheduleStatus status;
   private final ICourseService courseService;
 
-  public CourseWidgetGroup(@Nonnull final VernoServerGate vernoServerGate,
+  public CourseWidgetGroup(@Nonnull final VernoApplicationGate vernoApplicationGate,
                            @Nonnull final CourseScheduleStatus status) {
-    this.vernoServerGate = vernoServerGate;
-    this.courseService = vernoServerGate.getService(ICourseService.class);
+    this.vernoApplicationGate = vernoApplicationGate;
+    this.courseService = vernoApplicationGate.getService(ICourseService.class);
     this.status = status;
 
     setPadding(false);
@@ -32,7 +32,7 @@ public class CourseWidgetGroup extends VerticalLayout implements Refreshable {
 
     for (final var course : courses) {
       if (course.getId() != null) {
-        add(new CourseWidget(course.getId(), vernoServerGate));
+        add(new CourseWidget(course.getId(), vernoApplicationGate));
       }
     }
   }

@@ -2,6 +2,7 @@ package ch.verno.common.report;
 
 import ch.verno.common.db.dto.CourseDto;
 import ch.verno.common.db.dto.ParticipantDto;
+import ch.verno.common.file.FileDto;
 import jakarta.annotation.Nonnull;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface ReportServerGate {
 
   String generateParticipantsReport();
 
-  ReportDto loadTempFile(@Nonnull String token);
+  FileDto loadTempFile(@Nonnull String token);
 
   void deleteTempFile(@Nonnull String token);
 

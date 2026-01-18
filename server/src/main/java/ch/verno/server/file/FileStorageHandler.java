@@ -1,6 +1,6 @@
 package ch.verno.server.file;
 
-import ch.verno.common.report.ReportDto;
+import ch.verno.common.file.FileDto;
 import ch.verno.server.file.temp.TempFileStorageHandler;
 import jakarta.annotation.Nonnull;
 
@@ -19,7 +19,12 @@ public class FileStorageHandler {
   }
 
   @Nonnull
-  public ReportDto loadTemporaryFile(@Nonnull final String token) {
+  public FileDto getFileByToken(@Nonnull final String token) {
+    return tempFileStorageHandler.load(token);
+  }
+
+  @Nonnull
+  public FileDto loadTemporaryFile(@Nonnull final String token) {
     return tempFileStorageHandler.load(token);
   }
 

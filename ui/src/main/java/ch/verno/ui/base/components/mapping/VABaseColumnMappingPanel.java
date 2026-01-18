@@ -29,11 +29,11 @@ public abstract class VABaseColumnMappingPanel<TField> extends Composite<Div> {
   protected VABaseColumnMappingPanel(@Nonnull final List<String> csvColumns,
                                      @Nonnull final List<TField> availableFields,
                                      final boolean allowDuplicates,
-                                     @Nonnull final String ignoreLabel) {
+                                     @Nonnull final String ignoreLabelKey) {
     this.selectionByCsvColumn = new LinkedHashMap<>();
 
     this.allowDuplicates = allowDuplicates;
-    this.ignoreLabel = ignoreLabel;
+    this.ignoreLabel = getTranslation(ignoreLabelKey);
 
     final var rows = csvColumns.stream()
             .filter(Objects::nonNull)
@@ -152,12 +152,12 @@ public abstract class VABaseColumnMappingPanel<TField> extends Composite<Div> {
 
   @Nonnull
   protected String getCsvColumnHeader() {
-    return "CSV-Spalte";
+    return getTranslation("shared.csv.spalte");
   }
 
   @Nonnull
   protected String getTargetHeader() {
-    return "Map to";
+    return getTranslation("shared.map.to.db.field");
   }
 
   @Nonnull

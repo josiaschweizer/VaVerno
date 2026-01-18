@@ -1,23 +1,17 @@
 package ch.verno.ui.verno.dashboard.io;
 
-import ch.verno.common.gate.VernoServerGate;
-import ch.verno.common.db.service.ICourseLevelService;
-import ch.verno.common.db.service.ICourseService;
-import ch.verno.common.db.service.IInstructorService;
-import ch.verno.common.db.service.IParticipantService;
-import ch.verno.common.file.FileServerGate;
-import ch.verno.common.report.ReportServerGate;
-import ch.verno.ui.verno.dashboard.io.widgets.InstructorWidget;
-import ch.verno.ui.verno.dashboard.io.widgets.ParticipantWidget;
+import ch.verno.common.gate.VernoApplicationGate;
+import ch.verno.ui.verno.dashboard.io.widgets.instructor.InstructorWidget;
+import ch.verno.ui.verno.dashboard.io.widgets.participant.ParticipantWidget;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import jakarta.annotation.Nonnull;
 
 public class ImportExportWidgetGroup extends VerticalLayout {
 
-  @Nonnull private final VernoServerGate vernoServerGate;
+  @Nonnull private final VernoApplicationGate vernoApplicationGate;
 
-  public ImportExportWidgetGroup(@Nonnull final VernoServerGate vernoServerGate) {
-    this.vernoServerGate = vernoServerGate;
+  public ImportExportWidgetGroup(@Nonnull final VernoApplicationGate vernoApplicationGate) {
+    this.vernoApplicationGate = vernoApplicationGate;
 
     setPadding(false);
     setMargin(false);
@@ -29,8 +23,8 @@ public class ImportExportWidgetGroup extends VerticalLayout {
 
 
   private void initUI() {
-    final var participant = new ParticipantWidget(vernoServerGate);
-    final var instructorWidget = new InstructorWidget(vernoServerGate);
+    final var participant = new ParticipantWidget(vernoApplicationGate);
+    final var instructorWidget = new InstructorWidget(vernoApplicationGate);
 
     add(participant, instructorWidget);
   }

@@ -16,6 +16,8 @@ import java.io.InputStream;
 @CssImport("./components/upload/va-file-upload.css")
 public class VAFileUpload extends VerticalLayout {
 
+  //TODO ANZEIGE AUF UI FUNKTIONIERT NICHT WIRKLCIH - FILE WIRD NACH DRAG & DROP ANGEZEIGT, HELP-TEXT NICHT & DRAUF CLICKEN FUNKTIONIERT AUCH NICHT RICHTIG
+
   @Nonnull
   private final FileServerGate fileServerGate;
 
@@ -134,6 +136,19 @@ public class VAFileUpload extends VerticalLayout {
   public void cleanup() {
     deleteTempIfPresent();
     resetUI();
+  }
+
+  public void refreshUI() {
+    if (hasFile() && originalFileName != null) {
+      dropArea.removeAll();
+      dropArea.add(
+              new Span("Datei ausgewählt"),
+              new Div(new Text(originalFileName + " (" + sizeBytes + " bytes)")),
+              new Span("Klicken oder neue Datei ziehen zum Ersetzen")
+      );
+    } else {
+      resetUI();
+    }
   }
 
   private void resetUI() {

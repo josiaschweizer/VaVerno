@@ -1,9 +1,10 @@
 package ch.verno.ui.verno.dashboard.io.dialog;
 
-import ch.verno.common.gate.VernoServerGate;
+import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.ui.verno.dashboard.io.dialog.steps.DialogStepDto;
 import ch.verno.ui.verno.dashboard.io.dialog.steps.step1.ImportFile;
 import ch.verno.ui.verno.dashboard.io.dialog.steps.step2.ImportMapping;
+import ch.verno.ui.verno.dashboard.io.widgets.ImportEntityConfig;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -17,21 +18,29 @@ import java.util.List;
 
 public class ImportDialog extends Dialog {
 
-  @Nullable private HorizontalLayout contentLayout;
-
   @Nonnull private final List<DialogStepDto> steps;
+
+  @Nullable private HorizontalLayout contentLayout;
   @Nullable private Button forwardButton;
   @Nullable private Button finishButton;
+  @Nullable private Button backButton;
 
   private DialogStep currentStep;
 
-  public ImportDialog(@Nonnull final VernoServerGate vernoServerGate,
-                      @Nonnull final String dialogTitle) {
+  public ImportDialog(@Nonnull final VernoApplicationGate vernoApplicationGate,
+                      @Nonnull final String dialogTitle,
+                      @Nonnull final ImportEntityConfig entityConfig) {
     steps = new ArrayList<>();
     currentStep = DialogStep.ZERO;
 
-    steps.add(new DialogStepDto(DialogStep.ONE, new ImportFile(vernoServerGate)));
-    steps.add(new DialogStepDto(DialogStep.TWO, new ImportMapping(vernoServerGate)));
+    final var importFileStep = new ImportFile(vernoApplicationGate);
+    final var importMappingStep = new ImportMapping(vernoApplicationGate, entityConfig);
+
+    importFileStep.setOnFileUploadedListener(this::updateButtonVisibility);
+    importMappingStep.setOnValidationChangedListener(this::updateButtonVisibility);
+
+    steps.add(new DialogStepDto(DialogStep.ONE, importFileStep));
+    steps.add(new DialogStepDto(DialogStep.TWO, importMappingStep));
 
     initUI(dialogTitle);
   }
@@ -60,26 +69,75 @@ public class ImportDialog extends Dialog {
   }
 
 
-  @NonNull
+  @Nonnull
   protected Collection<Button> createActionButtons() {
     final var cancelButton = new Button(getTranslation("shared.cancel"), e -> close());
+
+//    backButton = new Button(getTranslation("shared.back"), e -> {
+//      if (contentLayout == null) {
+//        return;
+//      }
+//
+//      final var previousStep = DialogStep.addSteps(currentStep, -1);
+//      if (previousStep.getStepNumber() > 0) {
+//        updateContentByStep(previousStep, contentLayout);
+//      }
+//    });
+
     forwardButton = new Button(getTranslation("shared.forward"), e -> {
       if (contentLayout == null) {
         return;
       }
 
-      updateContentByStep(DialogStep.addSteps(currentStep, 1), contentLayout);
+      final var nextStep = DialogStep.addSteps(currentStep, 1);
+
+      if (currentStep == DialogStep.ONE && nextStep == DialogStep.TWO) {
+        final var importFileStep = steps.stream()
+                .filter(s -> s.step() == DialogStep.ONE)
+                .findFirst();
+
+        final var importMappingStep = steps.stream()
+                .filter(s -> s.step() == DialogStep.TWO)
+                .findFirst();
+
+        if (importFileStep.isPresent() && importMappingStep.isPresent()) {
+          final var importFile = (ImportFile) importFileStep.get().content();
+          final var importMapping = (ImportMapping) importMappingStep.get().content();
+
+          if (importFile.hasFile()) {
+            final var fileToken = importFile.getTempToken();
+            importMapping.setFileToken(fileToken);
+          }
+        }
+      }
+
+      updateContentByStep(nextStep, contentLayout);
     });
-    finishButton = new Button(getTranslation("shared.finish"), e -> close());
+
+    finishButton = new Button(getTranslation("shared.finish"), e -> {
+      final var importMappingStep = steps.stream()
+              .filter(s -> s.step() == DialogStep.TWO)
+              .findFirst();
+
+      if (importMappingStep.isPresent()) {
+        final var importMapping = (ImportMapping) importMappingStep.get().content();
+        if (importMapping.performImport()) {
+          close();
+        }
+      }
+    });
+
     updateButtonVisibility();
 
     return List.of(cancelButton, forwardButton, finishButton);
   }
 
   private void updateButtonVisibility() {
-    if (forwardButton == null || finishButton == null) {
+    if (forwardButton == null || finishButton == null || backButton == null) {
       return;
     }
+
+    backButton.setVisible(currentStep.getStepNumber() > 1);
 
     if (currentStep.getStepNumber() == steps.size()) {
       forwardButton.setVisible(false);
@@ -88,6 +146,17 @@ public class ImportDialog extends Dialog {
       forwardButton.setVisible(true);
       finishButton.setVisible(false);
     }
+
+    final var first = steps.stream()
+            .filter(s -> s.step() == currentStep)
+            .findFirst();
+    if (first.isEmpty()) {
+      return;
+    }
+
+    final var content = first.get().content();
+    forwardButton.setEnabled(content.isValid());
+    finishButton.setEnabled(content.isValid());
   }
 
   protected void updateContentByStep(@Nonnull final DialogStep stepIndex,
@@ -105,6 +174,9 @@ public class ImportDialog extends Dialog {
     contentLayout.removeAll();
     contentLayout.add(content);
     contentLayout.expand(content);
+    content.onBecomeVisible();
+
+    updateButtonVisibility();
   }
 
   private void updateHeaderTitle(@NonNull final String title) {

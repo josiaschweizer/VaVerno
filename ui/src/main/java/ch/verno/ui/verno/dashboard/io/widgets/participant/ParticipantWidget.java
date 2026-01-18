@@ -1,6 +1,6 @@
-package ch.verno.ui.verno.dashboard.io.widgets;
+package ch.verno.ui.verno.dashboard.io.widgets.participant;
 
-import ch.verno.common.gate.VernoServerGate;
+import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.notification.NotificationFactory;
 import ch.verno.ui.base.components.widget.VAAccordionWidgetBase;
@@ -13,11 +13,11 @@ import org.jspecify.annotations.NonNull;
 
 public class ParticipantWidget extends VAAccordionWidgetBase {
 
-  @Nonnull private final VernoServerGate vernoServerGate;
+  @Nonnull private final VernoApplicationGate vernoApplicationGate;
 
-  public ParticipantWidget(@Nonnull final VernoServerGate vernoServerGate) {
+  public ParticipantWidget(@Nonnull final VernoApplicationGate vernoApplicationGate) {
     super();
-    this.vernoServerGate = vernoServerGate;
+    this.vernoApplicationGate = vernoApplicationGate;
 
     build();
   }
@@ -34,7 +34,12 @@ public class ParticipantWidget extends VAAccordionWidgetBase {
             getTranslation("shared.import"),
             VaadinIcon.DOWNLOAD,
             e -> {
-              final var importDialog = new ImportDialog(vernoServerGate, getTranslation("shared.import") + Publ.SPACE + getTranslation("participant.participant"));
+              final var config = new ParticipantImportConfig(vernoApplicationGate);
+              final var importDialog = new ImportDialog(
+                      vernoApplicationGate,
+                      getTranslation("shared.import") + Publ.SPACE + getTranslation("participant.participant"),
+                      config
+              );
               importDialog.open();
             });
     final var exportButton = createHeaderButton(
@@ -47,7 +52,7 @@ public class ParticipantWidget extends VAAccordionWidgetBase {
 
   @Override
   protected void initContent() {
-    final var participantsGrid = new ParticipantsGrid(vernoServerGate,
+    final var participantsGrid = new ParticipantsGrid(vernoApplicationGate,
             false,
             false);
     participantsGrid.getGrid().setAllRowsVisible(true);

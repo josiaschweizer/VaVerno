@@ -1,9 +1,9 @@
 package ch.verno.server.report.base.usecase;
 
-import ch.verno.common.report.ReportDto;
+import ch.verno.common.file.FileDto;
 
 public interface BaseReportUseCase {
 
-  ReportDto generate();
+  FileDto generate();
 
 }

@@ -8,7 +8,7 @@ import ch.verno.common.db.filter.ParticipantFilter;
 import ch.verno.common.db.service.ICourseLevelService;
 import ch.verno.common.db.service.ICourseService;
 import ch.verno.common.db.service.IParticipantService;
-import ch.verno.common.gate.VernoServerGate;
+import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.common.report.ReportServerGate;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.toolbar.ViewToolbar;
@@ -47,15 +47,15 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
   @Nonnull private final ICourseLevelService courseLevelService;
   @Nonnull private final ReportServerGate reportServerGate;
 
-  public ParticipantsGrid(@Nonnull final VernoServerGate vernoServerGate,
+  public ParticipantsGrid(@Nonnull final VernoApplicationGate vernoApplicationGate,
                           final boolean showGridToolbar,
                           final boolean showFilterToolbar) {
     super(ParticipantFilter.empty(), showGridToolbar, showFilterToolbar);
 
-    this.participantService = vernoServerGate.getService(IParticipantService.class);
-    this.courseService = vernoServerGate.getService(ICourseService.class);
-    this.courseLevelService = vernoServerGate.getService(ICourseLevelService.class);
-    this.reportServerGate = vernoServerGate.getService(ReportServerGate.class);
+    this.participantService = vernoApplicationGate.getService(IParticipantService.class);
+    this.courseService = vernoApplicationGate.getService(ICourseService.class);
+    this.courseLevelService = vernoApplicationGate.getService(ICourseLevelService.class);
+    this.reportServerGate = vernoApplicationGate.getService(ReportServerGate.class);
   }
 
   @Autowired

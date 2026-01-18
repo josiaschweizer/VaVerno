@@ -33,4 +33,15 @@ public class AddressRepository {
   public AddressEntity save(@Nonnull final AddressEntity entity) {
     return springDataAddressJpaRepository.save(entity);
   }
+
+  @Nonnull
+  public Optional<AddressEntity> findByFields(@Nonnull final String street,
+                                               @Nonnull final String houseNumber,
+                                               @Nonnull final String zipCode,
+                                               @Nonnull final String city,
+                                               @Nonnull final String country) {
+    return springDataAddressJpaRepository.findByStreetAndHouseNumberAndZipCodeAndCityAndCountry(
+            street, houseNumber, zipCode, city, country
+    );
+  }
 }

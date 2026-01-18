@@ -1,33 +1,33 @@
 package ch.verno.ui.verno.dashboard.io.dialog.steps.step2;
 
 
-import ch.verno.server.io.importing.dto.DbField;
 import ch.verno.ui.base.components.mapping.VABaseColumnMappingPanel;
+import ch.verno.ui.verno.dashboard.io.dto.ImportField;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImportColumnMappingPanel<T> extends VABaseColumnMappingPanel<DbField<T>> {
+public class ImportColumnMappingPanel extends VABaseColumnMappingPanel<ImportField> {
 
   @Nonnull private final List<Runnable> validationChangeListeners;
 
   public ImportColumnMappingPanel(@Nonnull final List<String> csvColumns,
-                                  @Nonnull final List<DbField<T>> dbFields) {
-    super(csvColumns, dbFields, true, "shared.ignorieren");
+                                  @Nonnull final List<ImportField> fields) {
+    super(csvColumns, fields, true, "shared.ignorieren");
     validationChangeListeners = new ArrayList<>();
   }
 
   @Nonnull
   @Override
-  protected String getFieldKey(@Nonnull final DbField<T> field) {
+  protected String getFieldKey(@Nonnull final ImportField field) {
     return field.key();
   }
 
   @Nonnull
   @Override
-  protected String getFieldLabel(@Nonnull final DbField<T> field) {
+  protected String getFieldLabel(@Nonnull final ImportField field) {
     return field.label();
   }
 
@@ -47,3 +47,4 @@ public class ImportColumnMappingPanel<T> extends VABaseColumnMappingPanel<DbFiel
     validationChangeListeners.forEach(Runnable::run);
   }
 }
+

@@ -14,6 +14,7 @@ import org.jspecify.annotations.NonNull;
 public class ParticipantWidget extends VAAccordionWidgetBase {
 
   @Nonnull private final VernoApplicationGate vernoApplicationGate;
+  private ParticipantsGrid participantsGrid;
 
   public ParticipantWidget(@Nonnull final VernoApplicationGate vernoApplicationGate) {
     super();
@@ -40,6 +41,7 @@ public class ParticipantWidget extends VAAccordionWidgetBase {
                       getTranslation("shared.import") + Publ.SPACE + getTranslation("participant.participant"),
                       config
               );
+              importDialog.addClosedListener(close -> refresh());
               importDialog.open();
             });
     final var exportButton = createHeaderButton(
@@ -52,11 +54,23 @@ public class ParticipantWidget extends VAAccordionWidgetBase {
 
   @Override
   protected void initContent() {
-    final var participantsGrid = new ParticipantsGrid(vernoApplicationGate,
+    participantsGrid = new ParticipantsGrid(vernoApplicationGate,
             false,
             false);
     participantsGrid.getGrid().setAllRowsVisible(true);
     participantsGrid.setWidthFull();
     add(participantsGrid);
+  }
+
+  protected void refresh() {
+    if (participantsGrid == null) {
+      return;
+    }
+
+    participantsGrid.setFilter(participantsGrid.getFilter());
+//    participantsInCurrentCourse = participantsGrid.getGrid()
+//            .getDataProvider()
+//            .fetch(new Query<>())
+//            .toList();
   }
 }

@@ -46,10 +46,8 @@ public class VAFileUpload extends VerticalLayout {
     upload.setSizeFull();
     upload.setAutoUpload(true);
     upload.setDropAllowed(true);
-    upload.setMaxFiles(1);
     upload.getElement().setProperty("nodrop", false);
 
-    // Verstecke die Dateiliste komplett
     upload.getElement().executeJs(
             "this.addEventListener('upload-success', () => {" +
             "  const fileList = this.shadowRoot.querySelector('[part=\"file-list\"]');" +
@@ -96,6 +94,10 @@ public class VAFileUpload extends VerticalLayout {
 
     add(upload);
     expand(upload);
+  }
+
+  public void setMaxFileUpload(final int maxFileUpload){
+    upload.setMaxFiles(maxFileUpload);
   }
 
   public void setAcceptedFileTypes(@Nonnull final String... acceptedFileTypes) {

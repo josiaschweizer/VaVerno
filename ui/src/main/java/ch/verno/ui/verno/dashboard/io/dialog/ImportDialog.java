@@ -1,8 +1,9 @@
 package ch.verno.ui.verno.dashboard.io.dialog;
 
-import ch.verno.common.file.FileServerGate;
-import ch.verno.ui.verno.dashboard.io.dialog.steps.DialogStep;
-import ch.verno.ui.verno.dashboard.io.dialog.steps.step1.StepImportFile;
+import ch.verno.common.gate.VernoServerGate;
+import ch.verno.ui.verno.dashboard.io.dialog.steps.DialogStepDto;
+import ch.verno.ui.verno.dashboard.io.dialog.steps.step1.ImportFile;
+import ch.verno.ui.verno.dashboard.io.dialog.steps.step2.ImportMapping;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,24 +17,32 @@ import java.util.List;
 
 public class ImportDialog extends Dialog {
 
-  @Nonnull private final List<DialogStep> steps;
-
   @Nullable private HorizontalLayout contentLayout;
 
-  public ImportDialog(@Nonnull final FileServerGate fileServerGate) {
-    steps = new ArrayList<>();
-    steps.add(new DialogStep(1, new StepImportFile(fileServerGate)));
+  @Nonnull private final List<DialogStepDto> steps;
+  @Nullable private Button forwardButton;
+  @Nullable private Button finishButton;
 
-    initUI("Import");
+  private DialogStep currentStep;
+
+  public ImportDialog(@Nonnull final VernoServerGate vernoServerGate,
+                      @Nonnull final String dialogTitle) {
+    steps = new ArrayList<>();
+    currentStep = DialogStep.ZERO;
+
+    steps.add(new DialogStepDto(DialogStep.ONE, new ImportFile(vernoServerGate)));
+    steps.add(new DialogStepDto(DialogStep.TWO, new ImportMapping(vernoServerGate)));
+
+    initUI(dialogTitle);
   }
 
-  private void initUI(@NonNull final String title) {
+  private void initUI(@NonNull final String dialogTitle) {
     setHeight("90vh");
     setWidth("min(1500px, 95vw)");
     setMaxWidth("1500px");
     setMinWidth("320px");
 
-    updateHeaderTitle(title);
+    updateHeaderTitle(dialogTitle);
     add(createContent());
     createActionButtons().forEach(btn -> getFooter().add(btn));
   }
@@ -41,10 +50,11 @@ public class ImportDialog extends Dialog {
   @NonNull
   protected HorizontalLayout createContent() {
     contentLayout = new HorizontalLayout();
-    contentLayout.setWidthFull();
-    contentLayout.setHeightFull();
+    contentLayout.setSizeFull();
+    contentLayout.setPadding(true);
+    contentLayout.setSpacing(true);
 
-    updateContentByStep(1, contentLayout);
+    updateContentByStep(DialogStep.ONE, contentLayout);
 
     return contentLayout;
   }
@@ -52,11 +62,36 @@ public class ImportDialog extends Dialog {
 
   @NonNull
   protected Collection<Button> createActionButtons() {
-    final var closeButton = new Button("Close", e -> close());
-    return List.of(closeButton);
+    final var cancelButton = new Button(getTranslation("shared.cancel"), e -> close());
+    forwardButton = new Button(getTranslation("shared.forward"), e -> {
+      if (contentLayout == null) {
+        return;
+      }
+
+      updateContentByStep(DialogStep.addSteps(currentStep, 1), contentLayout);
+    });
+    finishButton = new Button(getTranslation("shared.finish"), e -> close());
+    updateButtonVisibility();
+
+    return List.of(cancelButton, forwardButton, finishButton);
   }
 
-  protected void updateContentByStep(final int stepIndex, @Nonnull final HorizontalLayout contentLayout) {
+  private void updateButtonVisibility() {
+    if (forwardButton == null || finishButton == null) {
+      return;
+    }
+
+    if (currentStep.getStepNumber() == steps.size()) {
+      forwardButton.setVisible(false);
+      finishButton.setVisible(true);
+    } else {
+      forwardButton.setVisible(true);
+      finishButton.setVisible(false);
+    }
+  }
+
+  protected void updateContentByStep(@Nonnull final DialogStep stepIndex,
+                                     @Nonnull final HorizontalLayout contentLayout) {
     final var first = steps.stream()
             .filter(s -> s.step() == stepIndex)
             .findFirst();
@@ -64,10 +99,12 @@ public class ImportDialog extends Dialog {
       return;
     }
 
+    currentStep = stepIndex;
     final var content = first.get().content();
 
     contentLayout.removeAll();
     contentLayout.add(content);
+    contentLayout.expand(content);
   }
 
   private void updateHeaderTitle(@NonNull final String title) {

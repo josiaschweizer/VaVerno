@@ -1,8 +1,6 @@
 package ch.verno.ui.verno.dashboard;
 
-import ch.verno.common.db.service.*;
-import ch.verno.common.file.FileServerGate;
-import ch.verno.common.report.ReportServerGate;
+import ch.verno.common.gate.VernoServerGate;
 import ch.verno.ui.base.components.toolbar.ViewToolbar;
 import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -10,34 +8,21 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("")
 @PermitAll
 @PageTitle("Dashboard")
 public class DashboardView extends VerticalLayout {
 
-  public DashboardView(@Nonnull final ICourseService courseService,
-                       @Nonnull final IInstructorService instructorService,
-                       @Nonnull final IParticipantService participantService,
-                       @Nonnull final ICourseLevelService courseLevelService,
-                       @Nonnull final ICourseScheduleService courseScheduleService,
-                       @Nonnull final IMandantSettingService mandantSettingService,
-                       @Nonnull final ReportServerGate reportServerGate,
-                       @Nonnull final FileServerGate fileServerGate) {
+  @Autowired
+  public DashboardView(@Nonnull final VernoServerGate vernoServerGate) {
     setSizeFull();
     setPadding(false);
     setSpacing(false);
     setAlignItems(Alignment.STRETCH);
 
-    final var dashboard = new Dashboard(
-            courseService,
-            instructorService,
-            participantService,
-            courseLevelService,
-            courseScheduleService,
-            mandantSettingService,
-            reportServerGate,
-            fileServerGate);
+    final var dashboard = new Dashboard(vernoServerGate);
 
     add(createViewToolBar());
     add(dashboard);

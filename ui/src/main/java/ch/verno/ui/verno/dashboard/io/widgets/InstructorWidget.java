@@ -1,7 +1,8 @@
 package ch.verno.ui.verno.dashboard.io.widgets;
 
 import ch.verno.common.db.service.IInstructorService;
-import ch.verno.common.file.FileServerGate;
+import ch.verno.common.gate.VernoServerGate;
+import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.notification.NotificationFactory;
 import ch.verno.ui.base.components.widget.VAAccordionWidgetBase;
 import ch.verno.ui.verno.dashboard.io.dialog.ImportDialog;
@@ -13,13 +14,12 @@ import org.jspecify.annotations.NonNull;
 
 public class InstructorWidget extends VAAccordionWidgetBase {
 
-  @Nonnull private final FileServerGate fileServerGate;
+  @Nonnull private final VernoServerGate vernoServerGate;
   @Nonnull private final IInstructorService instructorService;
 
-  public InstructorWidget(@Nonnull final FileServerGate fileServerGate,
-                          @Nonnull final IInstructorService instructorService) {
-    this.instructorService = instructorService;
-    this.fileServerGate = fileServerGate;
+  public InstructorWidget(@Nonnull final VernoServerGate vernoServerGate) {
+    this.vernoServerGate = vernoServerGate;
+    this.instructorService = vernoServerGate.getService(IInstructorService.class);
 
     build();
   }
@@ -36,7 +36,7 @@ public class InstructorWidget extends VAAccordionWidgetBase {
             getTranslation("shared.import"),
             VaadinIcon.DOWNLOAD,
             e -> {
-              final var importDialog = new ImportDialog(fileServerGate);
+              final var importDialog = new ImportDialog(vernoServerGate, getTranslation("shared.import") + Publ.SPACE + getTranslation("shared.instructor"));
               importDialog.open();
             });
     final var exportButton = createHeaderButton(

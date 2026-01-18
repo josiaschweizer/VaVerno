@@ -6,7 +6,11 @@ import ch.verno.common.db.dto.ParticipantDto;
 import ch.verno.common.db.service.ICourseService;
 import ch.verno.common.db.service.IMandantSettingService;
 import ch.verno.common.db.service.IParticipantService;
+import ch.verno.common.gate.VernoServerGate;
 import ch.verno.publ.Publ;
+import ch.verno.server.service.CourseService;
+import ch.verno.server.service.MandantSettingService;
+import ch.verno.server.service.ParticipantService;
 import ch.verno.ui.base.components.entry.combobox.VAComboBox;
 import ch.verno.ui.base.components.filter.VASearchFilter;
 import ch.verno.ui.base.components.notification.NotificationFactory;
@@ -29,7 +33,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@CssImport("/components/assignment/assignment.css")
+@CssImport("./components/assignment/assignment.css")
 public class AssignToCourseDialog extends VADialog {
 
   @Nonnull
@@ -59,20 +63,16 @@ public class AssignToCourseDialog extends VADialog {
 
   private boolean suppressSelectionSync;
 
-  public AssignToCourseDialog(@Nonnull final ICourseService courseService,
-                              @Nonnull final IParticipantService participantService,
-                              @Nonnull final IMandantSettingService mandantSettingService) {
-    this(courseService, participantService, mandantSettingService, null, List.of());
+  public AssignToCourseDialog(@Nonnull final VernoServerGate vernoServerGate) {
+    this(vernoServerGate, null, List.of());
   }
 
-  public AssignToCourseDialog(@Nonnull final ICourseService courseService,
-                              @Nonnull final IParticipantService participantService,
-                              @Nonnull final IMandantSettingService mandantSettingService,
+  public AssignToCourseDialog(@Nonnull final VernoServerGate vernoServerGate,
                               @Nullable final Long preSelectedCourseId,
                               @Nonnull final List<Long> preSelectedParticipantIds) {
-    this.courseService = courseService;
-    this.participantService = participantService;
-    this.mandantSettingService = mandantSettingService;
+    this.courseService = vernoServerGate.getService(CourseService.class);
+    this.participantService = vernoServerGate.getService(ParticipantService.class);
+    this.mandantSettingService = vernoServerGate.getService(MandantSettingService.class);
     this.preSelectedCourseId = preSelectedCourseId;
 
     this.selectedParticipantIds = new LinkedHashSet<>(preSelectedParticipantIds);

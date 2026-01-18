@@ -1,5 +1,6 @@
 package ch.verno.ui.verno.dashboard.io;
 
+import ch.verno.common.gate.VernoServerGate;
 import ch.verno.common.db.service.ICourseLevelService;
 import ch.verno.common.db.service.ICourseService;
 import ch.verno.common.db.service.IInstructorService;
@@ -13,25 +14,10 @@ import jakarta.annotation.Nonnull;
 
 public class ImportExportWidgetGroup extends VerticalLayout {
 
-  @Nonnull private final IParticipantService participantService;
-  @Nonnull private final ICourseLevelService courseLevelService;
-  @Nonnull private final IInstructorService instructorService;
-  @Nonnull private final ICourseService courseService;
-  @Nonnull private final FileServerGate fileServerGate;
-  @Nonnull private final ReportServerGate reportServerGate;
+  @Nonnull private final VernoServerGate vernoServerGate;
 
-  public ImportExportWidgetGroup(@Nonnull final IParticipantService participantService,
-                                 @Nonnull final ICourseLevelService courseLevelService,
-                                 @Nonnull final IInstructorService instructorService,
-                                 @Nonnull final ReportServerGate reportServerGate,
-                                 @Nonnull final FileServerGate fileServerGate,
-                                 @Nonnull final ICourseService courseService) {
-    this.participantService = participantService;
-    this.courseLevelService = courseLevelService;
-    this.instructorService = instructorService;
-    this.reportServerGate = reportServerGate;
-    this.fileServerGate = fileServerGate;
-    this.courseService = courseService;
+  public ImportExportWidgetGroup(@Nonnull final VernoServerGate vernoServerGate) {
+    this.vernoServerGate = vernoServerGate;
 
     setPadding(false);
     setMargin(false);
@@ -43,13 +29,8 @@ public class ImportExportWidgetGroup extends VerticalLayout {
 
 
   private void initUI() {
-    final var participant = new ParticipantWidget(
-            participantService,
-            courseService,
-            courseLevelService,
-            reportServerGate
-    );
-    final var instructorWidget = new InstructorWidget(fileServerGate, instructorService);
+    final var participant = new ParticipantWidget(vernoServerGate);
+    final var instructorWidget = new InstructorWidget(vernoServerGate);
 
     add(participant, instructorWidget);
   }

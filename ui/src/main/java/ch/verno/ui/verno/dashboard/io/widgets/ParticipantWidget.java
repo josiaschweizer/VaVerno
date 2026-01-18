@@ -1,11 +1,10 @@
 package ch.verno.ui.verno.dashboard.io.widgets;
 
-import ch.verno.common.db.service.ICourseLevelService;
-import ch.verno.common.db.service.ICourseService;
-import ch.verno.common.db.service.IParticipantService;
-import ch.verno.common.report.ReportServerGate;
+import ch.verno.common.gate.VernoServerGate;
+import ch.verno.publ.Publ;
 import ch.verno.ui.base.components.notification.NotificationFactory;
 import ch.verno.ui.base.components.widget.VAAccordionWidgetBase;
+import ch.verno.ui.verno.dashboard.io.dialog.ImportDialog;
 import ch.verno.ui.verno.participant.ParticipantsGrid;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -14,20 +13,11 @@ import org.jspecify.annotations.NonNull;
 
 public class ParticipantWidget extends VAAccordionWidgetBase {
 
-  @Nonnull private final IParticipantService participantService;
-  @Nonnull private final ICourseService courseService;
-  @Nonnull private final ICourseLevelService courseLevelService;
-  @Nonnull private final ReportServerGate reportServerGate;
+  @Nonnull private final VernoServerGate vernoServerGate;
 
-  public ParticipantWidget(@Nonnull final IParticipantService participantService,
-                           @Nonnull final ICourseService courseService,
-                           @Nonnull final ICourseLevelService courseLevelService,
-                           @Nonnull final ReportServerGate reportServerGate) {
+  public ParticipantWidget(@Nonnull final VernoServerGate vernoServerGate) {
     super();
-    this.participantService = participantService;
-    this.courseService = courseService;
-    this.courseLevelService = courseLevelService;
-    this.reportServerGate = reportServerGate;
+    this.vernoServerGate = vernoServerGate;
 
     build();
   }
@@ -43,7 +33,10 @@ public class ParticipantWidget extends VAAccordionWidgetBase {
     final var importButton = createHeaderButton(
             getTranslation("shared.import"),
             VaadinIcon.DOWNLOAD,
-            e -> NotificationFactory.showInfoNotification("This feature is not implemented yet."));
+            e -> {
+              final var importDialog = new ImportDialog(vernoServerGate, getTranslation("shared.import") + Publ.SPACE + getTranslation("participant.participant"));
+              importDialog.open();
+            });
     final var exportButton = createHeaderButton(
             getTranslation("shared.export"),
             VaadinIcon.UPLOAD,
@@ -54,11 +47,7 @@ public class ParticipantWidget extends VAAccordionWidgetBase {
 
   @Override
   protected void initContent() {
-    final var participantsGrid = new ParticipantsGrid(
-            participantService,
-            courseService,
-            courseLevelService,
-            reportServerGate,
+    final var participantsGrid = new ParticipantsGrid(vernoServerGate,
             false,
             false);
     participantsGrid.getGrid().setAllRowsVisible(true);

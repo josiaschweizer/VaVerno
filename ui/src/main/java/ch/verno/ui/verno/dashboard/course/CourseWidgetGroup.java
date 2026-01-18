@@ -1,39 +1,23 @@
 package ch.verno.ui.verno.dashboard.course;
 
 import ch.verno.common.db.enums.CourseScheduleStatus;
-import ch.verno.common.db.service.*;
-import ch.verno.common.report.ReportServerGate;
+import ch.verno.common.db.service.ICourseService;
+import ch.verno.common.gate.VernoServerGate;
 import ch.verno.ui.base.Refreshable;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import jakarta.annotation.Nonnull;
 
 public class CourseWidgetGroup extends VerticalLayout implements Refreshable {
 
+  @Nonnull private final VernoServerGate vernoServerGate;
   @Nonnull private final CourseScheduleStatus status;
-  @Nonnull private final ICourseService courseService;
-  @Nonnull private final IInstructorService instructorService;
-  @Nonnull private final IParticipantService participantService;
-  @Nonnull private final ICourseLevelService courseLevelService;
-  @Nonnull private final ICourseScheduleService courseScheduleService;
-  @Nonnull private final IMandantSettingService mandantSettingService;
-  @Nonnull private final ReportServerGate reportServerGate;
+  private final ICourseService courseService;
 
-  public CourseWidgetGroup(@Nonnull final CourseScheduleStatus status,
-                           @Nonnull final ICourseService courseService,
-                           @Nonnull final IInstructorService instructorService,
-                           @Nonnull final IParticipantService participantService,
-                           @Nonnull final ICourseLevelService courseLevelService,
-                           @Nonnull final ICourseScheduleService courseScheduleService,
-                           @Nonnull final IMandantSettingService mandantSettingService,
-                           @Nonnull final ReportServerGate reportServerGate) {
+  public CourseWidgetGroup(@Nonnull final VernoServerGate vernoServerGate,
+                           @Nonnull final CourseScheduleStatus status) {
+    this.vernoServerGate = vernoServerGate;
+    this.courseService = vernoServerGate.getService(ICourseService.class);
     this.status = status;
-    this.courseService = courseService;
-    this.instructorService = instructorService;
-    this.participantService = participantService;
-    this.courseLevelService = courseLevelService;
-    this.courseScheduleService = courseScheduleService;
-    this.mandantSettingService = mandantSettingService;
-    this.reportServerGate = reportServerGate;
 
     setPadding(false);
     setMargin(false);
@@ -48,14 +32,7 @@ public class CourseWidgetGroup extends VerticalLayout implements Refreshable {
 
     for (final var course : courses) {
       if (course.getId() != null) {
-        add(new CourseWidget(course.getId(),
-                courseService,
-                instructorService,
-                participantService,
-                courseLevelService,
-                mandantSettingService,
-                courseScheduleService,
-                reportServerGate));
+        add(new CourseWidget(course.getId(), vernoServerGate));
       }
     }
   }

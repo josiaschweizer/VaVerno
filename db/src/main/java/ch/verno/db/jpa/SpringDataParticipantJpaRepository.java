@@ -18,4 +18,6 @@ public interface SpringDataParticipantJpaRepository extends
   List<ParticipantEntity> findByCoursesAndActiveTrue(@Nonnull CourseEntity course);
 
   Optional<ParticipantEntity> findByEmail(@Nonnull String email);
+
+  boolean existsByCourses_Id(@Nonnull Long courseId);
 }

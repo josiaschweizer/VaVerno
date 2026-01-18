@@ -1,8 +1,8 @@
 package ch.verno.ui.verno.dashboard.assignment;
 
-import ch.verno.common.db.dto.CourseDto;
-import ch.verno.common.db.dto.CourseLevelDto;
-import ch.verno.common.db.dto.ParticipantDto;
+import ch.verno.common.db.dto.table.CourseDto;
+import ch.verno.common.db.dto.table.CourseLevelDto;
+import ch.verno.common.db.dto.table.ParticipantDto;
 import ch.verno.common.db.service.ICourseService;
 import ch.verno.common.db.service.IMandantSettingService;
 import ch.verno.common.db.service.IParticipantService;
@@ -29,7 +29,6 @@ import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -106,8 +105,9 @@ public class AssignToCourseDialog extends VADialog {
     return layout;
   }
 
+  @Nonnull
   @Override
-  protected @NonNull Collection<Button> createActionButtons() {
+  protected Collection<Button> createActionButtons() {
     saveButton = createSaveButton();
     final var cancelButton = createCancelButton();
     return List.of(cancelButton, saveButton);
@@ -159,6 +159,10 @@ public class AssignToCourseDialog extends VADialog {
             .collect(Collectors.toCollection(LinkedHashSet::new))
             .stream()
             .filter(this::filterForInvalidCourseLevel)
+            .sorted(Comparator.comparing(
+                    id -> participantItems.getOrDefault(id, ""),
+                    String.CASE_INSENSITIVE_ORDER
+            ))
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
     selectedParticipantIds = selectedParticipantIds.stream()

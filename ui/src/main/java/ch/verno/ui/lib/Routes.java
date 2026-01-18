@@ -17,12 +17,9 @@ public class Routes {
   public static final String COURSE_LEVELS = "course-levels";
   public static final String COURSE_SCHEDULES = COURSE + Publ.SLASH + "course-schedules";
   public static final String IO = "io";
-  public static final String IO_IMPORT = IO + Publ.SLASH + "import";
-  public static final String IO_EXPORT = IO + Publ.SLASH + "export";
   public static final String SETTINGS = "settings";
   public static final String USER_SETTINGS = SETTINGS + Publ.SLASH + "user";
   public static final String MANDANT_SETTINGS = SETTINGS + Publ.SLASH + "mandant";
-  public static final String ADMIN_SETTINGS = SETTINGS + Publ.SLASH + "admin";
   public static final String DETAIL = "/detail";
 
   public static final String VALUE_ACCESSOR_ID = Publ.QUESTION_MARK + Publ.ID + Publ.EQUALS;

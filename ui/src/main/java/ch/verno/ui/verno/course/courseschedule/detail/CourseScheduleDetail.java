@@ -1,11 +1,11 @@
 package ch.verno.ui.verno.course.courseschedule.detail;
 
-import ch.verno.common.db.dto.CourseScheduleDto;
+import ch.verno.common.db.dto.table.CourseScheduleDto;
 import ch.verno.common.db.enums.CourseScheduleStatus;
 import ch.verno.common.db.service.ICourseScheduleService;
 import ch.verno.common.db.service.IMandantSettingService;
 import ch.verno.ui.base.components.form.FormMode;
-import ch.verno.ui.base.detail.BaseDetailView;
+import ch.verno.ui.base.pages.detail.BaseDetailView;
 import ch.verno.ui.lib.Routes;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -62,8 +62,15 @@ public class CourseScheduleDetail extends BaseDetailView<CourseScheduleDto> impl
             getTranslation(getTranslation("courseSchedule.course.schedule.status")),
             t -> getTranslation(t.getDisplayNameKey())
     );
+    final var colorPicker = entryFactory.createColorPickerEntry(
+            CourseScheduleDto::getColor,
+            CourseScheduleDto::setColor,
+            getBinder(),
+            Optional.empty(),
+            getTranslation("shared.color")
+    );
 
-    return createLayoutFromComponents(title, status);
+    return createLayoutFromComponents(title, status, colorPicker);
   }
 
   @Nonnull

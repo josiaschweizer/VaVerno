@@ -145,4 +145,20 @@ public class ParticipantFilter {
   public void setActive(@Nullable final Boolean active) {
     this.active = active;
   }
+
+  @Nullable
+  public Long getActiveAsLong() {
+    if (active == null) {
+      return null;
+    }
+    return active ? 1L : 0L;
+  }
+
+  public void setActiveFromLong(@Nullable final Long activeLong) {
+    if (activeLong == null) {
+      this.active = null;
+    } else {
+      this.active = activeLong.equals(1L);
+    }
+  }
 }

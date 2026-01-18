@@ -1,6 +1,6 @@
 package ch.verno.server.mapper.csv;
 
-import ch.verno.common.db.dto.InstructorDto;
+import ch.verno.common.db.dto.table.InstructorDto;
 import jakarta.annotation.Nonnull;
 
 public class InstructorCsvMapper extends AbstractCsvMapper<InstructorDto> {

@@ -1,9 +1,9 @@
 package ch.verno.ui.verno.participant;
 
-import ch.verno.common.db.dto.CourseDto;
-import ch.verno.common.db.dto.CourseLevelDto;
-import ch.verno.common.db.dto.ParticipantDto;
 import ch.verno.common.db.dto.base.BaseDto;
+import ch.verno.common.db.dto.table.CourseDto;
+import ch.verno.common.db.dto.table.CourseLevelDto;
+import ch.verno.common.db.dto.table.ParticipantDto;
 import ch.verno.common.db.filter.ParticipantFilter;
 import ch.verno.common.db.service.ICourseLevelService;
 import ch.verno.common.db.service.ICourseService;
@@ -11,18 +11,25 @@ import ch.verno.common.db.service.IParticipantService;
 import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.common.report.ReportServerGate;
 import ch.verno.publ.Publ;
+import ch.verno.ui.base.components.contextmenu.ActionDef;
+import ch.verno.ui.base.components.grid.GridActionRoles;
 import ch.verno.ui.base.components.toolbar.ViewToolbar;
 import ch.verno.ui.base.components.toolbar.ViewToolbarFactory;
-import ch.verno.ui.base.grid.BaseOverviewGrid;
-import ch.verno.ui.base.grid.ComponentGridColumn;
-import ch.verno.ui.base.grid.ObjectGridColumn;
+import ch.verno.ui.base.factory.SpanFactory;
+import ch.verno.ui.base.pages.grid.BaseOverviewGrid;
+import ch.verno.ui.base.pages.grid.ComponentGridColumn;
+import ch.verno.ui.base.pages.grid.ObjectGridColumn;
 import ch.verno.ui.lib.Routes;
 import ch.verno.ui.verno.dashboard.report.ParticipantsReportDialog;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBoxBase;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
@@ -31,6 +38,7 @@ import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -55,20 +63,17 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
     this.participantService = vernoApplicationGate.getService(IParticipantService.class);
     this.courseService = vernoApplicationGate.getService(ICourseService.class);
     this.courseLevelService = vernoApplicationGate.getService(ICourseLevelService.class);
-    this.reportServerGate = vernoApplicationGate.getService(ReportServerGate.class);
+    this.reportServerGate = vernoApplicationGate.getGate(ReportServerGate.class);
   }
 
   @Autowired
-  public ParticipantsGrid(@Nonnull final IParticipantService participantService,
-                          @Nonnull final ICourseService courseService,
-                          @Nonnull final ICourseLevelService courseLevelService,
-                          @Nonnull final ReportServerGate reportServerGate) {
+  public ParticipantsGrid(@Nonnull final VernoApplicationGate vernoApplicationGate) {
     super(ParticipantFilter.empty(), true, true);
 
-    this.participantService = participantService;
-    this.courseService = courseService;
-    this.courseLevelService = courseLevelService;
-    this.reportServerGate = reportServerGate;
+    this.participantService = vernoApplicationGate.getService(IParticipantService.class);
+    this.courseService = vernoApplicationGate.getService(ICourseService.class);
+    this.courseLevelService = vernoApplicationGate.getService(ICourseLevelService.class);
+    this.reportServerGate = vernoApplicationGate.getGate(ReportServerGate.class);
   }
 
   @Nonnull
@@ -80,12 +85,6 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
     final var sortOrders = query.getSortOrders();
 
     return participantService.findParticipants(filter, offset, limit, sortOrders).stream();
-  }
-
-  @Override
-  protected int count(@Nonnull final Query<ParticipantDto, ParticipantFilter> query,
-                      @Nonnull final ParticipantFilter filter) {
-    return participantService.countParticipants(filter);
   }
 
   @Nonnull
@@ -102,29 +101,40 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
 
   @Override
   public void createContextMenu() {
-    final var menu = grid.addContextMenu();
+    final var gridContextMenu = grid.addContextMenu();
 
-    menu.setDynamicContentHandler(dto -> {
-      menu.removeAll();
-
+    gridContextMenu.setDynamicContentHandler(dto -> {
+      gridContextMenu.removeAll();
       if (dto == null) {
         return false;
       }
 
-      if (dto.isActive()) {
-        menu.addItem(
-                getTranslation(getTranslation("participant.disable.participant")),
-                e -> disableItem(dto)
-        );
-      } else {
-        menu.addItem(
-                getTranslation(getTranslation("participant.enable.participant")),
-                e -> enableItem(dto)
-        );
+      for (final var action : buildContextMenuActions(dto)) {
+        final var item = gridContextMenu.addItem(action.getComponent(), e -> action.getRunnable().run());
+        item.setEnabled(action.isEnabled());
       }
-
       return true;
     });
+  }
+
+  @Nonnull
+  @Override
+  protected List<ActionDef> buildContextMenuActions(@Nonnull ParticipantDto dto) {
+    final var actions = new ArrayList<ActionDef>();
+
+    if (dto.isActive()) {
+      actions.add(ActionDef.create(
+              SpanFactory.createSpan(getTranslation("participant.disable.participant"), VaadinIcon.BAN),
+              () -> disableItem(dto)
+      ));
+    } else {
+      actions.add(ActionDef.create(
+              SpanFactory.createSpan(getTranslation("participant.enable.participant"), VaadinIcon.CHECK_CIRCLE),
+              () -> enableItem(dto)
+      ));
+    }
+
+    return actions;
   }
 
   private void disableItem(@Nonnull final ParticipantDto dto) {
@@ -143,8 +153,8 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
   @Override
   protected List<ObjectGridColumn<ParticipantDto>> getColumns() {
     final var columns = new ArrayList<ObjectGridColumn<ParticipantDto>>();
-    columns.add(new ObjectGridColumn<>("firstname", ParticipantDto::getFirstName, getTranslation("shared.first.name"), true));
     columns.add(new ObjectGridColumn<>("lastname", ParticipantDto::getLastName, getTranslation("shared.last.name"), true));
+    columns.add(new ObjectGridColumn<>("firstname", ParticipantDto::getFirstName, getTranslation("shared.first.name"), true));
     columns.add(new ObjectGridColumn<>("birthdate", ParticipantDto::getAgeFromBirthday, getTranslation("shared.age"), true));
     columns.add(new ObjectGridColumn<>("email", ParticipantDto::getEmail, getTranslation("shared.e.mail"), true));
     columns.add(new ObjectGridColumn<>("phone", ParticipantDto::getPhoneString, getTranslation("shared.phone"), true));
@@ -163,7 +173,8 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
   @Override
   protected List<ComponentGridColumn<ParticipantDto>> getComponentColumns() {
     final var components = new ArrayList<ComponentGridColumn<ParticipantDto>>();
-    components.add(new ComponentGridColumn<>("active", this::getStatusBadge, getTranslation("shared.status"), true));
+    components.add(new ComponentGridColumn<>("active", this::getStatusBadge, getTranslation("shared.status"), true, GridActionRoles.STICK_COLUMN));
+    components.add(new ComponentGridColumn<>("actionColumn", this::getActionContextMenuButton, getTranslation("shared.action"), false, GridActionRoles.STICK_COLUMN));
     return components;
   }
 
@@ -173,6 +184,23 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
     final var statusSpan = new Span(string);
     statusSpan.getElement().getThemeList().add(dto.isActive() ? "badge success" : "badge error");
     return statusSpan;
+  }
+
+  @Nonnull
+  private Span getActionContextMenuButton(@Nonnull final ParticipantDto dto) {
+    final var button = new Button(VaadinIcon.ELLIPSIS_DOTS_V.create());
+    button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+
+    final var menu = new ContextMenu(button);
+    menu.setOpenOnClick(true);
+
+    menu.removeAll();
+    for (final var action : buildContextMenuActions(dto)) {
+      final var item = menu.addItem(action.getComponent(), ev -> action.getRunnable().run());
+      item.setEnabled(action.isEnabled());
+    }
+
+    return new Span(button);
   }
 
   @Nonnull
@@ -187,16 +215,15 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
             .map(mapper)
             .filter(s -> s != null && !s.isBlank())
             .distinct()
-            .collect(Collectors.joining(", "));
+            .collect(Collectors.joining(Publ.COMMA + Publ.SPACE));
   }
 
   @Nonnull
   @Override
-  public List<MultiSelectComboBox<Long>> getFilterComponents() {
+  public List<ComboBoxBase<?, ?, ?>> getFilterComponents() {
     final var courses = courseService.getAllCourses().stream()
             .collect(Collectors.toMap(CourseDto::getId, CourseDto::getTitle));
-
-    final var courseFilter = filterEntryFactory.createComboboxFilter(
+    final var courseFilter = filterEntryFactory.createMultiSelectComboboxFilter(
             ParticipantFilter::getCourseIds,
             ParticipantFilter::setCourseIds,
             courses,
@@ -205,21 +232,24 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
 
     final var courseLevels = courseLevelService.getAllCourseLevels().stream()
             .collect(Collectors.toMap(BaseDto::getId, CourseLevelDto::getName));
-    final var courseLevelFilter = filterEntryFactory.createComboboxFilter(
+    final var courseLevelFilter = filterEntryFactory.createMultiSelectComboboxFilter(
             ParticipantFilter::getCourseLevelIds,
             ParticipantFilter::setCourseLevelIds,
             courseLevels,
             filterBinder,
             getTranslation("filter.course_level_filter"));
 
-    //todo create active filter
-//    final var activeFilter = filterEntryFactory.createBooleanFilter(
-//            ParticipantFilter::getActive,
-//            ParticipantFilter::setActive,
-//            filterBinder,
-//            "Active Filter");
+    final var options = new HashMap<Long, String>();
+    options.put(1L, getTranslation("shared.active"));
+    options.put(0L, getTranslation("shared.inactive"));
+    final var activeFilter = filterEntryFactory.createComboBoxFilter(
+            ParticipantFilter::getActiveAsLong,
+            ParticipantFilter::setActiveFromLong,
+            options,
+            filterBinder,
+            getTranslation("filter.active.filter"));
 
-    return List.of(courseFilter, courseLevelFilter);
+    return List.of(courseFilter, courseLevelFilter, activeFilter);
   }
 
   @Nonnull
@@ -241,6 +271,16 @@ public class ParticipantsGrid extends BaseOverviewGrid<ParticipantDto, Participa
   @Override
   protected ParticipantFilter withSearchText(@Nonnull final String searchText) {
     return ParticipantFilter.fromSearchText(searchText);
+  }
+
+  @Override
+  protected void setDefaultSorting() {
+    final var lastNameCol = columnsByKey.get("lastname");
+    if (lastNameCol == null) {
+      return;
+    }
+
+    grid.sort(List.of(new GridSortOrder<>(lastNameCol, SortDirection.ASCENDING)));
   }
 
   @Override

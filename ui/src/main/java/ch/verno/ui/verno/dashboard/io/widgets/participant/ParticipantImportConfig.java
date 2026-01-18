@@ -1,9 +1,9 @@
 package ch.verno.ui.verno.dashboard.io.widgets.participant;
 
 import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
-import ch.verno.common.db.dto.AddressDto;
-import ch.verno.common.db.dto.ParentDto;
-import ch.verno.common.db.dto.ParticipantDto;
+import ch.verno.common.db.dto.table.AddressDto;
+import ch.verno.common.db.dto.table.ParentDto;
+import ch.verno.common.db.dto.table.ParticipantDto;
 import ch.verno.common.db.service.IParticipantService;
 import ch.verno.common.file.CsvMapDto;
 import ch.verno.common.file.FileServerGate;

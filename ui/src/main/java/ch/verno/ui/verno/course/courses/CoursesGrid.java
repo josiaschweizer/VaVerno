@@ -1,13 +1,22 @@
 package ch.verno.ui.verno.course.courses;
 
-import ch.verno.common.db.dto.CourseDto;
+import ch.verno.common.db.dto.table.CourseDto;
 import ch.verno.common.db.filter.CourseFilter;
 import ch.verno.common.db.service.ICourseService;
-import ch.verno.ui.base.grid.BaseOverviewGrid;
-import ch.verno.ui.base.grid.ComponentGridColumn;
-import ch.verno.ui.base.grid.ObjectGridColumn;
+import ch.verno.ui.base.components.contextmenu.ActionDef;
+import ch.verno.ui.base.components.grid.GridActionRoles;
+import ch.verno.ui.base.components.notification.NotificationFactory;
+import ch.verno.ui.base.factory.SpanFactory;
+import ch.verno.ui.base.pages.grid.BaseOverviewGrid;
+import ch.verno.ui.base.pages.grid.ComponentGridColumn;
+import ch.verno.ui.base.pages.grid.ObjectGridColumn;
 import ch.verno.ui.lib.Routes;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Menu;
@@ -22,11 +31,10 @@ import java.util.stream.Stream;
 
 @PermitAll
 @Route(Routes.COURSES)
-@Menu(order = 3.1, icon = "vaadin:desktop", title = "course.course")
+@Menu(order = 3.1, icon = "vaadin:desktop", title = "course.course.overview")
 public class CoursesGrid extends BaseOverviewGrid<CourseDto, CourseFilter> implements HasDynamicTitle {
 
-  @Nonnull
-  private final ICourseService courseService;
+  @Nonnull private final ICourseService courseService;
 
   public CoursesGrid(@Nonnull final ICourseService courseService) {
     super(CourseFilter.empty());
@@ -41,12 +49,6 @@ public class CoursesGrid extends BaseOverviewGrid<CourseDto, CourseFilter> imple
     final var sortOrders = query.getSortOrders();
 
     return courseService.findCourses(filter, offset, limit, sortOrders).stream();
-  }
-
-  @Override
-  protected int count(@Nonnull final Query<CourseDto, CourseFilter> query,
-                      @Nonnull final CourseFilter filter) {
-    return courseService.countCourses(filter);
   }
 
   @Nonnull
@@ -80,7 +82,8 @@ public class CoursesGrid extends BaseOverviewGrid<CourseDto, CourseFilter> imple
   @Override
   protected List<ComponentGridColumn<CourseDto>> getComponentColumns() {
     final var componentColumns = new ArrayList<ComponentGridColumn<CourseDto>>();
-    componentColumns.add(new ComponentGridColumn<>("courseSchedule.status", this::getStatusBadge, getTranslation("shared.status"), true));
+    componentColumns.add(new ComponentGridColumn<>("status", this::getStatusBadge, getTranslation("shared.status"), true, GridActionRoles.STICK_COLUMN));
+    componentColumns.add(new ComponentGridColumn<>("actionColumn", this::getActionContextMenuButton, getTranslation("shared.action"), false, GridActionRoles.STICK_COLUMN));
     return componentColumns;
   }
 
@@ -97,6 +100,23 @@ public class CoursesGrid extends BaseOverviewGrid<CourseDto, CourseFilter> imple
   }
 
   @Nonnull
+  private Span getActionContextMenuButton(@Nonnull final CourseDto dto) {
+    final var button = new Button(VaadinIcon.ELLIPSIS_DOTS_V.create());
+    button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+
+    final var menu = new ContextMenu(button);
+    menu.setOpenOnClick(true);
+
+    menu.removeAll();
+    for (final var action : buildContextMenuActions(dto)) {
+      final var item = menu.addItem(action.getComponent(), ev -> action.getRunnable().run());
+      item.setEnabled(action.isEnabled());
+    }
+
+    return new Span(button);
+  }
+
+  @Nonnull
   @Override
   protected CourseFilter withSearchText(@Nonnull final String searchText) {
     return CourseFilter.fromSearchText(searchText);
@@ -105,5 +125,52 @@ public class CoursesGrid extends BaseOverviewGrid<CourseDto, CourseFilter> imple
   @Override
   public String getPageTitle() {
     return getTranslation("course.course");
+  }
+
+  @Override
+  public void createContextMenu() {
+    final var menu = grid.addContextMenu();
+
+    menu.setDynamicContentHandler(dto -> {
+      menu.removeAll();
+
+      if (dto == null) {
+        return false;
+      }
+
+      for (final var action : buildContextMenuActions(dto)) {
+        final var item = menu.addItem(action.getComponent(), e -> action.getRunnable().run());
+        item.setEnabled(action.isEnabled());
+      }
+
+      return true;
+    });
+  }
+
+  @Override
+  protected List<ActionDef> buildContextMenuActions(@Nonnull final CourseDto dto) {
+    final var actions = new ArrayList<ActionDef>();
+
+    actions.add(ActionDef.create(
+            SpanFactory.createSpan(getTranslation("shared.delete"), VaadinIcon.TRASH),
+            () -> delete(dto),
+            canDelete(dto)
+    ));
+
+    return actions;
+  }
+
+  private boolean canDelete(@Nonnull final CourseDto dto) {
+    return courseService.canDelete(dto);
+  }
+
+  private void delete(@Nonnull final CourseDto dto) {
+    final var response = courseService.delete(dto);
+
+    if (response.success()) {
+      setFilter(getFilter()); // refresh grid by re setting filter
+    } else if (response.message() != null && !response.message().isBlank()) {
+      NotificationFactory.showErrorNotification(response.message());
+    }
   }
 }

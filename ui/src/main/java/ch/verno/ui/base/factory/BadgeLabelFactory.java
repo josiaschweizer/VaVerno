@@ -19,4 +19,10 @@ public class BadgeLabelFactory {
     }
   }
 
+  @Nonnull
+  public static VABadgeLabel createToolbarInfoBadgeLabel(@Nonnull final String labelText,
+                                                         @Nonnull final VABadgeLabelOptions option) {
+    return new VABadgeLabel(labelText, option);
+  }
+
 }

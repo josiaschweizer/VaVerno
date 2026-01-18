@@ -1,6 +1,6 @@
 package ch.verno.ui.verno.settings.setting.shared;
 
-import ch.verno.common.db.dto.MandantSettingDto;
+import ch.verno.common.db.dto.table.MandantSettingDto;
 import ch.verno.common.db.service.IMandantSettingService;
 import ch.verno.ui.base.settings.VABaseSetting;
 import com.vaadin.flow.component.Component;
@@ -40,6 +40,14 @@ public class SharedSettings extends VABaseSetting<MandantSettingDto> {
             MandantSettingDto::isEnforceCourseLevelSettings,
             MandantSettingDto::setEnforceCourseLevelSettings
     );
+    final var limitCourses = settingEntryFactory.createBooleanSetting(
+            getTranslation("setting.limit.course.assignment.to.planned.or.active.courses"),
+            Optional.of(getTranslation("setting.when.enabled.participants.can.only.be.assigned.to.courses.that.are.currently.planned.or.active.archived.completed.or.inactive.courses.are.excluded.from.selection")),
+            binder,
+            MandantSettingDto::isLimitCourseAssignmentsToActive,
+            MandantSettingDto::setLimitCourseAssignmentsToActive
+    );
+
     final var mainParentSetting = settingEntryFactory.createToggleSetting(
             getTranslation("setting.which.parent.is.the.main.parent"),
             getTranslation("participant.parent_one"),
@@ -50,7 +58,7 @@ public class SharedSettings extends VABaseSetting<MandantSettingDto> {
             MandantSettingDto::setParentOneMainParent
     );
 
-    final var content = new VerticalLayout(enforceQuantityLimits, enforceCourseLevel, mainParentSetting);
+    final var content = new VerticalLayout(enforceQuantityLimits, enforceCourseLevel, limitCourses, mainParentSetting);
     content.setPadding(false);
 
     return content;

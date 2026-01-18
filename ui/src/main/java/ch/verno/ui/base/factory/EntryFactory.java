@@ -1,9 +1,12 @@
 package ch.verno.ui.base.factory;
 
+import ch.verno.common.base.components.colorpicker.Colors;
 import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
-import ch.verno.common.db.dto.GenderDto;
 import ch.verno.common.db.dto.YearWeekDto;
-import ch.verno.common.util.phonenumber.PhoneNumberFormatter;
+import ch.verno.common.db.dto.table.GenderDto;
+import ch.verno.common.lib.phonenumber.PhoneNumberFormatter;
+import ch.verno.ui.base.components.colorpicker.ColorPresets;
+import ch.verno.ui.base.components.colorpicker.VAColorPicker;
 import ch.verno.ui.base.components.entry.combobox.VAComboBox;
 import ch.verno.ui.base.components.entry.numberfield.VANumberField;
 import ch.verno.ui.base.components.entry.phonenumber.PhoneEntry;
@@ -13,6 +16,8 @@ import ch.verno.ui.base.components.entry.weekoption.VAWeekOption;
 import ch.verno.ui.base.components.schedulepicker.VAScheduleWeekPicker;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.charts.model.style.Color;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -22,10 +27,12 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Setter;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.i18n.I18NProvider;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.vaadin.addons.tatu.ColorPicker;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -71,6 +78,7 @@ public class EntryFactory<DTO> {
     final var textField = new VATextField(label);
     textField.setWidthFull();
     textField.setClearButtonVisible(showClearButton);
+    textField.setValueChangeMode(ValueChangeMode.EAGER);
     bindEntry(textField, valueProvider, valueSetter, binder, required);
     return textField;
   }
@@ -83,6 +91,7 @@ public class EntryFactory<DTO> {
                                       @Nonnull final String label) {
     final var textArea = new TextArea(label);
     textArea.setWidthFull();
+    textArea.setValueChangeMode(ValueChangeMode.EAGER);
     bindEntry(textArea, valueProvider, valueSetter, binder, required);
     return textArea;
   }
@@ -96,8 +105,30 @@ public class EntryFactory<DTO> {
     final var emailField = new EmailField(label);
     emailField.setClearButtonVisible(true);
     emailField.setWidthFull();
-    emailField.setErrorMessage(getTranslation("base.please.enter.a.valid.email.address"));
-    bindEntry(emailField, valueProvider, valueSetter, binder, required);
+    emailField.setValueChangeMode(ValueChangeMode.EAGER);
+
+    emailField.setPattern(null);
+
+    final boolean allowEmpty = required.isEmpty();
+    bindEntry(
+            emailField,
+            valueProvider,
+            valueSetter,
+            binder,
+            required,
+            (value, ctx) -> {
+              if (value == null || value.isBlank()) {
+                return allowEmpty
+                        ? ValidationResult.ok()
+                        : ValidationResult.error(required.orElse(getTranslation("common.required")));
+              }
+              if (!value.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+                return ValidationResult.error(getTranslation("base.please.enter.a.valid.email.address"));
+              }
+              return ValidationResult.ok();
+            }
+    );
+
     return emailField;
   }
 
@@ -146,6 +177,7 @@ public class EntryFactory<DTO> {
                                          @Nonnull final Optional<String> required,
                                          @Nonnull final String label) {
     final var numberField = new VANumberField(label);
+    numberField.setValueChangeMode(ValueChangeMode.EAGER);
     numberField.setWidthFull();
 
     bindEntry(numberField, valueProvider, valueSetter, binder, required, getDoubleValidator(required, required.isEmpty()));
@@ -210,6 +242,17 @@ public class EntryFactory<DTO> {
   }
 
   @Nonnull
+  public Checkbox createCheckBoxEntry(@Nonnull final ValueProvider<DTO, Boolean> valueProvider,
+                                      @Nonnull final Setter<DTO, Boolean> valueSetter,
+                                      @Nonnull final Binder<DTO> binder,
+                                      @Nonnull final String label) {
+    final var checkbox = new Checkbox(label);
+    checkbox.setWidthFull();
+    bindEntry(checkbox, valueProvider, valueSetter, binder, Optional.empty());
+    return checkbox;
+  }
+
+  @Nonnull
   public <T> MultiSelectComboBox<T> createMultiSelectComboBoxEntry(@Nonnull final ValueProvider<DTO, List<T>> valueProvider,
                                                                    @Nonnull final Setter<DTO, List<T>> valueSetter,
                                                                    @Nonnull final Binder<DTO> binder,
@@ -257,6 +300,19 @@ public class EntryFactory<DTO> {
     bindEntry(entry, valueProvider, valueSetter, binder, required);
     entry.setWidthFull();
     return entry;
+  }
+
+  @Nonnull
+  public VAColorPicker createColorPickerEntry(@Nonnull final ValueProvider<DTO, String> valueProvider,
+                                              @Nonnull final Setter<DTO, String> valueSetter,
+                                              @Nonnull final Binder<DTO> binder,
+                                              @Nonnull final Optional<String> required,
+                                              @Nonnull final String label) {
+    final var colorPicker = new VAColorPicker(label);
+    colorPicker.setPresets(ColorPresets.getDefaultColorPresets());
+    colorPicker.setWidthFull();
+    bindEntry(colorPicker, valueProvider, valueSetter, binder, required);
+    return colorPicker;
   }
 
   @Nonnull

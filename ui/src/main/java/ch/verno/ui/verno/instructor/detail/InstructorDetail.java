@@ -1,10 +1,10 @@
 package ch.verno.ui.verno.instructor.detail;
 
-import ch.verno.common.db.dto.InstructorDto;
+import ch.verno.common.db.dto.table.InstructorDto;
 import ch.verno.common.db.service.IGenderService;
 import ch.verno.common.db.service.IInstructorService;
 import ch.verno.ui.base.components.form.FormMode;
-import ch.verno.ui.base.detail.BaseDetailView;
+import ch.verno.ui.base.pages.detail.BaseDetailView;
 import ch.verno.ui.lib.Routes;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;

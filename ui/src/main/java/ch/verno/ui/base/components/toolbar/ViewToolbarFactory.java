@@ -1,19 +1,26 @@
 package ch.verno.ui.base.components.toolbar;
 
+import ch.verno.common.lib.i18n.TranslationHelper;
 import ch.verno.publ.Publ;
+import ch.verno.ui.base.components.badge.UserActionBadge;
 import ch.verno.ui.base.components.filter.VASearchFilter;
+import ch.verno.ui.lib.Routes;
+import ch.verno.ui.lib.helper.LogoutHelper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.i18n.I18NProvider;
-import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 
 public class ViewToolbarFactory {
 
   @Nonnull
   public static ViewToolbar createSimpleToolbar(@Nonnull final String title) {
-    return new ViewToolbar(title);
+    final var viewToolbar = new ViewToolbar(title);
+    applyUserBadgeToToolbar(viewToolbar);
+    return viewToolbar;
   }
 
   @Nonnull
@@ -33,9 +40,7 @@ public class ViewToolbarFactory {
   public static ViewToolbar createGridToolbar(@Nonnull final String gridObjectName,
                                               @Nonnull final String url,
                                               @Nullable final VASearchFilter filter) {
-    final var translation = getI18NProvider() != null ?
-            getI18NProvider().getTranslation("base.grid", UI.getCurrent().getLocale()) :
-            "Grid";
+    final var translation = TranslationHelper.getTranslation("base.grid", UI.getCurrent().getLocale());
 
     if (filter != null) {
       return new ViewToolbar(
@@ -45,12 +50,9 @@ public class ViewToolbarFactory {
       );
     }
 
-    return new ViewToolbar(gridObjectName + Publ.SPACE + translation, createNewButton(gridObjectName, url));
-  }
-
-  @Nonnull
-  public static ViewToolbarResult createDetailToolbar(@Nonnull final String objectName) {
-    return createDetailToolbar(objectName, objectName + Publ.S);
+    final var viewToolbar = new ViewToolbar(gridObjectName + Publ.SPACE + translation, createNewButton(gridObjectName, url));
+    applyUserBadgeToToolbar(viewToolbar);
+    return viewToolbar;
   }
 
   @Nonnull
@@ -58,12 +60,13 @@ public class ViewToolbarFactory {
                                                       @Nonnull final String url) {
     final var newButton = createNewButton(objectName, url);
 
-    final var translation = getI18NProvider() != null ?
-            getI18NProvider().getTranslation("base.detail", UI.getCurrent().getLocale()) :
-            "Detail";
+    final var translation = TranslationHelper.getTranslation("base.detail", UI.getCurrent().getLocale());
+
+    final var viewToolbar = new ViewToolbar(objectName + Publ.SPACE + translation, newButton);
+    applyUserBadgeToToolbar(viewToolbar);
 
     return new ViewToolbarResult(
-            new ViewToolbar(objectName + Publ.SPACE + translation, newButton),
+            viewToolbar,
             newButton,
             null
     );
@@ -72,24 +75,35 @@ public class ViewToolbarFactory {
   @Nonnull
   private static Button createNewButton(@Nonnull final String gridObjectName,
                                         @Nonnull final String url) {
-    final var translation = getI18NProvider() != null ?
-            getI18NProvider().getTranslation("common.new", UI.getCurrent().getLocale()) :
-            "New";
+    final var translation = TranslationHelper.getTranslation("common.new", UI.getCurrent().getLocale());
 
-    final var createButton = new Button(translation + Publ.SPACE + gridObjectName);
+    final var createButton = new Button(translation, VaadinIcon.PLUS.create());
     createButton.addClickListener(event -> UI.getCurrent().navigate(url.toLowerCase()));
     return createButton;
   }
 
-  @Nullable
-  protected static I18NProvider getI18NProvider() {
-    final var service = VaadinService.getCurrent();
-    if (service != null && service.getInstantiator() != null) {
-      return service.getInstantiator().getI18NProvider();
+  private static void applyUserBadgeToToolbar(@Nonnull final ViewToolbar toolbar) {
+    final var currentUser = getCurrentUser();
+    if (currentUser == null) {
+      return;
     }
 
-    return null;
+    final var ui = UI.getCurrent();
+    final var userBadge = new UserActionBadge(currentUser.getUsername())
+//            .addItem(VaadinIcon.USER, "Profil", () -> ui.navigate(Routes.PROFILE))
+            .addItemWithTranslationKey(VaadinIcon.SLIDER, "setting.user_settings", () -> ui.navigate(Routes.USER_SETTINGS))
+            .addItemWithTranslationKey(VaadinIcon.SIGN_OUT, "shared.logout", LogoutHelper::logout);
+
+    toolbar.addUserAction(userBadge);
   }
 
+  @Nullable
+  private static User getCurrentUser() {
+    final var authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
+      return (User) authentication.getPrincipal();
+    }
+    return null;
+  }
 
 }

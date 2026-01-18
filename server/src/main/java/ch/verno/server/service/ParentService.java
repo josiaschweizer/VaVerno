@@ -1,12 +1,13 @@
 package ch.verno.server.service;
 
-import ch.verno.common.db.dto.ParentDto;
+import ch.verno.common.db.dto.table.ParentDto;
 import ch.verno.common.db.service.IParentService;
 import ch.verno.common.exceptions.db.DBNotFoundException;
 import ch.verno.common.exceptions.db.DBNotFoundReason;
 import ch.verno.db.entity.ParentEntity;
 import ch.verno.server.mapper.ParentMapper;
 import ch.verno.server.repository.ParentRepository;
+import ch.verno.server.service.helper.ServiceHelper;
 import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Service;
 

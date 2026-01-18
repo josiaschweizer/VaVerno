@@ -1,7 +1,7 @@
 package ch.verno.common.db.service;
 
-import ch.verno.common.db.dto.CourseDto;
-import ch.verno.common.db.dto.ParticipantDto;
+import ch.verno.common.db.dto.table.CourseDto;
+import ch.verno.common.db.dto.table.ParticipantDto;
 import ch.verno.common.db.filter.ParticipantFilter;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import jakarta.annotation.Nonnull;
@@ -12,10 +12,13 @@ import java.util.Optional;
 public interface IParticipantService {
 
   @Nonnull
-  ParticipantDto createParticipant(@Nonnull ParticipantDto participantEntity);
+  ParticipantDto createParticipant(@Nonnull ParticipantDto participant);
 
   @Nonnull
-  ParticipantDto updateParticipant(@Nonnull ParticipantDto participantEntity);
+  ParticipantDto updateParticipant(@Nonnull ParticipantDto participant);
+
+  ParticipantDto disableParticipant(@Nonnull final ParticipantDto participant,
+                                    final boolean disabled);
 
   @Nonnull
   ParticipantDto getParticipantById(@Nonnull Long id);

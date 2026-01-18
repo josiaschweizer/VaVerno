@@ -1,6 +1,6 @@
 package ch.verno.ui.verno.dashboard.course;
 
-import ch.verno.common.db.dto.CourseDto;
+import ch.verno.common.db.dto.table.CourseDto;
 import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.ui.verno.course.courses.detail.CourseDetail;
 import com.vaadin.flow.component.dialog.Dialog;

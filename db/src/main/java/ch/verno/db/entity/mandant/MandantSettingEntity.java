@@ -29,6 +29,9 @@ public class MandantSettingEntity {
   @Column(name = "course_report_name")
   private String courseReportName;
 
+  @Column(name = "limit_course_assignments_to_active")
+  private boolean limitCourseAssignmentsToActive;
+
   protected MandantSettingEntity() {
     // JPA
   }
@@ -38,13 +41,15 @@ public class MandantSettingEntity {
                               final boolean enforceQuantitySettings,
                               final boolean enforceCourseLevelSettings,
                               final boolean isParentOneMainParent,
-                              @Nonnull final String courseReportName) {
+                              @Nonnull final String courseReportName,
+                              final boolean limitCourseAssignmentsToActive) {
     this.courseDaysPerSchedule = courseDaysPerSchedule;
     this.maxParticipantsPerCourse = maxParticipantsPerCourse;
     this.enforceQuantitySettings = enforceQuantitySettings;
     this.enforceCourseLevelSettings = enforceCourseLevelSettings;
     this.isParentOneMainParent = isParentOneMainParent;
     this.courseReportName = courseReportName;
+    this.limitCourseAssignmentsToActive = limitCourseAssignmentsToActive;
   }
 
   public Long getId() {
@@ -101,5 +106,13 @@ public class MandantSettingEntity {
 
   public void setCourseReportName(final String courseReportName) {
     this.courseReportName = courseReportName;
+  }
+
+  public boolean isLimitCourseAssignmentsToActive() {
+    return limitCourseAssignmentsToActive;
+  }
+
+  public void setLimitCourseAssignmentsToActive(final boolean limitCourseAssignmentsToActive) {
+    this.limitCourseAssignmentsToActive = limitCourseAssignmentsToActive;
   }
 }

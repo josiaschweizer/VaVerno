@@ -1,15 +1,27 @@
 package ch.verno.ui.verno.participant.detail;
 
 import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
-import ch.verno.common.db.dto.CourseDto;
-import ch.verno.common.db.dto.CourseLevelDto;
-import ch.verno.common.db.dto.GenderDto;
-import ch.verno.common.db.dto.ParticipantDto;
+import ch.verno.common.db.dto.table.CourseDto;
+import ch.verno.common.db.dto.table.CourseLevelDto;
+import ch.verno.common.db.dto.table.GenderDto;
+import ch.verno.common.db.dto.table.ParticipantDto;
+import ch.verno.common.db.enums.CourseScheduleStatus;
 import ch.verno.common.db.service.*;
+import ch.verno.publ.Publ;
+import ch.verno.ui.base.components.badge.VABadgeLabel;
+import ch.verno.ui.base.components.badge.VABadgeLabelOptions;
 import ch.verno.ui.base.components.form.FormMode;
-import ch.verno.ui.base.detail.BaseDetailView;
+import ch.verno.ui.base.factory.BadgeLabelFactory;
+import ch.verno.ui.base.pages.detail.BaseDetailView;
 import ch.verno.ui.lib.Routes;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -22,7 +34,9 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.security.PermitAll;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,6 +65,61 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
     super.setShowPaddingAroundDetail(true);
   }
 
+  @Nullable
+  @Override
+  //todo fertig machen
+  protected VABadgeLabel getInfoBadge() {
+    final var active = getBinder().getBean().isActive();
+    final var labelText = active ? getTranslation("shared.active") : getTranslation("shared.inactive");
+    final var badgeOption = active ? VABadgeLabelOptions.SUCCESS : VABadgeLabelOptions.WARNING;
+
+    final var badge = BadgeLabelFactory.createToolbarInfoBadgeLabel(labelText, badgeOption);
+    return null;
+  }
+
+  @Nullable
+  @Override
+  protected Component getToolbarContextMenu() {
+    final var contextButton = new Button(VaadinIcon.ELLIPSIS_DOTS_V.create());
+    contextButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+    final var contextMenu = new ContextMenu();
+    contextMenu.setTarget(contextButton);
+    contextMenu.setOpenOnClick(true);
+
+    final MenuItem toggleActiveItem = contextMenu.addItem(Publ.EMPTY_STRING);
+    toggleActiveItem.addClickListener(e -> {
+      final var bean = getBinder().getBean();
+      if (bean == null) {
+        return;
+      }
+
+      final var updated = participantService
+              .disableParticipant(bean, bean.isActive());
+
+      getBinder().setBean(updated);
+      getBinder().validate();
+      applyFormMode(getFormModeByBean(updated));
+
+      toggleActiveItem.setText(getToggleText(updated));
+    });
+
+    toggleActiveItem.setText(getToggleText(getBinder().getBean()));
+
+    final var wrapper = new HorizontalLayout(contextButton, contextMenu);
+    wrapper.setPadding(false);
+    wrapper.setSpacing(false);
+    wrapper.setAlignItems(FlexComponent.Alignment.CENTER);
+    return wrapper;
+  }
+
+  @Nonnull
+  private String getToggleText(@Nullable ParticipantDto p) {
+    if (p != null && p.isActive()) {
+      return getTranslation("participant.disable.participant");
+    }
+    return getTranslation("participant.enable.participant");
+  }
   @Nonnull
   @Override
   protected String getDetailPageName() {
@@ -183,14 +252,21 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             CourseLevelDto::displayName
     );
 
-    final var courses = courseService.getAllCourses();
+    final var courses = new ArrayList<CourseDto>();
+    if (mandantSettingService.getSingleMandantSetting().isLimitCourseAssignmentsToActive()) {
+      courses.addAll(courseService.getCoursesByCourseScheduleStatus(CourseScheduleStatus.PLANNED));
+      courses.addAll(courseService.getCoursesByCourseScheduleStatus(CourseScheduleStatus.ACTIVE));
+    } else {
+      courses.addAll(courseService.getAllCourses());
+    }
+
     final var coursesEntry = entryFactory.createMultiSelectComboBoxEntry(
             ParticipantDto::getCourses,
             ParticipantDto::setCourses,
             getBinder(),
             Optional.empty(),
             getTranslation(getTranslation("course.courses")),
-            courseService.getAllCourses(),
+            courses,
             CourseDto::displayName
     );
 
@@ -221,7 +297,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             ParticipantDto::setNote,
             getBinder(),
             Optional.empty(),
-            getTranslation("participants.note")
+            getTranslation("shared.note")
     );
 
     return createLayoutFromComponents(note);
@@ -309,7 +385,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             firstNameSetter,
             getBinder(),
             Optional.empty(),
-            getTranslation("participant.firstName")
+            getTranslation("shared.first.name")
     );
 
     final var lastNameEntry = entryFactory.createTextEntry(
@@ -317,7 +393,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             lastNameSetter,
             getBinder(),
             Optional.empty(),
-            getTranslation("participant.lastName")
+            getTranslation("shared.last.name")
     );
 
     final var genderEntry = fieldFactory.createGenderField(
@@ -332,7 +408,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             emailSetter,
             getBinder(),
             Optional.empty(),
-            getTranslation("shared.email")
+            getTranslation("shared.e.mail")
     );
 
     final var phoneEntry = entryFactory.createPhoneNumberEntry(
@@ -340,7 +416,7 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
             phoneSetter,
             getBinder(),
             Optional.empty(),
-            getTranslation("participant.phone_number")
+            getTranslation("shared.phone")
     );
 
     return new VerticalLayout(
@@ -354,6 +430,6 @@ public class ParticipantDetail extends BaseDetailView<ParticipantDto> implements
 
   @Override
   public String getPageTitle() {
-    return getTranslation("participant.participants.detail.view");
+    return getTranslation("participant.participant.detail");
   }
 }

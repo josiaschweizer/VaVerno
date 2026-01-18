@@ -27,13 +27,21 @@ public class CourseRepository {
   }
 
   @Nonnull
-  public List<CourseEntity> findByCourseLevelId(@Nonnull final Long courseLevelId) {
-    return jpaRepository.findByCourseLevels_Id(courseLevelId);
+  public List<CourseEntity> findByCourseScheduleId(@Nonnull final Long courseLevelId) {
+    return jpaRepository.findByCourseSchedule_Id(courseLevelId);
   }
 
   @Nonnull
   public List<CourseEntity> findAll() {
     return jpaRepository.findAll();
+  }
+
+  public void delete(@Nonnull final Long courseId) {
+    jpaRepository.deleteById(courseId);
+  }
+
+  public void delete(@Nonnull final CourseEntity course) {
+    jpaRepository.delete(course);
   }
 
   @Nonnull

@@ -1,6 +1,6 @@
 package ch.verno.server.mapper;
 
-import ch.verno.common.db.dto.CourseScheduleDto;
+import ch.verno.common.db.dto.table.CourseScheduleDto;
 import ch.verno.db.entity.CourseScheduleEntity;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -22,6 +22,7 @@ public final class CourseScheduleMapper {
             entity.getId(),
             entity.getCreatedAt(),
             entity.getTitle(),
+            entity.getColor(),
             entity.getStatus(),
             weeks
     );
@@ -37,6 +38,7 @@ public final class CourseScheduleMapper {
 
     final var entity = new CourseScheduleEntity(
             dto.getTitle(),
+            dto.getColor(),
             dto.getStatus(),
             weeks
     );
@@ -46,6 +48,8 @@ public final class CourseScheduleMapper {
     } else {
       entity.setId(null);
     }
+
+    entity.setCreatedAt(dto.getCreatedAt());
 
     return entity;
   }

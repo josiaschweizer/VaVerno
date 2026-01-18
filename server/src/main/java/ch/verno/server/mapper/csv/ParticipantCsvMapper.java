@@ -1,6 +1,6 @@
 package ch.verno.server.mapper.csv;
 
-import ch.verno.common.db.dto.ParticipantDto;
+import ch.verno.common.db.dto.table.ParticipantDto;
 import jakarta.annotation.Nonnull;
 
 public final class ParticipantCsvMapper extends AbstractCsvMapper<ParticipantDto> {

@@ -1,8 +1,8 @@
 package ch.verno.ui.verno.dashboard.io.widgets.instructor;
 
 import ch.verno.common.base.components.entry.phonenumber.PhoneNumber;
-import ch.verno.common.db.dto.AddressDto;
-import ch.verno.common.db.dto.InstructorDto;
+import ch.verno.common.db.dto.table.AddressDto;
+import ch.verno.common.db.dto.table.InstructorDto;
 import ch.verno.common.db.service.IInstructorService;
 import ch.verno.common.file.CsvMapDto;
 import ch.verno.common.file.FileServerGate;
@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Import configuration for Instructor entities.
- */
 public class InstructorImportConfig implements ImportEntityConfig<InstructorDto> {
 
   @Nonnull

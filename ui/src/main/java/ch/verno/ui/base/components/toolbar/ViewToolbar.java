@@ -1,5 +1,8 @@
 package ch.verno.ui.base.components.toolbar;
 
+import ch.verno.ui.base.components.badge.UserActionBadge;
+import ch.verno.ui.lib.Routes;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -12,15 +15,17 @@ import org.jspecify.annotations.Nullable;
 
 public final class ViewToolbar extends Composite<HorizontalLayout> {
 
-  @Nonnull
-  private final HorizontalLayout actions;
+  @Nonnull private final HorizontalLayout actions;
+  @Nonnull private final HorizontalLayout userAction;
 
-  public ViewToolbar(@Nullable final String viewTitle, @Nonnull final Component... initialActions) {
+  public ViewToolbar(@Nullable final String viewTitle,
+                     @Nonnull final Component... initialActions) {
     final var layout = getContent();
     layout.setPadding(true);
     layout.setWrap(true);
     layout.setWidthFull();
     layout.addClassName(LumoUtility.Border.BOTTOM);
+    layout.addClassName(LumoUtility.Margin.Top.MEDIUM);
     layout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
     final var drawerToggle = new DrawerToggle();
@@ -44,7 +49,13 @@ public final class ViewToolbar extends Composite<HorizontalLayout> {
     actions.setWrap(true);
     actions.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
-    layout.add(toggleAndTitle, actions);
+    userAction = new HorizontalLayout();
+    userAction.setPadding(false);
+    userAction.setSpacing(false);
+    userAction.setWrap(true);
+    userAction.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+
+    layout.add(toggleAndTitle, actions, userAction);
     layout.setFlexGrow(1, toggleAndTitle);
 
     if (initialActions.length > 0) {
@@ -72,6 +83,12 @@ public final class ViewToolbar extends Composite<HorizontalLayout> {
     } else {
       actions.add(button);
     }
+    return this;
+  }
+
+  @Nonnull
+  public ViewToolbar addUserAction(@Nonnull final Component component) {
+    userAction.add(component);
     return this;
   }
 

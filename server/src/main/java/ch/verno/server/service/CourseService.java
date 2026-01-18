@@ -1,6 +1,7 @@
 package ch.verno.server.service;
 
-import ch.verno.common.db.dto.CourseDto;
+import ch.verno.common.db.dto.response.DeleteResponseDto;
+import ch.verno.common.db.dto.table.CourseDto;
 import ch.verno.common.db.enums.CourseScheduleStatus;
 import ch.verno.common.db.filter.CourseFilter;
 import ch.verno.common.db.service.ICourseService;
@@ -8,12 +9,11 @@ import ch.verno.common.exceptions.db.DBNotFoundException;
 import ch.verno.common.exceptions.db.DBNotFoundReason;
 import ch.verno.db.entity.CourseEntity;
 import ch.verno.server.mapper.CourseMapper;
-import ch.verno.server.repository.CourseLevelRepository;
-import ch.verno.server.repository.CourseRepository;
-import ch.verno.server.repository.CourseScheduleRepository;
-import ch.verno.server.repository.InstructorRepository;
+import ch.verno.server.repository.*;
+import ch.verno.server.service.helper.ServiceHelper;
 import ch.verno.server.spec.CourseSpec;
 import ch.verno.server.spec.PageHelper;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import jakarta.annotation.Nonnull;
 import org.springframework.stereotype.Service;
@@ -24,28 +24,25 @@ import java.util.List;
 @Service
 public class CourseService implements ICourseService {
 
-  @Nonnull
-  private final CourseRepository courseRepository;
-  @Nonnull
-  private final CourseLevelRepository courseLevelRepository;
-  @Nonnull
-  private final CourseScheduleRepository courseScheduleRepository;
-  @Nonnull
-  private final InstructorRepository instructorRepository;
+  @Nonnull private final CourseRepository courseRepository;
+  @Nonnull private final CourseLevelRepository courseLevelRepository;
+  @Nonnull private final CourseScheduleRepository courseScheduleRepository;
+  @Nonnull private final InstructorRepository instructorRepository;
+  @Nonnull private final ParticipantRepository participantRepository;
 
-  @Nonnull
-  private final ServiceHelper serviceHelper;
-  @Nonnull
-  private final CourseSpec courseSpec;
+  @Nonnull private final ServiceHelper serviceHelper;
+  @Nonnull private final CourseSpec courseSpec;
 
   public CourseService(@Nonnull final CourseRepository courseRepository,
                        @Nonnull final CourseLevelRepository courseLevelRepository,
                        @Nonnull final CourseScheduleRepository courseScheduleRepository,
-                       @Nonnull final InstructorRepository instructorRepository) {
+                       @Nonnull final InstructorRepository instructorRepository,
+                       @Nonnull final ParticipantRepository participantRepository) {
     this.courseRepository = courseRepository;
     this.courseLevelRepository = courseLevelRepository;
     this.courseScheduleRepository = courseScheduleRepository;
     this.instructorRepository = instructorRepository;
+    this.participantRepository = participantRepository;
 
     this.serviceHelper = new ServiceHelper();
     this.courseSpec = new CourseSpec();
@@ -56,9 +53,6 @@ public class CourseService implements ICourseService {
   @Transactional
   public CourseDto createCourse(@Nonnull final CourseDto courseDto) {
     final var levels = serviceHelper.resolveCourseLevels(courseLevelRepository, courseDto.getCourseLevels());
-    if (levels.isEmpty()) {
-      throw new IllegalArgumentException("At least one course level is required");
-    }
 
     final var schedule = serviceHelper.resolveCourseSchedule(courseScheduleRepository, courseDto.getCourseSchedule());
     if (schedule == null) {
@@ -103,9 +97,9 @@ public class CourseService implements ICourseService {
     existing.setNote(courseDto.getNote());
 
     final var levels = serviceHelper.resolveCourseLevels(courseLevelRepository, courseDto.getCourseLevels());
-    if (levels.isEmpty()) {
-      throw new IllegalArgumentException("At least one course level is required");
-    }
+//    if (levels.isEmpty()) {
+//      throw new IllegalArgumentException("At least one course level is required");
+//    }
 
     final var schedule = serviceHelper.resolveCourseSchedule(courseScheduleRepository, courseDto.getCourseSchedule());
     if (schedule == null) {
@@ -137,9 +131,16 @@ public class CourseService implements ICourseService {
   @Override
   @Transactional
   public List<CourseDto> getCoursesByCourseScheduleId(@Nonnull final Long courseScheduleId) {
-    return courseRepository.findByCourseLevelId(courseScheduleId).stream()
+    final var courses = courseRepository.findAll().stream()
+            .filter(dto -> dto.getCourseSchedule() != null)
+            .filter(dto -> dto.getCourseSchedule().getId().equals(courseScheduleId))
             .map(CourseMapper::toDto)
             .toList();
+//    return courseRepository.findByCourseScheduleId(courseScheduleId).stream()
+//            .map(CourseMapper::toDto)
+//            .toList();
+
+    return courses;
   }
 
   @Nonnull
@@ -158,6 +159,28 @@ public class CourseService implements ICourseService {
   @Transactional(readOnly = true)
   public List<CourseDto> getAllCourses() {
     return courseRepository.findAll().stream().map(CourseMapper::toDto).toList();
+  }
+
+
+  @Nonnull
+  @Override
+  @Transactional
+  public DeleteResponseDto delete(@Nonnull final CourseDto course) {
+    if (course.getId() == null || course.getId() == 0L) {
+      throw new DBNotFoundException(DBNotFoundReason.COURSE_BY_ID_NOT_FOUND);
+    }
+
+    if (participantRepository.existsByCourseId(course.getId())) {
+      return DeleteResponseDto.failure("Cannot delete course with registered participants");
+    }
+
+    final var entity = CourseMapper.toEntity(course);
+    if (entity == null) {
+      throw new DBNotFoundException(DBNotFoundReason.NOT_ABLE_TO_DELETE_ENTITY);
+    }
+
+    courseRepository.delete(entity);
+    return DeleteResponseDto.unconditionalSuccess();
   }
 
   @Nonnull
@@ -179,5 +202,15 @@ public class CourseService implements ICourseService {
   @Transactional(readOnly = true)
   public int countCourses(@Nonnull final CourseFilter filter) {
     return Math.toIntExact(courseRepository.count(courseSpec.courseSpec(filter)));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public boolean canDelete(@Nonnull final CourseDto course) {
+    if (course.getId() == null || course.getId() == 0L) {
+      return false;
+    }
+
+    return !participantRepository.existsByCourseId(course.getId());
   }
 }

@@ -8,6 +8,6 @@ public class VABadgeLabel extends Span {
   public VABadgeLabel(@Nonnull final String label,
                       @Nonnull final VABadgeLabelOptions option) {
     super(label);
-    this.addClassName(option.getClassName());
+    this.getElement().getThemeList().add(option.getTheme());
   }
 }

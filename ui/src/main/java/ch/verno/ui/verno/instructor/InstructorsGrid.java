@@ -1,12 +1,14 @@
 package ch.verno.ui.verno.instructor;
 
-import ch.verno.common.db.dto.InstructorDto;
+import ch.verno.common.db.dto.table.InstructorDto;
 import ch.verno.common.db.filter.InstructorFilter;
 import ch.verno.common.db.service.IInstructorService;
-import ch.verno.ui.base.grid.BaseOverviewGrid;
-import ch.verno.ui.base.grid.ObjectGridColumn;
+import ch.verno.ui.base.pages.grid.BaseOverviewGrid;
+import ch.verno.ui.base.pages.grid.ObjectGridColumn;
 import ch.verno.ui.lib.Routes;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
@@ -49,12 +51,6 @@ public class InstructorsGrid extends BaseOverviewGrid<InstructorDto, InstructorF
     return instructorService.findInstructors(filter, offset, limit, sortOrders).stream();
   }
 
-  @Override
-  protected int count(@Nonnull final Query<InstructorDto, InstructorFilter> query,
-                      @Nonnull final InstructorFilter filter) {
-    return instructorService.countCourses(filter);
-  }
-
   @Nonnull
   @Override
   protected String getGridObjectName() {
@@ -71,8 +67,8 @@ public class InstructorsGrid extends BaseOverviewGrid<InstructorDto, InstructorF
   @Override
   protected List<ObjectGridColumn<InstructorDto>> getColumns() {
     final var columns = new ArrayList<ObjectGridColumn<InstructorDto>>();
-    columns.add(new ObjectGridColumn<>("firstname", InstructorDto::getFirstName, getTranslation("shared.first.name"), true));
     columns.add(new ObjectGridColumn<>("lastname", InstructorDto::getLastName, getTranslation("shared.last.name"), true));
+    columns.add(new ObjectGridColumn<>("firstname", InstructorDto::getFirstName, getTranslation("shared.first.name"), true));
     columns.add(new ObjectGridColumn<>("gender", InstructorDto::genderAsString, getTranslation("shared.gender"), true));
     columns.add(new ObjectGridColumn<>("email", InstructorDto::getEmail, getTranslation("shared.e.mail"), true));
     columns.add(new ObjectGridColumn<>("phone", InstructorDto::phoneAsString, getTranslation("shared.phone"), true));
@@ -84,6 +80,16 @@ public class InstructorsGrid extends BaseOverviewGrid<InstructorDto, InstructorF
   @Override
   protected InstructorFilter withSearchText(@Nonnull final String searchText) {
     return InstructorFilter.ofSearchText(searchText);
+  }
+
+  @Override
+  protected void setDefaultSorting() {
+    final var lastNameCol = columnsByKey.get("lastname");
+    if (lastNameCol == null) {
+      return;
+    }
+
+    grid.sort(List.of(new GridSortOrder<>(lastNameCol, SortDirection.ASCENDING)));
   }
 
   @Override

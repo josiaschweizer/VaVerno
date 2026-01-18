@@ -1,12 +1,12 @@
 package ch.verno.ui.verno.course.courses.detail;
 
-import ch.verno.common.db.dto.*;
+import ch.verno.common.db.dto.table.*;
 import ch.verno.common.db.filter.ParticipantFilter;
 import ch.verno.common.db.service.*;
 import ch.verno.common.gate.VernoApplicationGate;
 import ch.verno.server.service.*;
 import ch.verno.ui.base.components.form.FormMode;
-import ch.verno.ui.base.detail.BaseDetailView;
+import ch.verno.ui.base.pages.detail.BaseDetailView;
 import ch.verno.ui.lib.Routes;
 import ch.verno.ui.verno.participant.ParticipantsGrid;
 import com.vaadin.flow.component.html.Span;
@@ -66,6 +66,29 @@ public class CourseDetail extends BaseDetailView<CourseDto> implements HasDynami
   @Override
   protected String getDetailPageName() {
     return getTranslation("course.course");
+  }
+
+  @Override
+  protected void init() {
+    setWidthFull();
+    setPadding(false);
+    setSpacing(false);
+
+    if (showHeaderToolbar) {
+      add(viewToolbar.toolbar());
+    }
+
+    initUI();
+
+    saveButton.addClickListener(event -> save());
+    getBinder().addValueChangeListener(event -> updateSaveButtonState());
+    getBinder().addStatusChangeListener(event -> updateSaveButtonState());
+
+    add(createActionButtonLayout());
+    initAdditionalInfoUIBelowSaveButton();
+
+    applyFormMode(resolveInitialFormMode());
+    updateSaveButtonState();
   }
 
   @NonNull
@@ -190,7 +213,7 @@ public class CourseDetail extends BaseDetailView<CourseDto> implements HasDynami
             CourseDto::getCourseLevels,
             CourseDto::setCourseLevels,
             getBinder(),
-            Optional.of(getTranslation("courseLevel.at.least.one.course.level.is.required")),
+            Optional.empty(),
             getTranslation("courseLevel.course_levels"),
             courseLevelService.getAllCourseLevels(),
             CourseLevelDto::displayName
@@ -234,7 +257,7 @@ public class CourseDetail extends BaseDetailView<CourseDto> implements HasDynami
             CourseDto::getWeekdays,
             CourseDto::setWeekdays,
             getBinder(),
-            Optional.of(getTranslation("course.at.least.one.weekday.is.required")),
+            Optional.empty(),
             getTranslation("course.weekdays")
     );
 
@@ -261,9 +284,13 @@ public class CourseDetail extends BaseDetailView<CourseDto> implements HasDynami
       }
     };
 
+    participantsGrid.setHeight(null);
+    participantsGrid.getGrid().setHeight(null);
+    participantsGrid.getGrid().setAllRowsVisible(true);
+
     addOnLayout = new VerticalLayout(title, participantsGrid);
     addOnLayout.setWidthFull();
-    addOnLayout.setHeightFull();
+    addOnLayout.setHeight(null);
 
     if (!showPaddingAroundDetail) {
       addOnLayout.setPadding(false);

@@ -1,11 +1,12 @@
 package ch.verno.ui.verno.course.courseschedule;
 
-import ch.verno.common.db.dto.CourseScheduleDto;
+import ch.verno.common.db.dto.table.CourseScheduleDto;
 import ch.verno.common.db.filter.CourseScheduleFilter;
 import ch.verno.common.db.service.ICourseScheduleService;
-import ch.verno.ui.base.grid.BaseOverviewGrid;
-import ch.verno.ui.base.grid.ComponentGridColumn;
-import ch.verno.ui.base.grid.ObjectGridColumn;
+import ch.verno.ui.base.components.grid.GridActionRoles;
+import ch.verno.ui.base.pages.grid.BaseOverviewGrid;
+import ch.verno.ui.base.pages.grid.ComponentGridColumn;
+import ch.verno.ui.base.pages.grid.ObjectGridColumn;
 import ch.verno.ui.lib.Routes;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.provider.Query;
@@ -44,12 +45,6 @@ public class CourseSchedulesGrid extends BaseOverviewGrid<CourseScheduleDto, Cou
     return courseScheduleService.findCourseSchedules(filter, offset, limit, sortOrders).stream();
   }
 
-  @Override
-  protected int count(@Nonnull final Query<CourseScheduleDto, CourseScheduleFilter> query,
-                      @Nonnull final CourseScheduleFilter filter) {
-    return courseScheduleService.countCourseSchedules(filter);
-  }
-
   @Nonnull
   @Override
   protected String getGridObjectName() {
@@ -67,8 +62,8 @@ public class CourseSchedulesGrid extends BaseOverviewGrid<CourseScheduleDto, Cou
   protected List<ObjectGridColumn<CourseScheduleDto>> getColumns() {
     final var columns = new ArrayList<ObjectGridColumn<CourseScheduleDto>>();
     columns.add(new ObjectGridColumn<>("title", CourseScheduleDto::getTitle, getTranslation("shared.title"), true));
-    columns.add(new ObjectGridColumn<>("first-week", dto -> dto.getWeeks().getFirst(), getTranslation("courseSchedule.first.week"), false));
-    columns.add(new ObjectGridColumn<>("last-week", dto -> dto.getWeeks().getLast(), getTranslation("courseSchedule.last.week"), false));
+    columns.add(new ObjectGridColumn<>("first-week", dto -> !dto.getWeeks().isEmpty() ? dto.getWeeks().getFirst() : null, getTranslation("courseSchedule.first.week"), false));
+    columns.add(new ObjectGridColumn<>("last-week", dto -> !dto.getWeeks().isEmpty() ? dto.getWeeks().getLast() : null, getTranslation("courseSchedule.last.week"), false));
     columns.add(new ObjectGridColumn<>("weeks", CourseScheduleDto::getWeeksAsString, getTranslation("courseSchedule.weeks"), true));
     return columns;
   }
@@ -77,7 +72,8 @@ public class CourseSchedulesGrid extends BaseOverviewGrid<CourseScheduleDto, Cou
   @Override
   protected List<ComponentGridColumn<CourseScheduleDto>> getComponentColumns() {
     final var componentColumns = new ArrayList<ComponentGridColumn<CourseScheduleDto>>();
-    componentColumns.add(new ComponentGridColumn<>("status", this::getStatusBadge, getTranslation("shared.status"), true));
+    componentColumns.add(new ComponentGridColumn<>("color", this::getColorSpan, getTranslation("shared.color"), false, null));
+    componentColumns.add(new ComponentGridColumn<>("status", this::getStatusBadge, getTranslation("shared.status"), true, GridActionRoles.STICK_COLUMN));
     return componentColumns;
   }
 
@@ -89,7 +85,20 @@ public class CourseSchedulesGrid extends BaseOverviewGrid<CourseScheduleDto, Cou
     return statusSpan;
   }
 
+  @Nonnull
+  private Span getColorSpan(@Nonnull final CourseScheduleDto dto) {
+    final var hexColor = dto.getColor();
 
+    final var span = new Span();
+    span.getStyle()
+            .set("background-color", hexColor)
+            .set("width", "1rem")
+            .set("height", "1rem")
+            .set("border-radius", "50%")
+            .set("display", "inline-block");
+
+    return span;
+  }
   @Nonnull
   @Override
   protected CourseScheduleFilter withSearchText(@Nonnull final String searchText) {

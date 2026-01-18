@@ -1,6 +1,6 @@
 package ch.verno.ui.verno.dashboard.courseSchedules;
 
-import ch.verno.common.db.dto.CourseScheduleDto;
+import ch.verno.common.db.dto.table.CourseScheduleDto;
 import ch.verno.common.db.enums.CourseScheduleStatus;
 import ch.verno.common.db.service.ICourseScheduleService;
 import ch.verno.ui.base.components.notification.NotificationFactory;
@@ -81,10 +81,10 @@ public class CourseScheduleDialog extends Dialog {
       return;
     } else if (showConfirmDialogOnClose) {
       final var confirmDialog = new ConfirmDialog(
-              "Confirm action",
-              "This action cannot be undone. Do you want to continue?",
-              "Confirm", confirm -> confirmDialog(confirm, selectedItems),
-              "Cancel",
+              getTranslation("shared.confirm.action"),
+              getTranslation("shared.this.action.cannot.be.undone.do.you.want.to.continue"),
+              getTranslation("shared.confirm"), confirm -> confirmDialog(confirm, selectedItems),
+              getTranslation("shared.cancel"),
               cancel -> { /* no action */ }
       );
       confirmDialog.open();

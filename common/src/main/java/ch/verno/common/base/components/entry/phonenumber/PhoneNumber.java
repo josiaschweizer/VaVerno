@@ -1,7 +1,7 @@
 package ch.verno.common.base.components.entry.phonenumber;
 
 import ch.verno.publ.Publ;
-import ch.verno.common.util.calling.CallingCode;
+import ch.verno.common.lib.calling.CallingCode;
 import jakarta.annotation.Nonnull;
 
 public record PhoneNumber(
@@ -42,7 +42,7 @@ public record PhoneNumber(
       return empty();
     }
 
-    final var allCodesDesc = ch.verno.common.util.calling.CallingCodeHelper.getCallingCodes().stream()
+    final var allCodesDesc = ch.verno.common.lib.calling.CallingCodeHelper.getCallingCodes().stream()
         .sorted((a, b) -> Integer.compare(b.countryCode(), a.countryCode()))
         .toList();
 

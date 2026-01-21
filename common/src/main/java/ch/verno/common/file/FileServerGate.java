@@ -23,6 +23,4 @@ public interface FileServerGate {
   FileDto parseRows(@Nonnull final List<CsvMapDto> rows, @Nonnull final String fileName);
 
   void delete(@Nonnull String token);
-
-  String generateFile(List<CsvMapDto> rows);
 }

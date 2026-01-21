@@ -1,30 +1,26 @@
-package ch.verno.ui.base.pdf;
+package ch.verno.ui.base.file;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.IFrame;
 import jakarta.annotation.Nonnull;
 
-public class PdfPreview extends Div {
+public abstract class AbstractFilePreview extends Div {
 
+  @Nonnull private final FileType fileType;
   @Nonnull private final IFrame frame;
 
-  public PdfPreview(@Nonnull final String src) {
-    this();
-    setSrc(src);
+
+  public AbstractFilePreview(@Nonnull final FileType fileType) {
+    this.fileType = fileType;
+    this.frame = new IFrame();
   }
 
-  public PdfPreview() {
-    frame = new IFrame();
-
-    init();
-  }
-
-  private void init() {
+  protected void init() {
     frame.setSizeFull();
     frame.setWidth("100%");
     frame.setHeight("100%");
 
-    frame.getElement().setAttribute("type", "application/pdf");
+    frame.getElement().setAttribute("type", fileType.getMimeType());
     frame.getElement().setAttribute("allow", "fullscreen");
     frame.getElement().setAttribute("frameborder", "0");
 

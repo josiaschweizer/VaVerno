@@ -50,7 +50,7 @@ public class InstructorWidget extends VAAccordionWidgetBase {
             VaadinIcon.UPLOAD,
             e -> {
               final var config = new InstructorExportConfig(globalGate);
-              final var exportDialog = new ExportDialog(globalGate, config);
+              final var exportDialog = new ExportDialog<>(globalGate, config);
               exportDialog.open();
             });
 

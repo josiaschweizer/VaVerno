@@ -1,6 +1,8 @@
 package ch.verno.server;
 
 import ch.verno.common.file.FileServerGate;
+import ch.verno.common.file.dto.CsvMapDto;
+import ch.verno.common.file.dto.FileDto;
 import ch.verno.common.server.ServerGate;
 import ch.verno.common.server.io.importing.CsvSchema;
 import ch.verno.server.io.importing.SchemaResolver;
@@ -8,7 +10,7 @@ import jakarta.annotation.Nonnull;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class ServerGateImpl implements ServerGate {
@@ -26,9 +28,11 @@ public class ServerGateImpl implements ServerGate {
     return schemaResolver.resolveCsvSchema(fileToken);
   }
 
+  @Nonnull
   @Override
-  public void importCsvData(@NonNull final String fileToken, @NonNull final Map<String, String> mapping) {
-
+  public FileDto generateFileFromCsv(@Nonnull final String filename,
+                                     @NonNull final List<CsvMapDto> rows) {
+    return fileServerGate.parseRows(rows, filename);
   }
 
 }

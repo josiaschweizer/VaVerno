@@ -10,4 +10,7 @@ public interface ExportEntityConfig<T> {
   @Nonnull
   List<CsvMapDto> getRows();
 
+  @Nonnull
+  String getFileName();
+
 }

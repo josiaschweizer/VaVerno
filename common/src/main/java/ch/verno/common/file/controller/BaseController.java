@@ -1,27 +1,29 @@
-package ch.verno.common.file;
+package ch.verno.common.file.controller;
 
-import ch.verno.common.gate.GlobalGate;
-import ch.verno.publ.ApiUrl;
+import ch.verno.common.file.FileServerGate;
 import jakarta.annotation.Nonnull;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
-@RequestMapping(ApiUrl.TEMP_FILE_IMPORT)
-public class FileController {
+public abstract class BaseController {
 
   @Nonnull private final FileServerGate fileServerGate;
 
-  public FileController(@Nonnull GlobalGate globalGate) {
-    fileServerGate = globalGate.getGate(FileServerGate.class);
+  public BaseController(@Nonnull final FileServerGate fileServerGate) {
+    this.fileServerGate = fileServerGate;
   }
 
-  @GetMapping(value = "/{token}", produces = "text/csv")
-  public ResponseEntity<ByteArrayResource> get(@PathVariable String token,
-                                               @RequestParam(defaultValue = "inline") String disposition) {
+  @Nonnull
+  abstract ResponseEntity<ByteArrayResource> get(@PathVariable String token,
+                                                 @RequestParam(defaultValue = "inline") String disposition);
+
+  @Nonnull
+  protected ResponseEntity<ByteArrayResource> getByToken(@Nonnull final String token,
+                                                         @Nonnull final String disposition) {
     final var reportDto = fileServerGate.loadFile(token);
 
     ContentDisposition cd = ContentDisposition
@@ -38,5 +40,4 @@ public class FileController {
             .contentLength(reportDto.pdfBytes().length)
             .body(new ByteArrayResource(reportDto.pdfBytes()));
   }
-
 }

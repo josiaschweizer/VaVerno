@@ -1,6 +1,7 @@
 package ch.verno.ui.base.components.notification;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -8,70 +9,75 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import jakarta.annotation.Nonnull;
 
 @CssImport("./components/notification/va-notification.css")
-public final class NotificationFactory {
+public class NotificationFactory {
 
   public static final Notification.Position NOTIFICATION_POSITION = Notification.Position.BOTTOM_END;
   private static final int DEFAULT_DURATION = 4000;
 
-  private NotificationFactory() {}
-
   public static void showWarningNotification(@Nonnull final String message) {
-    showNotification(message, VaadinIcon.WARNING, NotificationVariant.LUMO_WARNING);
+    showNotification(message, VaadinIcon.WARNING, NotificationVariant.LUMO_WARNING, "warning");
   }
 
   public static void showSuccessNotification(@Nonnull final String message) {
-    showNotification(message, VaadinIcon.CHECK_CIRCLE, NotificationVariant.LUMO_SUCCESS);
+    showNotification(message, VaadinIcon.CHECK_CIRCLE, NotificationVariant.LUMO_SUCCESS, "success");
   }
 
   public static void showErrorNotification(@Nonnull final String message) {
-    showNotification(message, VaadinIcon.EXCLAMATION_CIRCLE, NotificationVariant.LUMO_ERROR);
+    showNotification(message, VaadinIcon.CLOSE_CIRCLE, NotificationVariant.LUMO_ERROR, "error");
   }
 
   public static void showInfoNotification(@Nonnull final String message) {
-    showNotification(message, VaadinIcon.INFO_CIRCLE, NotificationVariant.LUMO_CONTRAST);
+    showNotification(message, VaadinIcon.INFO_CIRCLE, NotificationVariant.LUMO_CONTRAST, "info");
   }
 
   private static void showNotification(@Nonnull final String message,
-                                       @Nonnull final VaadinIcon icon,
-                                       @Nonnull final NotificationVariant variant) {
-
+                                       @Nonnull final VaadinIcon iconType,
+                                       @Nonnull final NotificationVariant variant,
+                                       @Nonnull final String type) {
     final var notification = new Notification();
     notification.addThemeVariants(variant);
     notification.setDuration(DEFAULT_DURATION);
     notification.setPosition(NOTIFICATION_POSITION);
 
-    final var root = new Div();
-    root.addClassName("va-notification");
-    root.getElement().getThemeList().add(variant.getVariantName());
+    final var iconContainer = new Div();
+    iconContainer.addClassName("notification-icon-container");
+    iconContainer.addClassName("notification-icon-" + type);
 
-    final var accent = new Div();
-    accent.addClassName("va-notification__accent");
+    final var icon = iconType.create();
+    icon.setSize("24px");
+    icon.addClassName("notification-icon");
+    iconContainer.add(icon);
 
-    final Icon iconComponent = icon.create();
-    iconComponent.addClassName("va-notification__icon");
+    final var messageSpan = new Span(message);
+    messageSpan.addClassName("notification-message");
 
-    final var iconWrap = new Div(iconComponent);
-    iconWrap.addClassName("va-notification__icon-wrap");
+    final var closeButton = new Button(new Icon(VaadinIcon.CLOSE_SMALL));
+    closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_CONTRAST);
+    closeButton.addClassName("notification-close-btn");
+    closeButton.getElement().setAttribute("aria-label", "Close");
+    closeButton.addClickListener(e -> {
+      notification.close();
+    });
+    closeButton.getStyle()
+            .set("color", "white")
+            .set("cursor", "pointer");
 
-    final var msg = new Span(message);
-    msg.addClassName("va-notification__message");
+    final var contentWrapper = new Div();
+    contentWrapper.addClassName("notification-content-wrapper");
+    contentWrapper.add(messageSpan);
 
-    final var closeIcon = VaadinIcon.CLOSE_SMALL.create();
-    closeIcon.addClassName("va-notification__close-icon");
+    final var layout = new HorizontalLayout(iconContainer, contentWrapper, closeButton);
+    layout.setSpacing(false);
+    layout.setAlignItems(FlexComponent.Alignment.CENTER);
+    layout.addClassName("notification-layout");
+    layout.addClassName("notification-" + type);
 
-    final var close = new Button(closeIcon, e -> notification.close());
-    close.addClassName("va-notification__close");
-    close.getElement().setAttribute("aria-label", "Close notification");
-    close.getElement().setAttribute("title", "Schließen");
-
-    final var content = new Div(iconWrap, msg, close);
-    content.addClassName("va-notification__content");
-
-    root.add(accent, content);
-    notification.add(root);
+    notification.add(layout);
     notification.open();
   }
 }

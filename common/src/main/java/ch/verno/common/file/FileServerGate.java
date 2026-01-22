@@ -1,5 +1,7 @@
 package ch.verno.common.file;
 
+import ch.verno.common.file.dto.CsvMapDto;
+import ch.verno.common.file.dto.FileDto;
 import jakarta.annotation.Nonnull;
 
 import java.util.List;

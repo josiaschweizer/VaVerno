@@ -2,12 +2,12 @@ package ch.verno.ui.verno.dashboard.report;
 
 import ch.verno.common.db.dto.table.CourseDto;
 import ch.verno.common.db.dto.table.ParticipantDto;
-import ch.verno.common.gate.VernoApplicationGate;
+import ch.verno.common.gate.GlobalGate;
 import ch.verno.common.report.ReportServerGate;
 import ch.verno.publ.ApiUrl;
 import ch.verno.publ.Publ;
 import ch.verno.ui.base.dialog.VADialog;
-import ch.verno.ui.base.pdf.PdfPreview;
+import ch.verno.ui.base.file.pdf.PdfPreview;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
@@ -27,10 +27,10 @@ public class CourseReportDialog extends VADialog {
 
   @Nonnull private String reportToken;
 
-  public CourseReportDialog(@Nonnull final VernoApplicationGate vernoApplicationGate,
+  public CourseReportDialog(@Nonnull final GlobalGate globalGate,
                             @Nonnull final CourseDto currentCourse,
                             @Nonnull final List<ParticipantDto> participantsInCourse) {
-    this.reportServerGate = vernoApplicationGate.getService(ReportServerGate.class);
+    this.reportServerGate = globalGate.getService(ReportServerGate.class);
     this.currentCourse = currentCourse;
     this.participantsInCourse = participantsInCourse;
 

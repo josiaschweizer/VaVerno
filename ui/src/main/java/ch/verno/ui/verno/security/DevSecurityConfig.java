@@ -25,6 +25,7 @@ public class DevSecurityConfig {
     http.authorizeHttpRequests(auth -> auth
             .requestMatchers(ApiUrl.TEMP_FILE_REPORT + "/**").permitAll()
             .requestMatchers(ApiUrl.TEMP_FILE_IMPORT + "/**").permitAll()
+            .requestMatchers(ApiUrl.TEMP_FILE_EXPORT + "/**").permitAll()
     );
 
     http = http.with(VaadinSecurityConfigurer.vaadin(), configurer -> {
@@ -34,6 +35,7 @@ public class DevSecurityConfig {
     http.csrf(csrf -> csrf
             .ignoringRequestMatchers(ApiUrl.TEMP_FILE_REPORT + "/**")
             .ignoringRequestMatchers(ApiUrl.TEMP_FILE_IMPORT + "/**")
+            .ignoringRequestMatchers(ApiUrl.TEMP_FILE_EXPORT + "/**")
     );
 
     http.headers(headers -> headers

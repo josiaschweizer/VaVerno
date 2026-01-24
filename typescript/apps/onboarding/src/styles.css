@@ -1,82 +1,75 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
-
-@plugin "tailwindcss-animate";
-@custom-variant dark (&:is(.dark *));
 
 :root {
-  --verno-bg: #0a0908;
-  --verno-surface: #22333b;
-  --verno-surface-light: #568095;
-  --verno-dark: #eae0d5;
-  --verno-dark-hover: #736f69;
-  --verno-darker: #c6ac8f;
-  --verno-accent: #5e503f;
+  /* Brand (Light defaults) */
+  --verno-bg: #f6f1e9; /* warmes Off-White */
+  --verno-surface: #ffffff; /* Karten */
+  --verno-surface-light: #eef2f4; /* leichte Flächen / Hover */
+  --verno-dark: #1e2427; /* Text "dark" */
+  --verno-dark-hover: #384247; /* Hover/Muted Text */
+  --verno-darker: #101416; /* starke Headlines */
+  --verno-accent: #6b5744; /* warmes Braun */
 
-  --verno-bg-rgb: 10 9 8;
-  --verno-surface-rgb: 34 51 59;
-  --verno-surface-light-rgb: 86 128 149;
-  --verno-dark-rgb: 234 224 213;
-  --verno-dark-hover-rgb: 115 111 105;
-  --verno-darker-rgb: 198 172 143;
-  --verno-accent-rgb: 94 80 63;
+  /* System tokens (Light) */
+  --background: var(--verno-bg);
+  --foreground: var(--verno-darker);
+
+  --card: var(--verno-surface);
+  --card-foreground: var(--verno-darker);
+
+  --popover: var(--verno-surface);
+  --popover-foreground: var(--verno-darker);
+
+  --primary: var(--verno-accent);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--verno-surface-light);
+  --secondary-foreground: var(--verno-darker);
+
+  --muted: #ece6dd;
+  --muted-foreground: #5a646a;
+
+  --accent: #d7dde0;
+  --accent-foreground: var(--verno-darker);
+
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: #ffffff;
+
+  --border: color-mix(in oklab, var(--verno-dark) 14%, transparent);
+  --input: color-mix(in oklab, var(--verno-dark) 16%, transparent);
+  --ring: color-mix(in oklab, var(--verno-accent) 55%, transparent);
+
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
 
   --radius: 0.625rem;
 
-  --background: var(--verno-bg);
-  --foreground: var(--verno-darker);
-
-  --card: var(--verno-surface);
-  --card-foreground: var(--verno-dark);
-
-  --popover: var(--verno-surface);
-  --popover-foreground: var(--verno-dark);
-
-  --primary: var(--verno-accent);
-  --primary-foreground: var(--verno-dark);
-
-  --secondary: var(--verno-surface);
-  --secondary-foreground: var(--verno-dark);
-
-  --muted: var(--verno-surface);
-  --muted-foreground: var(--verno-dark-hover);
-
-  --accent: var(--verno-surface-light);
-  --accent-foreground: var(--verno-bg);
-
-  --destructive: oklch(0.704 0.191 22.216);
-
-  --border: color-mix(in oklab, var(--verno-dark-hover) 55%, transparent);
-  --input: color-mix(in oklab, var(--verno-dark-hover) 65%, transparent);
-  --ring: color-mix(in oklab, var(--verno-surface-light) 70%, transparent);
-
-  --chart-1: var(--verno-accent);
-  --chart-2: var(--verno-surface-light);
-  --chart-3: var(--verno-darker);
-  --chart-4: var(--verno-dark-hover);
-  --chart-5: var(--verno-surface);
-
-  --sidebar: var(--verno-surface);
-  --sidebar-foreground: var(--verno-dark);
+  --sidebar: #fbf7f0;
+  --sidebar-foreground: var(--verno-darker);
   --sidebar-primary: var(--verno-accent);
-  --sidebar-primary-foreground: var(--verno-dark);
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: var(--verno-surface-light);
-  --sidebar-accent-foreground: var(--verno-bg);
-  --sidebar-border: color-mix(
-    in oklab,
-    var(--verno-dark-hover) 55%,
-    transparent
-  );
-  --sidebar-ring: color-mix(
-    in oklab,
-    var(--verno-surface-light) 70%,
-    transparent
-  );
+  --sidebar-accent-foreground: var(--verno-darker);
+  --sidebar-border: color-mix(in oklab, var(--verno-dark) 14%, transparent);
+  --sidebar-ring: color-mix(in oklab, var(--verno-accent) 55%, transparent);
 }
 
 .dark {
+  /* Brand (Dark) */
+  --verno-bg: #0a0908;
+  --verno-surface: #141a1d; /* etwas heller als bg, bessere Trennung */
+  --verno-surface-light: #22333b;
+  --verno-dark: #eae0d5;
+  --verno-dark-hover: #b7aea5; /* lesbarer als #736f69 auf dark */
+  --verno-darker: #f3ede6; /* für sehr prominenten Text */
+  --verno-accent: #c6ac8f; /* Akzent heller, damit Buttons knallen */
+
+  /* System tokens (Dark) */
   --background: var(--verno-bg);
-  --foreground: var(--verno-darker);
+  --foreground: var(--verno-dark);
 
   --card: var(--verno-surface);
   --card-foreground: var(--verno-dark);
@@ -85,47 +78,42 @@
   --popover-foreground: var(--verno-dark);
 
   --primary: var(--verno-accent);
-  --primary-foreground: var(--verno-dark);
+  --primary-foreground: #1a1410;
 
-  --secondary: var(--verno-surface);
+  --secondary: #1b2429;
   --secondary-foreground: var(--verno-dark);
 
-  --muted: var(--verno-surface);
+  --muted: #161f23;
   --muted-foreground: var(--verno-dark-hover);
 
-  --accent: var(--verno-surface-light);
-  --accent-foreground: var(--verno-bg);
+  --accent: #22333b;
+  --accent-foreground: var(--verno-dark);
 
-  --border: color-mix(in oklab, var(--verno-dark-hover) 55%, transparent);
-  --input: color-mix(in oklab, var(--verno-dark-hover) 65%, transparent);
-  --ring: color-mix(in oklab, var(--verno-surface-light) 70%, transparent);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.985 0 0);
 
-  --sidebar: var(--verno-surface);
+  --border: color-mix(in oklab, var(--verno-dark) 18%, transparent);
+  --input: color-mix(in oklab, var(--verno-dark) 22%, transparent);
+  --ring: color-mix(in oklab, var(--verno-accent) 55%, transparent);
+
+  --sidebar: #0f1416;
   --sidebar-foreground: var(--verno-dark);
   --sidebar-primary: var(--verno-accent);
-  --sidebar-primary-foreground: var(--verno-dark);
-  --sidebar-accent: var(--verno-surface-light);
-  --sidebar-accent-foreground: var(--verno-bg);
-  --sidebar-border: color-mix(
-    in oklab,
-    var(--verno-dark-hover) 55%,
-    transparent
-  );
-  --sidebar-ring: color-mix(
-    in oklab,
-    var(--verno-surface-light) 70%,
-    transparent
-  );
+  --sidebar-primary-foreground: #1a1410;
+  --sidebar-accent: #1b2429;
+  --sidebar-accent-foreground: var(--verno-dark);
+  --sidebar-border: color-mix(in oklab, var(--verno-dark) 18%, transparent);
+  --sidebar-ring: color-mix(in oklab, var(--verno-accent) 55%, transparent);
 }
 
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+@theme {
+  --color-verno-bg: var(--verno-bg);
+  --color-verno-surface: var(--verno-surface);
+  --color-verno-surface-light: var(--verno-surface-light);
+  --color-verno-dark: var(--verno-dark);
+  --color-verno-dark-hover: var(--verno-dark-hover);
+  --color-verno-darker: var(--verno-darker);
+  --color-verno-accent: var(--verno-accent);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -142,6 +130,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -150,6 +139,12 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -162,47 +157,26 @@
 
 @layer base {
   html,
-  body,
-  #root {
+  body {
     height: 100%;
   }
 
-  * {
-    @apply border-border outline-ring/50;
-  }
-
   body {
-    @apply bg-background text-foreground antialiased;
-  }
-
-  button,
-  [role='button'] {
-    @apply cursor-pointer;
-  }
-
-  button:disabled,
-  [role='button'][aria-disabled='true'] {
-    @apply cursor-not-allowed;
+    @apply bg-verno-bg text-verno-darker antialiased;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-card text-card-foreground rounded-2xl p-6 shadow;
+    @apply bg-verno-surface rounded-2xl p-6 shadow;
   }
 
   .btn-primary {
     @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl
-    bg-primary text-primary-foreground
+    bg-verno-accent text-verno-dark
     hover:opacity-90
     active:scale-95 active:opacity-80
     transition-transform transition-opacity duration-150
     cursor-pointer select-none;
-  }
-
-  .input {
-    @apply w-full rounded-xl border border-input bg-background px-3 py-2
-    text-foreground placeholder:text-muted-foreground
-    focus:outline-none focus:ring-2 focus:ring-ring/60;
   }
 }

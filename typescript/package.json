@@ -1,0 +1,14 @@
+{
+  "name": "typescript",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev:onboarding": "pnpm --filter @verno/onboarding dev",
+    "build:onboarding": "pnpm --filter @verno/onboarding build",
+    "lint": "pnpm -r lint",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18"
+  }
+}

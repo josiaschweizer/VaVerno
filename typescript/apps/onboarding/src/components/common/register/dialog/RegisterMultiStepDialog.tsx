@@ -6,17 +6,17 @@ import {
   DialogTitle,
 } from '@headlessui/react'
 import { Button } from '@/components/ui/button'
-
 import StepOne from '../steps/StepOne'
 import StepTwo from '../steps/StepTwo'
 import StepThree from '../steps/StepThree'
-import { XMarkIcon } from '@heroicons/react/24/outline'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   CircleSlash,
   FlagIcon,
 } from 'lucide-react'
+import RegisterDialogFormData from '@/interfaces/register/RegisterDialogFormData'
+import { get, useForm } from 'react-hook-form'
 
 interface Props {
   open: boolean
@@ -26,12 +26,25 @@ interface Props {
 export default function RegisterMultiStepDialog({ open, onClose }: Props) {
   const [step, setStep] = useState<number>(0)
 
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    formState: { isDirty, isValid, errors },
+  } = useForm<RegisterDialogFormData>()
+
   useEffect(() => {
     if (open) setStep(0)
   }, [open])
 
   const next = () => setStep((s) => Math.min(2, s + 1))
   const back = () => setStep((s) => Math.max(0, s - 1))
+
+  const onSubmit = () => {
+    //todo implement submission logic
+
+    onClose()
+  }
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-100">
@@ -66,7 +79,13 @@ export default function RegisterMultiStepDialog({ open, onClose }: Props) {
             </div>
 
             <div className="mt-6 min-h-30">
-              {step === 0 && <StepOne />}
+              {step === 0 && (
+                <StepOne
+                  control={control}
+                  getValues={getValues}
+                  readOnly={!open}
+                />
+              )}
               {step === 1 && <StepTwo />}
               {step === 2 && <StepThree />}
             </div>
@@ -87,11 +106,7 @@ export default function RegisterMultiStepDialog({ open, onClose }: Props) {
                     Continue <ArrowRightIcon className="h-5 w-5" />
                   </Button>
                 ) : (
-                  <Button
-                    onClick={() => {
-                      onClose()
-                    }}
-                  >
+                  <Button onClick={onSubmit}>
                     Finish <FlagIcon className="h-5 w-5" />
                   </Button>
                 )}
